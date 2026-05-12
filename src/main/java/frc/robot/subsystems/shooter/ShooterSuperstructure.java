@@ -129,7 +129,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
      */
     public final LoggedTrigger shooterAtDesiredState =
             new LoggedTrigger(
-                    getName() + "/shooterAtGoal", () -> isFlywheelAtSpeed() && isHoodAtAngle());
+                    getName() + "/shooterAtGoal", () -> isFlywheelAtDesiredSpeed() && isHoodAtDesiredAngle());
 
     /**
      * Trigger determining whether robot is ready to shoot at its current target (i.e. {@link
@@ -189,10 +189,12 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     // Actuator helpers
+    /** Apply a specified speed to the flywheel with a trapezoidal motion profile. */
     private void applyFlywheelVelocity(AngularVelocity velocity) {
         flywheelIO.runVelocity(velocity, FlywheelConstants.MAX_ACCELERATION, PIDSlot.SLOT_0);
     }
 
+    /** Apply a specified angle to the hood with no motion profile. */
     private void applyHoodPosition(Angle angle) {
         hoodIO.runUnprofiledPosition(angle, PIDSlot.SLOT_0);
     }
@@ -214,13 +216,15 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                         RotationsPerSecond.of(flywheelProfileToleranceRPS.get()));
     }
 
-    private boolean isFlywheelAtSpeed() {
+    // Returns whether flywheel is at desired feed / shot speed for current robot pose and target
+    private boolean isFlywheelAtDesiredSpeed() {
         return flywheelIO
                 .getVelocity()
                 .isNear(getDesiredFlywheelVelocity(), FlywheelConstants.TOLERANCE);
     }
 
-    private boolean isHoodAtAngle() {
+    // Returns whether hood is at desired feed / shot angle for current robot pose and target
+    private boolean isHoodAtDesiredAngle() {
         return hoodIO.getPosition().isNear(getDesiredHoodAngle(), HoodConstants.TOLERANCE);
     }
 
@@ -255,21 +259,25 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 flywheelIO.getSupplyCurrent().in(Amps) * flywheelIO.getAppliedVoltage().in(Volts));
     }
 
+    /** Returns the desired feed / shot flywheel speed for current robot pose and target */
     private AngularVelocity getDesiredFlywheelVelocity() {
-        double distanceMeters = getShooterDistance(robotState.shouldFeed.getAsBoolean());
-        if (robotState.shouldFeed.getAsBoolean()) {
-            return RotationsPerSecond.of(feedFlywheelMap.get(distanceMeters));
+        boolean shouldFeed = robotState.shouldFeed.getAsBoolean();
+        double targetDistanceMeters = getShooterDistance(shouldFeed);
+        if (shouldFeed) {
+            return RotationsPerSecond.of(feedFlywheelMap.get(targetDistanceMeters));
         } else {
-            return RotationsPerSecond.of(hubFlywheelMap.get(distanceMeters));
+            return RotationsPerSecond.of(hubFlywheelMap.get(targetDistanceMeters));
         }
     }
 
+    /** Returns the desired feed / shot hood angle for current robot pose and target */
     private Angle getDesiredHoodAngle() {
-        double distanceMeters = getShooterDistance(robotState.shouldFeed.getAsBoolean());
-        if (robotState.shouldFeed.getAsBoolean()) {
-            return Degrees.of(feedHoodMap.get(distanceMeters));
+        boolean shouldFeed = robotState.shouldFeed.getAsBoolean();
+        double targetDistanceMeters = getShooterDistance(shouldFeed);
+        if (shouldFeed) {
+            return Degrees.of(feedHoodMap.get(targetDistanceMeters));
         } else {
-            return Degrees.of(hubHoodMap.get(distanceMeters));
+            return Degrees.of(hubHoodMap.get(targetDistanceMeters));
         }
     }
 
@@ -285,16 +293,19 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     // Command factory
+    /** Apply a specified speed to the flywheel with a trapezoidal motion profile. */
     public Command setFlywheelSpeed(AngularVelocity velocity) {
         return this.runOnce(() -> applyFlywheelVelocity(velocity));
     }
 
+    /** Apply a specified angle to the hood with no motion profile. */
     public Command setHoodAngle(Angle angle) {
         return this.runOnce(() -> applyHoodPosition(angle));
     }
 
+    /** Spin up the flywheel to the desired speed for the current robot pose and target. */
     public Command spinUpFlywheel() {
-        return Commands.none();
+        return this.runOnce(() -> applyFlywheelVelocity(getDesiredFlywheelVelocity()));
     }
 
     public Command setShooterToFixedDistance(Distance distance, boolean isFeeding) {
@@ -310,11 +321,15 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     public Command coastFlywheels() {
-        return Commands.none();
+        return this.runOnce(() -> flywheelIO.runCoast());
     }
 
+    /** Stop the flywheel and lower the hood. */
     public Command stopAndStow() {
-        return Commands.none();
+        return this.runOnce(() -> {
+            applyFlywheelVelocity(RotationsPerSecond.zero());
+            applyHoodPosition(Degrees.zero());
+        });
     }
 
     public Command retractHood() {
