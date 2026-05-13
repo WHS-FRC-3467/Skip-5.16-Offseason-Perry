@@ -21,6 +21,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Watts;
@@ -129,7 +130,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
      */
     public final LoggedTrigger shooterAtDesiredState =
             new LoggedTrigger(
-                    getName() + "/shooterAtGoal", () -> isFlywheelAtDesiredSpeed() && isHoodAtDesiredAngle());
+                    getName() + "/shooterAtGoal",
+                    () -> isFlywheelAtDesiredSpeed() && isHoodAtDesiredAngle());
 
     /**
      * Trigger determining whether robot is ready to shoot at its current target (i.e. {@link
@@ -309,22 +311,20 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         return this.runOnce(() -> applyFlywheelVelocity(getDesiredFlywheelVelocity()));
     }
 
-    /** Spin up the shooter to a specified fixed distance */
+    /** Continuously spin up the shooter to a specified fixed distance (feed or shot). */
     public Command setShooterToFixedDistance(Distance distance, boolean isFeeding) {
-        return this.run(() -> {
-            AngularVelocity speed;
-            Angle angle;
-            if (isFeeding) {
-                speed = RotationsPerSecond.of(feedFlywheelMap.get(distance.in(Meters)));
-                angle = Degrees.of(feedHoodMap.get(distance.in(Meters)));
-            }
-            else {
-                speed = RotationsPerSecond.of(hubFlywheelMap.get(distance.in(Meters)));
-                angle = Degrees.of(hubHoodMap.get(distance.in(Meters)));
-            }
-            applyFlywheelVelocity(speed);
-            applyHoodPosition(angle);
-        });
+        double distanceMeters = distance.in(Meters);
+        if (isFeeding) {
+            return setShooterCommand(
+                    () -> RotationsPerSecond.of(feedFlywheelMap.get(distanceMeters)),
+                    () -> Degrees.of(feedHoodMap.get(distanceMeters)),
+                    "Set Shooter to Fixed Distance - Feed");
+        } else {
+            return setShooterCommand(
+                    () -> RotationsPerSecond.of(hubFlywheelMap.get(distanceMeters)),
+                    () -> Degrees.of(hubHoodMap.get(distanceMeters)),
+                    "Set Shooter to Fixed Distance - Shot");
+        }
     }
 
     public Command setShooterContinuous() {
@@ -336,15 +336,13 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     public Command coastFlywheels() {
-        return this.runOnce(() -> flywheelIO.runCoast());
+        return this.runOnce(() -> flywheelIO.runCoast()).withName("Coast Flywheels");
     }
 
     /** Stop the flywheel and lower the hood. */
     public Command stopAndStow() {
-        return this.runOnce(() -> {
-            applyFlywheelVelocity(RotationsPerSecond.zero());
-            applyHoodPosition(Degrees.zero());
-        });
+        return Commands.sequence(setHoodAngle(Rotations.zero()), coastFlywheels())
+                .withName("Stop and Stow");
     }
 
     public Command retractHood() {
@@ -363,9 +361,15 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         return Commands.none();
     }
 
+    /** Set the shooter to the value provided by the given suppliers. */
     private Command setShooterCommand(
             Supplier<AngularVelocity> flywheelVelocity, Supplier<Angle> hoodAngle, String name) {
-        return Commands.none();
+        return this.run(
+                        () -> {
+                            applyFlywheelVelocity(flywheelVelocity.get());
+                            applyHoodPosition(hoodAngle.get());
+                        })
+                .withName(name);
     }
 
     @Override
