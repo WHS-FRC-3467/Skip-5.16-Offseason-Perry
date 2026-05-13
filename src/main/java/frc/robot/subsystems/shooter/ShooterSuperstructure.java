@@ -281,6 +281,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         }
     }
 
+    /** Returns shooter distance from current target */
     private double getShooterDistance(boolean shouldFeed) {
         if (shouldFeed) {
             return robotState
@@ -308,8 +309,22 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         return this.runOnce(() -> applyFlywheelVelocity(getDesiredFlywheelVelocity()));
     }
 
+    /** Spin up the shooter to a specified fixed distance */
     public Command setShooterToFixedDistance(Distance distance, boolean isFeeding) {
-        return Commands.none();
+        return this.run(() -> {
+            AngularVelocity speed;
+            Angle angle;
+            if (isFeeding) {
+                speed = RotationsPerSecond.of(feedFlywheelMap.get(distance.in(Meters)));
+                angle = Degrees.of(feedHoodMap.get(distance.in(Meters)));
+            }
+            else {
+                speed = RotationsPerSecond.of(hubFlywheelMap.get(distance.in(Meters)));
+                angle = Degrees.of(hubHoodMap.get(distance.in(Meters)));
+            }
+            applyFlywheelVelocity(speed);
+            applyHoodPosition(angle);
+        });
     }
 
     public Command setShooterContinuous() {
