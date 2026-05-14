@@ -109,12 +109,18 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     private final ShotTracker shotTracker;
+
     private final LoggedTunableNumber flywheelProfileDebounceSeconds =
             new LoggedTunableNumber(getName() + "/FlywheelProfileDebounceSeconds", 0.04);
     private final LoggedTunableNumber nearGoalDebounceSeconds =
             new LoggedTunableNumber(getName() + "/NearGoalDebounceSeconds", 0.2);
     private final LoggedTunableNumber flywheelProfileToleranceRPS =
             new LoggedTunableNumber(getName() + "/FlywheelProfileToleranceRPS", 0.2);
+
+    // Shot trim values: static contribution always applies, dynamic contribution is adjustable during runtime
+    private final LoggedTunableNumber staticTrimRPS = new LoggedTunableNumber(getName() + "/staticTrimRPS", 0.5);
+    private final LoggedTunableNumber dynamicTrimRPS = new LoggedTunableNumber(getName() + "/dynamicTrimRPS", 0.0);
+    private AngularVelocity trimRPS = RotationsPerSecond.zero();
 
     // Public status signals & helpers
     /** Trigger determining if flywheel motion profile is complete. */
@@ -184,10 +190,12 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     // Goal computation helpers
-    private void getFlywheelTrim() {}
+    private void getFlywheelTrim() {
+        trimRPS = RotationsPerSecond.of(staticTrimRPS.get()).plus(RotationsPerSecond.of(dynamicTrimRPS.get()));
+    }
 
     private AngularVelocity getFlywheelTrimStep() {
-        return RotationsPerSecond.of(0);
+        return RotationsPerSecond.of(dynamicTrimRPS.get()); 
     }
 
     // Actuator helpers
@@ -261,7 +269,10 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 flywheelIO.getSupplyCurrent().in(Amps) * flywheelIO.getAppliedVoltage().in(Volts));
     }
 
-    /** Returns the desired feed / shot flywheel speed for current robot pose and target */
+    /**
+     * Private helper returning the desired feed / shot flywheel speed for current robot pose and
+     * target.
+     */
     private AngularVelocity getDesiredFlywheelVelocity() {
         boolean shouldFeed = robotState.shouldFeed.getAsBoolean();
         double targetDistanceMeters = getShooterDistance(shouldFeed);
@@ -272,7 +283,10 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         }
     }
 
-    /** Returns the desired feed / shot hood angle for current robot pose and target */
+    /**
+     * Private helper returning the desired feed / shot hood angle for current robot pose and
+     * target.
+     */
     private Angle getDesiredHoodAngle() {
         boolean shouldFeed = robotState.shouldFeed.getAsBoolean();
         double targetDistanceMeters = getShooterDistance(shouldFeed);
@@ -283,7 +297,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         }
     }
 
-    /** Returns shooter distance from current target */
+    /** Private helper returning shooter distance from current target. */
     private double getShooterDistance(boolean shouldFeed) {
         if (shouldFeed) {
             return robotState
@@ -327,8 +341,15 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         }
     }
 
+    /**
+     * Returns a continuous command that dynamically spins up the shooter to the appropriate
+     * setpoint for the robot's current pose and target.
+     */
     public Command setShooterContinuous() {
-        return Commands.none();
+        return setShooterCommand(
+                () -> getDesiredFlywheelVelocity(),
+                () -> getDesiredHoodAngle(),
+                "Set Shooter Continuous");
     }
 
     public Command fountain() {
@@ -345,12 +366,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 .withName("Stop and Stow");
     }
 
-    public Command retractHood() {
-        return Commands.none();
-    }
-
     public Command homeHood() {
-        return Commands.none();
+        return Commands.runOnce(() -> applyHoodPosition(Rotations.zero())).withName("Home Hood");
     }
 
     public Command trimFlywheelSpeedUp() {
