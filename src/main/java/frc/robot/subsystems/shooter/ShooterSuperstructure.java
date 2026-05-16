@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.io.motor.MotorIO.PIDSlot;
 import frc.lib.mechanisms.flywheel.FlywheelMechanism;
 import frc.lib.mechanisms.rotary.RotaryMechanism;
+import frc.lib.util.AlwaysTunableNumber;
 import frc.lib.util.LoggedTrigger;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.RobotState;
@@ -117,10 +118,12 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     private final LoggedTunableNumber flywheelProfileToleranceRPS =
             new LoggedTunableNumber(getName() + "/FlywheelProfileToleranceRPS", 0.2);
 
-    // Shot trim values: static contribution always applies, dynamic contribution is adjustable during runtime
-    private final LoggedTunableNumber staticTrimRPS = new LoggedTunableNumber(getName() + "/staticTrimRPS", 0.5);
-    private final LoggedTunableNumber trimStepRPS = new LoggedTunableNumber(getName() + "/dynamicTrimRPS", 0.5);
-    private AngularVelocity dynamicTrimRPS = RotationsPerSecond.zero();
+    // Shot trim values: baseline contribution always applies, runtime contribution can be mutated with operator commands
+    private final AlwaysTunableNumber baselineTrimRPS =
+            new AlwaysTunableNumber(getName() + "/baselineTrimRPS", -0.5);
+    private final AlwaysTunableNumber trimStepRPS =
+            new AlwaysTunableNumber(getName() + "/runtimeTrimStepRPS", 0.5);
+    private AngularVelocity runtimeTrimRPS = RotationsPerSecond.zero();
 
     // Public status signals & helpers
     /** Trigger determining if flywheel motion profile is complete. */
@@ -191,16 +194,25 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
 
     // Goal computation helpers
     private AngularVelocity getFlywheelTrim() {
-        return RotationsPerSecond.of(staticTrimRPS.get()).plus(dynamicTrimRPS);
+        return RotationsPerSecond.of(baselineTrimRPS.get()).plus(runtimeTrimRPS);
     }
 
     // Actuator helpers
-    /** Apply a specified speed to the flywheel with a trapezoidal motion profile. */
+    /**
+     * Communal flywheel command factory private helper that applies a specified speed to the
+     * flywheel with a trapezoidal motion profile.
+     */
     private void applyFlywheelVelocity(AngularVelocity velocity) {
-        flywheelIO.runVelocity(velocity, FlywheelConstants.MAX_ACCELERATION, PIDSlot.SLOT_0);
+        flywheelIO.runVelocity(
+                velocity.plus(getFlywheelTrim()),
+                FlywheelConstants.MAX_ACCELERATION,
+                PIDSlot.SLOT_0);
     }
 
-    /** Apply a specified angle to the hood with no motion profile. */
+    /**
+     * Communal hood command factory private helper that applies a specified angle to the hood with
+     * no motion profile.
+     */
     private void applyHoodPosition(Angle angle) {
         hoodIO.runUnprofiledPosition(angle, PIDSlot.SLOT_0);
     }
@@ -293,7 +305,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         }
     }
 
-    /** Private helper returning shooter distance from current target. */
+    /** Private helper returning distance between current robot pose and target. */
     private double getShooterDistance(boolean shouldFeed) {
         if (shouldFeed) {
             return robotState
@@ -367,13 +379,17 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     public Command trimFlywheelSpeedUp() {
-        return Commands.runOnce(() -> {
-            dynamicTrimRPS = dynamicTrimRPS.plus(RotationsPerSecond.of(trimStepRPS.get()));
-        });
+        return Commands.runOnce(
+                () -> {
+                    runtimeTrimRPS = runtimeTrimRPS.plus(RotationsPerSecond.of(trimStepRPS.get()));
+                }).withName("Trim Flywheel Speed Up");
     }
 
     public Command trimFlywheelSpeedDown() {
-        return Commands.none();
+        return Commands.runOnce(
+            () -> {
+                runtimeTrimRPS = runtimeTrimRPS.minus(RotationsPerSecond.of(trimStepRPS.get()));
+            }).withName("Trim Flywheel Speed Down");
     }
 
     /** Set the shooter to the value provided by the given suppliers. */
