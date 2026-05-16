@@ -119,8 +119,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
 
     // Shot trim values: static contribution always applies, dynamic contribution is adjustable during runtime
     private final LoggedTunableNumber staticTrimRPS = new LoggedTunableNumber(getName() + "/staticTrimRPS", 0.5);
-    private final LoggedTunableNumber dynamicTrimRPS = new LoggedTunableNumber(getName() + "/dynamicTrimRPS", 0.0);
-    private AngularVelocity trimRPS = RotationsPerSecond.zero();
+    private final LoggedTunableNumber trimStepRPS = new LoggedTunableNumber(getName() + "/dynamicTrimRPS", 0.5);
+    private AngularVelocity dynamicTrimRPS = RotationsPerSecond.zero();
 
     // Public status signals & helpers
     /** Trigger determining if flywheel motion profile is complete. */
@@ -190,12 +190,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     // Goal computation helpers
-    private void getFlywheelTrim() {
-        trimRPS = RotationsPerSecond.of(staticTrimRPS.get()).plus(RotationsPerSecond.of(dynamicTrimRPS.get()));
-    }
-
-    private AngularVelocity getFlywheelTrimStep() {
-        return RotationsPerSecond.of(dynamicTrimRPS.get()); 
+    private AngularVelocity getFlywheelTrim() {
+        return RotationsPerSecond.of(staticTrimRPS.get()).plus(dynamicTrimRPS);
     }
 
     // Actuator helpers
@@ -371,7 +367,9 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     public Command trimFlywheelSpeedUp() {
-        return Commands.none();
+        return Commands.runOnce(() -> {
+            dynamicTrimRPS = dynamicTrimRPS.plus(RotationsPerSecond.of(trimStepRPS.get()));
+        });
     }
 
     public Command trimFlywheelSpeedDown() {
