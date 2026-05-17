@@ -121,8 +121,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     // Shot trim values: baseline contribution always applies, runtime contribution can be mutated with operator commands
     private final AlwaysTunableNumber baselineTrimRPS =
             new AlwaysTunableNumber(getName() + "/baselineTrimRPS", -0.5);
-    private final AlwaysTunableNumber trimStepRPS =
-            new AlwaysTunableNumber(getName() + "/runtimeTrimStepRPS", 0.5);
+    private final LoggedTunableNumber trimStepRPS =
+            new LoggedTunableNumber(getName() + "/runtimeTrimStepRPS", 0.5);
     private AngularVelocity runtimeTrimRPS = RotationsPerSecond.zero();
 
     // Public status signals & helpers
