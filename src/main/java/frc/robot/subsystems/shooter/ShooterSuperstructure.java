@@ -41,6 +41,7 @@ import frc.lib.mechanisms.flywheel.FlywheelMechanism;
 import frc.lib.mechanisms.rotary.RotaryMechanism;
 import frc.lib.util.AlwaysTunableNumber;
 import frc.lib.util.LoggedTrigger;
+import frc.lib.util.LoggedTunableBoolean;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.RobotState;
 import frc.robot.RobotState.Target;
@@ -111,6 +112,13 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
 
     private final ShotTracker shotTracker;
 
+    private final LoggedTunableBoolean tuningMode =
+            new LoggedTunableBoolean(getName() + "/TuningMode", false);
+    private final LoggedTunableNumber tuningFlywheelSpeedRPS =
+            new LoggedTunableNumber(getName() + "/TuningFlywheelSpeedRPS", 0.0);
+    private final LoggedTunableNumber tuningHoodAngleDegrees =
+            new LoggedTunableNumber(getName() + "/TuningHoodAngleDegrees", 0.0);
+
     private final LoggedTunableNumber flywheelProfileDebounceSeconds =
             new LoggedTunableNumber(getName() + "/FlywheelProfileDebounceSeconds", 0.04);
     private final LoggedTunableNumber nearGoalDebounceSeconds =
@@ -118,7 +126,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     private final LoggedTunableNumber flywheelProfileToleranceRPS =
             new LoggedTunableNumber(getName() + "/FlywheelProfileToleranceRPS", 0.2);
 
-    // Shot trim values: baseline contribution always applies, runtime contribution can be mutated with operator commands
+    // Shot trim values: baseline contribution always applies, runtime contribution can be mutated
+    // with operator commands
     private final AlwaysTunableNumber baselineTrimRPS =
             new AlwaysTunableNumber(getName() + "/baselineTrimRPS", -0.5);
     private final LoggedTunableNumber trimStepRPS =
@@ -187,7 +196,17 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     @Override
     public void periodic() {
         // tuning updates
+        if (tuningMode.get()) {
+            if (tuningMode.hasChanged(this.hashCode())
+                    || tuningFlywheelSpeedRPS.hasChanged(this.hashCode())
+                    || tuningHoodAngleDegrees.hasChanged(this.hashCode())) {
+                applyFlywheelVelocity(RotationsPerSecond.of(tuningFlywheelSpeedRPS.get()));
+                applyHoodPosition(Degrees.of(tuningHoodAngleDegrees.get()));
+            }
+        }
         // IO updates
+        flywheelIO.periodic();
+        hoodIO.periodic();
         // trigger polling
         // logging
     }
@@ -199,8 +218,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
 
     // Actuator helpers
     /**
-     * Communal flywheel command factory private helper that applies a specified speed to the
-     * flywheel with a trapezoidal motion profile.
+     * Communal command factory IO helper that applies a specified speed to the flywheel with a
+     * trapezoidal motion profile.
      */
     private void applyFlywheelVelocity(AngularVelocity velocity) {
         flywheelIO.runVelocity(
@@ -210,8 +229,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     /**
-     * Communal hood command factory private helper that applies a specified angle to the hood with
-     * no motion profile.
+     * Communal command factory IO helper that applies a specified angle to the hood with no motion
+     * profile.
      */
     private void applyHoodPosition(Angle angle) {
         hoodIO.runUnprofiledPosition(angle, PIDSlot.SLOT_0);
@@ -380,16 +399,20 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
 
     public Command trimFlywheelSpeedUp() {
         return Commands.runOnce(
-                () -> {
-                    runtimeTrimRPS = runtimeTrimRPS.plus(RotationsPerSecond.of(trimStepRPS.get()));
-                }).withName("Trim Flywheel Speed Up");
+                        () -> {
+                            runtimeTrimRPS =
+                                    runtimeTrimRPS.plus(RotationsPerSecond.of(trimStepRPS.get()));
+                        })
+                .withName("Trim Flywheel Speed Up");
     }
 
     public Command trimFlywheelSpeedDown() {
         return Commands.runOnce(
-            () -> {
-                runtimeTrimRPS = runtimeTrimRPS.minus(RotationsPerSecond.of(trimStepRPS.get()));
-            }).withName("Trim Flywheel Speed Down");
+                        () -> {
+                            runtimeTrimRPS =
+                                    runtimeTrimRPS.minus(RotationsPerSecond.of(trimStepRPS.get()));
+                        })
+                .withName("Trim Flywheel Speed Down");
     }
 
     /** Set the shooter to the value provided by the given suppliers. */
