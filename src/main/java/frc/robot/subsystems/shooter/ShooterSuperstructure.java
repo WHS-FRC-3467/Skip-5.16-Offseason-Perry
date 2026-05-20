@@ -49,6 +49,7 @@ import frc.robot.util.ShotTracker;
 
 import org.littletonrobotics.junction.Logger;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ShooterSuperstructure extends SubsystemBase implements AutoCloseable {
@@ -227,6 +228,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         Logger.recordOutput(
                 getName() + "/flywheelDesiredLinearVelocityMPS",
                 getDesiredFlywheelLinearVelocity().in(MetersPerSecond));
+        printCurrentCommand();
     }
 
     // Goal computation helpers
@@ -283,6 +285,18 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     // Returns whether hood is at desired feed / shot angle for current robot pose and target
     private boolean isHoodAtDesiredAngle() {
         return hoodIO.getPosition().isNear(getDesiredHoodAngle(), HoodConstants.TOLERANCE);
+    }
+
+    // Logs the name of the current command
+    private void printCurrentCommand() { 
+        Optional<Command> currentCommand = Optional.ofNullable(this.getCurrentCommand());
+        String prefix = getName() + "/currentCommand";
+        if (currentCommand.isEmpty()) {
+            Logger.recordOutput(prefix, "Empty");
+        }
+        else {
+            Logger.recordOutput(prefix, currentCommand.get().getName());
+        }
     }
 
     // Accessors
@@ -372,7 +386,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
      * current robot pose and target.
      */
     public Command spinUpFlywheel() {
-        return this.runOnce(() -> applyFlywheelVelocity(getDesiredFlywheelVelocity()));
+        return this.run(() -> applyFlywheelVelocity(getDesiredFlywheelVelocity()));
     }
 
     /** Continuously spin up the shooter to a specified fixed distance (feed or shot). */
