@@ -47,6 +47,8 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.Target;
 import frc.robot.util.ShotTracker;
 
+import org.littletonrobotics.junction.Logger;
+
 import java.util.function.Supplier;
 
 public class ShooterSuperstructure extends SubsystemBase implements AutoCloseable {
@@ -113,11 +115,11 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     private final ShotTracker shotTracker;
 
     private final LoggedTunableBoolean tuningMode =
-            new LoggedTunableBoolean(getName() + "/TuningMode", false);
+            new LoggedTunableBoolean(getName() + "/Tuning/Enable", false);
     private final LoggedTunableNumber tuningFlywheelSpeedRPS =
-            new LoggedTunableNumber(getName() + "/TuningFlywheelSpeedRPS", 0.0);
+            new LoggedTunableNumber(getName() + "/Tuning/FlywheelSpeedRPS", 0.0);
     private final LoggedTunableNumber tuningHoodAngleDegrees =
-            new LoggedTunableNumber(getName() + "/TuningHoodAngleDegrees", 0.0);
+            new LoggedTunableNumber(getName() + "/Tuning/HoodAngleDegrees", 0.0);
 
     private final LoggedTunableNumber flywheelProfileDebounceSeconds =
             new LoggedTunableNumber(getName() + "/FlywheelProfileDebounceSeconds", 0.04);
@@ -205,6 +207,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 applyFlywheelVelocity(RotationsPerSecond.of(tuningFlywheelSpeedRPS.get()));
                 applyHoodPosition(Degrees.of(tuningHoodAngleDegrees.get()));
             }
+            Logger.recordOutput(
+                    "Tuning/DistanceToTargetMeters", robotState.getDistanceToTarget().in(Meters));
         }
         // IO updates
         flywheelIO.periodic();
@@ -216,10 +220,17 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         // Attempt to detect an empty shot hopper (keeps hopperEmpty composite trigger up-to-date
         // including hopperEmptyDebouncer and shooter.staticShotState)
         robotState.hopperEmpty.getAsBoolean();
-        // Logging
+        // Telemetry logging
+        Logger.recordOutput(getName() + "/totalTrimRPS", getFlywheelTrim().in(RotationsPerSecond));
+        Logger.recordOutput(
+                getName() + "/flywheelPowerDrawWatts", getFlywheelPowerDraw().in(Watts));
+        Logger.recordOutput(
+                getName() + "/flywheelDesiredLinearVelocityMPS",
+                getDesiredFlywheelLinearVelocity().in(MetersPerSecond));
     }
 
     // Goal computation helpers
+    /** Total runtime trim, including static and dynamic contributions */
     private AngularVelocity getFlywheelTrim() {
         return RotationsPerSecond.of(baselineTrimRPS.get()).plus(runtimeTrimRPS);
     }

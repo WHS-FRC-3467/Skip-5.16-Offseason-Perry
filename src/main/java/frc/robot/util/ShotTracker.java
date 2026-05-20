@@ -120,7 +120,7 @@ public class ShotTracker {
      */
     private boolean detectFlywheelDrop(LinearVelocity drop) {
         LinearVelocity desiredLinearVelocity = shooter.getDesiredFlywheelLinearVelocity();
-        LinearVelocity currentLinearVelocity = shooter.getLinearVelocity();
+        LinearVelocity currentLinearVelocity = shooter.getFlywheelLinearVelocity();
         return currentLinearVelocity.minus(desiredLinearVelocity).in(MetersPerSecond)
                         <= -drop.in(MetersPerSecond)
                 && currentLinearVelocity.in(MetersPerSecond)
