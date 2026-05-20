@@ -152,26 +152,28 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                     () -> isFlywheelAtDesiredSpeed() && isHoodAtDesiredAngle());
 
     /**
+     * Trigger determining whether current flywheel velocity is near motion profile goal velocity.
+     */
+    public final LoggedTrigger nearGoal =
+            new LoggedTrigger(getName() + "/nearGoal", () -> isNearGoal())
+                    .debounce(nearGoalDebounceSeconds.get());
+
+    /**
      * Trigger determining whether robot is ready to shoot at its current target (i.e. {@link
-     * #isNearGoal} is true and the robot is aligned with current target.
+     * #nearGoal} is true and the robot is aligned with current target.
      */
     public final LoggedTrigger readyToShootAtCurrentTarget =
             new LoggedTrigger(
                     getName() + "/readyToShootAtCurrentTarget",
                     () -> {
                         if (robotState.shouldFeed.getAsBoolean()) {
-                            return isNearGoal() && robotState.facingFeedTarget.getAsBoolean();
+                            return nearGoal.getAsBoolean()
+                                    && robotState.facingFeedTarget.getAsBoolean();
                         } else {
-                            return isNearGoal() && robotState.facingTarget.getAsBoolean();
+                            return nearGoal.getAsBoolean()
+                                    && robotState.facingTarget.getAsBoolean();
                         }
                     });
-
-    /**
-     * Trigger determining whether current flywheel velocity is near motion profile goal velocity.
-     */
-    public final LoggedTrigger nearGoal =
-            new LoggedTrigger(getName() + "/nearGoal", () -> isNearGoal())
-                    .debounce(nearGoalDebounceSeconds.get());
 
     /**
      * Trigger determining whether the robot is in a static shooting state; does not trigger during
@@ -181,7 +183,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
             new LoggedTrigger(
                     getName() + "/staticShotState",
                     () ->
-                            isNearGoal()
+                            nearGoal.getAsBoolean()
                                     && robotState.atStaticShootingPosition.getAsBoolean()
                                     && robotState.getTarget() == Target.HUB);
 
@@ -195,7 +197,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     // Periodic
     @Override
     public void periodic() {
-        // tuning updates
+        // Tuning updates
         if (tuningMode.get()) {
             if (tuningMode.hasChanged(this.hashCode())
                     || tuningFlywheelSpeedRPS.hasChanged(this.hashCode())
@@ -207,8 +209,14 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         // IO updates
         flywheelIO.periodic();
         hoodIO.periodic();
-        // trigger polling
-        // logging
+        // Trigger polling
+        // Attempt to detect a power spike associated with a flywheel velocity drop, using the
+        // affirmative as a proxy for a shot (keeps powerSink up-to-date)
+        shotTracker.ballTrigger.getAsBoolean();
+        // Attempt to detect an empty shot hopper (keeps hopperEmpty composite trigger up-to-date
+        // including hopperEmptyDebouncer and shooter.staticShotState)
+        robotState.hopperEmpty.getAsBoolean();
+        // Logging
     }
 
     // Goal computation helpers
@@ -245,6 +253,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                         RotationsPerSecond.of(flywheelProfileToleranceRPS.get()));
     }
 
+    /** Return whether flywheel velocity is near the motion profile goal cruise velocity. */
     private boolean isNearGoal() {
         return flywheelIO
                 .getVelocity()
@@ -347,7 +356,10 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         return this.runOnce(() -> applyHoodPosition(angle));
     }
 
-    /** Spin up the flywheel to the desired speed for the current robot pose and target. */
+    /**
+     * Returns a command that continuously spins up the flywheel to the desired speed for the
+     * current robot pose and target.
+     */
     public Command spinUpFlywheel() {
         return this.runOnce(() -> applyFlywheelVelocity(getDesiredFlywheelVelocity()));
     }
