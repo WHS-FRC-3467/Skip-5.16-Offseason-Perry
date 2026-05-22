@@ -50,6 +50,7 @@ import frc.robot.util.ShotTracker;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.function.Supplier;
 
 public class ShooterSuperstructure extends SubsystemBase implements AutoCloseable {
@@ -288,13 +289,12 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     // Logs the name of the current command
-    private void printCurrentCommand() { 
+    private void printCurrentCommand() {
         Optional<Command> currentCommand = Optional.ofNullable(this.getCurrentCommand());
         String prefix = getName() + "/currentCommand";
         if (currentCommand.isEmpty()) {
             Logger.recordOutput(prefix, "Empty");
-        }
-        else {
+        } else {
             Logger.recordOutput(prefix, currentCommand.get().getName());
         }
     }
@@ -417,7 +417,9 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     public Command fountain() {
-        return Commands.none();
+        return Commands.sequence(
+                        setHoodAngle(Degrees.of(24.0)), setFlywheelSpeed(RotationsPerSecond.of(10.0)))
+                .withName("Fountain");
     }
 
     public Command coastFlywheels() {
@@ -430,8 +432,22 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 .withName("Stop and Stow");
     }
 
-    public Command homeHood() {
-        return Commands.runOnce(() -> applyHoodPosition(Rotations.zero())).withName("Home Hood");
+    /**
+     * Apply negative voltage until the hood bottoms out against its hard stop, indicated by
+     * operator interrupt or optional timeout. Afterwards, set its encoder position to zero and
+     * brake the hood.
+     */
+    public Command homeHood(OptionalDouble timeoutSeconds) {
+        double dt =
+                timeoutSeconds.isEmpty() ? Double.POSITIVE_INFINITY : timeoutSeconds.getAsDouble();
+        return Commands.sequence(this.runOnce(() -> hoodIO.runDutyCycle(-0.1, true)), this.idle())
+                .withTimeout(dt)
+                .finallyDo(
+                        () -> {
+                            hoodIO.setEncoderPosition(Rotations.zero());
+                            hoodIO.runBrake();
+                        })
+                .withName("Home Hood");
     }
 
     public Command trimFlywheelSpeedUp() {
@@ -464,5 +480,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     @Override
-    public void close() {}
+    public void close() {
+        flywheelIO.close();
+        hoodIO.close();
+    }
 }
