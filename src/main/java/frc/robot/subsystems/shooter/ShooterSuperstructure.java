@@ -28,6 +28,7 @@ import static edu.wpi.first.units.Units.Watts;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -55,12 +56,12 @@ import java.util.function.Supplier;
 
 public class ShooterSuperstructure extends SubsystemBase implements AutoCloseable {
 
-    // Dependencies
+    // Required global states & constructor dependencies
     private final RobotState robotState = RobotState.getInstance();
     private final FlywheelMechanism<?> flywheelIO;
     private final RotaryMechanism<?, ?> hoodIO;
 
-    // Shot model / calibration / associated trackers
+    // Shot model / calibration
     /** Distance from hub in meters -> flywheel speed in rotations per second */
     private static final InterpolatingDoubleTreeMap hubFlywheelMap =
             new InterpolatingDoubleTreeMap();
@@ -87,7 +88,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         feedFlywheelMap.put(8.0, 37.0);
     }
 
-    // Distance from hub in meters -> hood angle in degrees
+    /** Distance from hub in meters -> hood angle in degrees */
     private static final InterpolatingDoubleTreeMap hubHoodMap = new InterpolatingDoubleTreeMap();
 
     static {
@@ -101,7 +102,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         hubHoodMap.put(5.0, 21.0);
     }
 
-    // Distance from feed pose in meters -> hood angle in degrees
+    /** Distance from feed pose in meters -> hood angle in degrees */
     private static final InterpolatingDoubleTreeMap feedHoodMap = new InterpolatingDoubleTreeMap();
 
     static {
@@ -113,8 +114,6 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         feedHoodMap.put(9.0, 27.0);
         feedHoodMap.put(10.0, 27.0);
     }
-
-    private final ShotTracker shotTracker;
 
     private final LoggedTunableBoolean tuningMode =
             new LoggedTunableBoolean(getName() + "/Tuning/Enable", false);
@@ -191,6 +190,10 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                                     && robotState.atStaticShootingPosition.getAsBoolean()
                                     && robotState.getTarget() == Target.HUB);
 
+    // Private class utilities
+    private final ShotTracker shotTracker;
+    private boolean brownedOut = false;
+
     // Constructor
     public ShooterSuperstructure(RotaryMechanism<?, ?> hoodIO, FlywheelMechanism<?> flywheelIO) {
         this.flywheelIO = flywheelIO;
@@ -244,10 +247,11 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
      * trapezoidal motion profile.
      */
     private void applyFlywheelVelocity(AngularVelocity velocity) {
-        flywheelIO.runVelocity(
-                velocity.plus(getFlywheelTrim()),
-                FlywheelConstants.MAX_ACCELERATION,
-                PIDSlot.SLOT_0);
+        AngularAcceleration acceleration =
+                brownedOut
+                        ? FlywheelConstants.BROWNOUT_MAX_ACCELERATION
+                        : FlywheelConstants.MAX_ACCELERATION;
+        flywheelIO.runVelocity(velocity.plus(getFlywheelTrim()), acceleration, PIDSlot.SLOT_0);
     }
 
     /**
@@ -297,6 +301,19 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         } else {
             Logger.recordOutput(prefix, currentCommand.get().getName());
         }
+    }
+
+    /**
+     * Takes a subsystem-wide communal brownout state and points the shooter's private reference to
+     * it.
+     */
+    public void setBrownedOut(boolean brownedOut) {
+        this.brownedOut = brownedOut;
+    }
+
+    /** Toggles the shooter's brownout mode, reducing commanded accelerations */
+    public void toggleBrownedout() {
+        brownedOut = !brownedOut;
     }
 
     // Accessors
@@ -416,12 +433,18 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 "Set Shooter Continuous");
     }
 
+    /**
+     * Run the flywheel and hood at sluggish setpoints (10 RPS, 24 degrees) to test mechanical
+     * functionality.
+     */
     public Command fountain() {
         return Commands.sequence(
-                        setHoodAngle(Degrees.of(24.0)), setFlywheelSpeed(RotationsPerSecond.of(10.0)))
+                        setHoodAngle(Degrees.of(24.0)),
+                        setFlywheelSpeed(RotationsPerSecond.of(10.0)))
                 .withName("Fountain");
     }
 
+    /** Place the flywheel into free spin. */
     public Command coastFlywheels() {
         return this.runOnce(() -> flywheelIO.runCoast()).withName("Coast Flywheels");
     }
@@ -450,6 +473,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 .withName("Home Hood");
     }
 
+    /** Increment the runtime shot trim variable. */
     public Command trimFlywheelSpeedUp() {
         return Commands.runOnce(
                         () -> {
@@ -459,6 +483,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 .withName("Trim Flywheel Speed Up");
     }
 
+    /** Decrement the runtime shot trim variable. */
     public Command trimFlywheelSpeedDown() {
         return Commands.runOnce(
                         () -> {
