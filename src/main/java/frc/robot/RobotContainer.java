@@ -66,6 +66,7 @@ import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.Set;
 
 /**
@@ -405,7 +406,9 @@ public class RobotContainer {
         // Operator A: Home Hood and Intake
         operatorController
                 .a()
-                .whileTrue(Commands.parallel(intake.homeLinear(), shooter.homeHood()));
+                .whileTrue(
+                        Commands.parallel(
+                                intake.homeLinear(), shooter.homeHood(OptionalDouble.empty())));
 
         // Operator B: Eject
         operatorController
@@ -479,7 +482,7 @@ public class RobotContainer {
 
         SmartDashboard.putData(
                 "Home Intake and Shooter",
-                Commands.parallel(intake.homeLinear(), shooter.homeHood()));
+                Commands.parallel(intake.homeLinear(), shooter.homeHood(OptionalDouble.empty())));
 
         // Indexer Commands
         SmartDashboard.putData(IndexerConstants.NAME + "/Shoot", indexer.shoot());

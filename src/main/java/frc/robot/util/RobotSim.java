@@ -62,7 +62,7 @@ public class RobotSim {
                         Commands.runOnce(
                                 () -> {
                                     LinearVelocity ballVelocity =
-                                            shooter.getLinearVelocity()
+                                            shooter.getFlywheelLinearVelocity()
                                                     .times(BALL_VELOCITY_FUDGE.get());
 
                                     fuelSim.spawnFuel(

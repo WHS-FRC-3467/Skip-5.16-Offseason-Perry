@@ -44,6 +44,7 @@ import frc.lib.util.AlwaysTunableNumber;
 import frc.lib.util.LoggedTrigger;
 import frc.lib.util.LoggedTunableBoolean;
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.PowerProfiler;
 import frc.robot.RobotState;
 import frc.robot.RobotState.Target;
 import frc.robot.util.ShotTracker;
@@ -126,8 +127,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
             new LoggedTunableNumber(getName() + "/FlywheelProfileDebounceSeconds", 0.04);
     private final LoggedTunableNumber nearGoalDebounceSeconds =
             new LoggedTunableNumber(getName() + "/NearGoalDebounceSeconds", 0.2);
-    private final LoggedTunableNumber flywheelProfileToleranceRPS =
-            new LoggedTunableNumber(getName() + "/FlywheelProfileToleranceRPS", 0.2);
+    private final LoggedTunableNumber flywheelGoalToleranceRPS =
+            new LoggedTunableNumber(getName() + "/FlywheelGoalToleranceRPS", 0.2);
 
     // Shot trim values: baseline contribution always applies, runtime contribution can be mutated
     // with operator commands
@@ -157,23 +158,23 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     /**
      * Trigger determining whether current flywheel velocity is near motion profile goal velocity.
      */
-    public final LoggedTrigger nearGoal =
+    public final LoggedTrigger isNearGoal =
             new LoggedTrigger(getName() + "/nearGoal", () -> isNearGoal())
                     .debounce(nearGoalDebounceSeconds.get());
 
     /**
      * Trigger determining whether robot is ready to shoot at its current target (i.e. {@link
-     * #nearGoal} is true and the robot is aligned with current target.
+     * #isNearGoal} is true and the robot is aligned with current target.
      */
     public final LoggedTrigger readyToShootAtCurrentTarget =
             new LoggedTrigger(
                     getName() + "/readyToShootAtCurrentTarget",
                     () -> {
                         if (robotState.shouldFeed.getAsBoolean()) {
-                            return nearGoal.getAsBoolean()
+                            return isNearGoal.getAsBoolean()
                                     && robotState.facingFeedTarget.getAsBoolean();
                         } else {
-                            return nearGoal.getAsBoolean()
+                            return isNearGoal.getAsBoolean()
                                     && robotState.facingTarget.getAsBoolean();
                         }
                     });
@@ -186,7 +187,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
             new LoggedTrigger(
                     getName() + "/staticShotState",
                     () ->
-                            nearGoal.getAsBoolean()
+                            isNearGoal.getAsBoolean()
                                     && robotState.atStaticShootingPosition.getAsBoolean()
                                     && robotState.getTarget() == Target.HUB);
 
@@ -263,36 +264,37 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     // State helpers
+    // Returns whether flywheel velocity setpoint is near the motion profile goal cruise velocity.
     private boolean isFlywheelProfileComplete() {
         return flywheelIO
                 .getVelocitySetpoint()
                 .isNear(
                         flywheelIO.getVelocityGoal(),
-                        RotationsPerSecond.of(flywheelProfileToleranceRPS.get()));
+                        RotationsPerSecond.of(flywheelGoalToleranceRPS.get()));
     }
 
-    /** Return whether flywheel velocity is near the motion profile goal cruise velocity. */
+    /** Return whether measured flywheel velocity is near the motion profile goal cruise velocity. */
     private boolean isNearGoal() {
         return flywheelIO
                 .getVelocity()
                 .isNear(
                         flywheelIO.getVelocityGoal(),
-                        RotationsPerSecond.of(flywheelProfileToleranceRPS.get()));
+                        RotationsPerSecond.of(flywheelGoalToleranceRPS.get()));
     }
 
-    // Returns whether flywheel is at desired feed / shot speed for current robot pose and target
+    // Returns whether flywheel is at desired feed / shot speed for current robot pose and target.
     private boolean isFlywheelAtDesiredSpeed() {
         return flywheelIO
                 .getVelocity()
                 .isNear(getDesiredFlywheelVelocity(), FlywheelConstants.TOLERANCE);
     }
 
-    // Returns whether hood is at desired feed / shot angle for current robot pose and target
+    // Returns whether hood is at desired feed / shot angle for current robot pose and target.
     private boolean isHoodAtDesiredAngle() {
         return hoodIO.getPosition().isNear(getDesiredHoodAngle(), HoodConstants.TOLERANCE);
     }
 
-    // Logs the name of the current command
+    // Logs the name of the current command.
     private void printCurrentCommand() {
         Optional<Command> currentCommand = Optional.ofNullable(this.getCurrentCommand());
         String prefix = getName() + "/currentCommand";
@@ -311,37 +313,37 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         this.brownedOut = brownedOut;
     }
 
-    /** Toggles the shooter's brownout mode, reducing commanded accelerations */
-    public void toggleBrownedout() {
+    /** Toggles the shooter's brownout mode, reducing commanded accelerations. */
+    public void toggleBrownedOut() {
         brownedOut = !brownedOut;
     }
 
     // Accessors
-    /** Return the current flywheel angular velocity (mechanism-space) */
+    /** Return the current flywheel angular velocity (mechanism-space). */
     public AngularVelocity getFlywheelVelocity() {
         return flywheelIO.getVelocity();
     }
 
-    /** Return the current flywheel linear velocity (mechanism-space) */
+    /** Return the current flywheel linear velocity (mechanism-space). */
     public LinearVelocity getFlywheelLinearVelocity() {
         return MetersPerSecond.of(
                 getFlywheelVelocity().in(RadiansPerSecond)
                         * FlywheelConstants.FLYWHEEL_RADIUS.in(Meters));
     }
 
-    /** Return the desired flywheel linear velocity (mechanism-space) */
+    /** Return the desired flywheel linear velocity (mechanism-space). */
     public LinearVelocity getDesiredFlywheelLinearVelocity() {
         return MetersPerSecond.of(
                 getDesiredFlywheelVelocity().in(RadiansPerSecond)
                         * FlywheelConstants.FLYWHEEL_RADIUS.in(Meters));
     }
 
-    /** Return the current angle of the hood (mechanism-space) */
+    /** Return the current angle of the hood (mechanism-space). */
     public Angle getHoodAngle() {
         return hoodIO.getPosition();
     }
 
-    /** Return the total power draw of the flywheel */
+    /** Return the total power draw of the flywheel. */
     public Power getFlywheelPowerDraw() {
         return Watts.of(
                 flywheelIO.getSupplyCurrent().in(Amps) * flywheelIO.getAppliedVoltage().in(Volts));
@@ -387,6 +389,12 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         }
     }
 
+    /** Register the shooter's mechanisms with the power profiler. */
+    public void registerMechanisms(PowerProfiler powerProfiler) {
+        powerProfiler.registerMechanism(getName() + "/Flywheel", flywheelIO);
+        powerProfiler.registerMechanism(getName() + "/Hood", hoodIO);
+    }
+
     // Command factory
     /** Apply a specified speed to the flywheel with a trapezoidal motion profile. */
     public Command setFlywheelSpeed(AngularVelocity velocity) {
@@ -403,7 +411,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
      * current robot pose and target.
      */
     public Command spinUpFlywheel() {
-        return this.run(() -> applyFlywheelVelocity(getDesiredFlywheelVelocity()));
+        return this.run(() -> applyFlywheelVelocity(getDesiredFlywheelVelocity()))
+                .withName("Spin Up Flywheel");
     }
 
     /** Continuously spin up the shooter to a specified fixed distance (feed or shot). */
