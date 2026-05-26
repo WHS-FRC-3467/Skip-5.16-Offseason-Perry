@@ -127,8 +127,10 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
             new LoggedTunableNumber(getName() + "/FlywheelProfileDebounceSeconds", 0.04);
     private final LoggedTunableNumber nearGoalDebounceSeconds =
             new LoggedTunableNumber(getName() + "/NearGoalDebounceSeconds", 0.2);
-    private final LoggedTunableNumber flywheelGoalToleranceRPS =
-            new LoggedTunableNumber(getName() + "/FlywheelGoalToleranceRPS", 0.2);
+    private final LoggedTunableNumber flywheelNearGoalToleranceRPS =
+            new LoggedTunableNumber(getName() + "/FlywheelNearGoalToleranceRPS", 2.0);
+    private final LoggedTunableNumber flywheelProfileToleranceRPS =
+            new LoggedTunableNumber(getName() + "/FlywheelProfileToleranceRPS", 0.2);
 
     // Shot trim values: baseline contribution always applies, runtime contribution can be mutated
     // with operator commands
@@ -158,23 +160,23 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     /**
      * Trigger determining whether current flywheel velocity is near motion profile goal velocity.
      */
-    public final LoggedTrigger isNearGoal =
+    public final LoggedTrigger nearGoal =
             new LoggedTrigger(getName() + "/nearGoal", () -> isNearGoal())
                     .debounce(nearGoalDebounceSeconds.get());
 
     /**
      * Trigger determining whether robot is ready to shoot at its current target (i.e. {@link
-     * #isNearGoal} is true and the robot is aligned with current target.
+     * #nearGoal} is true and the robot is aligned with current target.
      */
     public final LoggedTrigger readyToShootAtCurrentTarget =
             new LoggedTrigger(
                     getName() + "/readyToShootAtCurrentTarget",
                     () -> {
                         if (robotState.shouldFeed.getAsBoolean()) {
-                            return isNearGoal.getAsBoolean()
+                            return nearGoal.getAsBoolean()
                                     && robotState.facingFeedTarget.getAsBoolean();
                         } else {
-                            return isNearGoal.getAsBoolean()
+                            return nearGoal.getAsBoolean()
                                     && robotState.facingTarget.getAsBoolean();
                         }
                     });
@@ -187,7 +189,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
             new LoggedTrigger(
                     getName() + "/staticShotState",
                     () ->
-                            isNearGoal.getAsBoolean()
+                            nearGoal.getAsBoolean()
                                     && robotState.atStaticShootingPosition.getAsBoolean()
                                     && robotState.getTarget() == Target.HUB);
 
@@ -214,7 +216,8 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 applyHoodPosition(Degrees.of(tuningHoodAngleDegrees.get()));
             }
             Logger.recordOutput(
-                    "Tuning/DistanceToTargetMeters", robotState.getDistanceToTarget().in(Meters));
+                    getName() + "/Tuning/DistanceToTargetMeters",
+                    robotState.getDistanceToTarget().in(Meters));
         }
         // IO updates
         flywheelIO.periodic();
@@ -270,16 +273,18 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 .getVelocitySetpoint()
                 .isNear(
                         flywheelIO.getVelocityGoal(),
-                        RotationsPerSecond.of(flywheelGoalToleranceRPS.get()));
+                        RotationsPerSecond.of(flywheelProfileToleranceRPS.get()));
     }
 
-    /** Return whether measured flywheel velocity is near the motion profile goal cruise velocity. */
+    /**
+     * Return whether measured flywheel velocity is near the motion profile goal cruise velocity.
+     */
     private boolean isNearGoal() {
         return flywheelIO
                 .getVelocity()
                 .isNear(
                         flywheelIO.getVelocityGoal(),
-                        RotationsPerSecond.of(flywheelGoalToleranceRPS.get()));
+                        RotationsPerSecond.of(flywheelNearGoalToleranceRPS.get()));
     }
 
     // Returns whether flywheel is at desired feed / shot speed for current robot pose and target.

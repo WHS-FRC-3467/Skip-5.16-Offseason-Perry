@@ -52,7 +52,7 @@ public class RobotSim {
         Trigger shootSimFuel =
                 new Trigger(
                         () ->
-                                (shooter.isNearGoal.getAsBoolean()
+                                (shooter.nearGoal.getAsBoolean()
                                         && (indexer.getVelocity().in(RotationsPerSecond) > 3.0)
                                         && (fuelSim.getHeldFuel() > 0)));
 

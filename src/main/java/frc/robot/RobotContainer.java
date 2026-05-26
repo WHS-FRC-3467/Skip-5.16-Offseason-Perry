@@ -327,7 +327,7 @@ public class RobotContainer {
                                                                                 InterruptionBehavior
                                                                                         .kCancelSelf),
                                                         Set.of(tower)),
-                                                Commands.waitUntil(shooter.isNearGoal),
+                                                Commands.waitUntil(shooter.nearGoal),
                                                 Commands.parallel(indexer.shoot(), tower.shoot())))
                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
                 .onFalse(
@@ -352,7 +352,7 @@ public class RobotContainer {
                                                                                 InterruptionBehavior
                                                                                         .kCancelSelf),
                                                         Set.of(tower)),
-                                                Commands.waitUntil(shooter.isNearGoal),
+                                                Commands.waitUntil(shooter.nearGoal),
                                                 Commands.parallel(indexer.shoot(), tower.shoot())))
                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
                 .onFalse(
@@ -382,7 +382,7 @@ public class RobotContainer {
                                                                                 InterruptionBehavior
                                                                                         .kCancelSelf),
                                                         Set.of(tower)),
-                                                Commands.waitUntil(shooter.isNearGoal),
+                                                Commands.waitUntil(shooter.nearGoal),
                                                 Commands.parallel(indexer.shoot(), tower.shoot())))
                                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
                 .onFalse(
