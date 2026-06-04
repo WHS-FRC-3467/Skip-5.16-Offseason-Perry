@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
+import frc.robot.FieldConstants;
 import frc.robot.commands.ResilientTrajectoryFollower;
 import frc.robot.commands.autos.utils.AutoCommands;
 import frc.robot.commands.autos.utils.AutoContext;
@@ -47,7 +48,7 @@ public class BAutoSuperDuperUnsafe {
                 List.of(
                         ChoreoTraj.AggresiveAuto1.name(),
                         ChoreoTraj.B2.name(),
-                        ChoreoTraj.C16783.name());
+                        ChoreoTraj.Handoff.name());
 
         List<Trajectory<SwerveSample>> trajectories =
                 AutoUtil.loadTrajectories(names, shouldMirror).orElse(null);
@@ -104,11 +105,20 @@ public class BAutoSuperDuperUnsafe {
                             routine.observe(secondFollow.done())
                                     .onTrue(
                                             Commands.sequence(
-                                                    AutoCommands.shootOnly(ctx, 5.0),
+                                                    AutoCommands.shootOnly(ctx, 3.0),
                                                     ctx.shooter()
                                                             .setHoodAngle(Degrees.of(0.0))
                                                             .asProxy(),
                                                     thirdFollow.asProxy()));
+
+                            routine.observe(thirdFollow.done())
+                                    .onTrue(
+                                            AutoCommands.fullSend(
+                                                    ctx,
+                                                    shouldMirror
+                                                            ? BAuto.Y_OFFSET
+                                                            : FieldConstants.FIELD_WIDTH
+                                                                    - BAuto.Y_OFFSET));
 
                             return routine;
                         }));
