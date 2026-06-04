@@ -62,6 +62,7 @@ import frc.robot.subsystems.tower.TowerConstants;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.util.RobotSim;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
@@ -115,9 +116,7 @@ public class RobotContainer {
     /** A power profiler for characterizing current/power/energy draw from the battery */
     public final PowerProfiler powerProfiler;
 
-    private boolean disableAutomaticBrownoutMitigation = false;
-
-    public boolean brownoutManuallyEnabled = false;
+    @AutoLogOutput public boolean brownoutEnabled = false;
 
     /** The container for the robot. Contains subsystems, IO devices, and commands. */
     public RobotContainer() {
@@ -270,6 +269,8 @@ public class RobotContainer {
 
         // Left or Right Bumper: Retract Intake
         controller.leftBumper().onTrue(intake.retractIntake());
+        controller.rightStick().onTrue(intake.retractIntake());
+        controller.leftStick().onTrue(intake.retractIntake());
 
         controller
                 .rightTrigger()
@@ -428,8 +429,8 @@ public class RobotContainer {
                         Commands.runOnce(
                                 () -> {
                                     // disableAutomaticBrownoutMitigation = true;
-                                    brownoutManuallyEnabled = !brownoutManuallyEnabled;
-                                    // drive.toggleBrownedOut();
+                                    brownoutEnabled = !brownoutEnabled;
+                                    drive.toggleBrownedOut();
                                     indexer.toggleBrownedOut();
                                     shooter.toggleBrownedOut();
                                 }));
