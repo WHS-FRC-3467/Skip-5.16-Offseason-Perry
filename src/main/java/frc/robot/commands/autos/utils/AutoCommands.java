@@ -7,6 +7,7 @@ package frc.robot.commands.autos.utils;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -15,11 +16,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.util.AlwaysTunableNumber;
 import frc.robot.RobotState;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.FullSendToPose;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.IntakeSuperstructure;
 import frc.robot.subsystems.shooter.ShooterSuperstructure;
 import frc.robot.subsystems.tower.Tower;
+
+import java.util.Set;
 
 /**
  * Class containing useful individual commands or small-group command sequences that can be strung
@@ -138,5 +142,16 @@ public class AutoCommands {
                 ctx.tower(),
                 ctx.shooter(),
                 timeoutSeconds);
+    }
+
+    public static Command fullSend(AutoContext ctx, double y) {
+        return Commands.defer(
+                () -> {
+                    var pose =
+                            new Pose2d(8.264, y, ctx.robotState().getEstimatedPose().getRotation());
+
+                    return new FullSendToPose(ctx.drive(), () -> pose);
+                },
+                Set.of(ctx.drive()));
     }
 }
