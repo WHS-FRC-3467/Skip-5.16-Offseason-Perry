@@ -254,7 +254,7 @@ public class Robot extends LoggedRobot {
         // Hub State management
         HubState.getInstance().periodic();
         SmartDashboard.putBoolean(
-                "Manual Brownout Protection Enabled", robotContainer.brownoutManuallyEnabled);
+                "Manual Brownout Protection Enabled", robotContainer.brownoutEnabled);
     }
 
     /** This function is called once when test mode is enabled. */
