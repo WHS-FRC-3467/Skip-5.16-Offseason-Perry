@@ -40,9 +40,9 @@ public class FullSendToPose extends Command {
     private static final double LINEAR_VELOCITY_TOLERANCE_METERS_PER_SECOND = 1e-2;
     private static final double ANGULAR_VELOCITY_TOLERANCE_RADIANS_PER_SECOND = 1e-2;
 
-    private static final PID DEFAULT_LINEAR_PID = new PID(8.0, 0.0, 0.0);
+    private static final PID DEFAULT_LINEAR_PID = new PID(11.0, 0.0, 0.0);
     private static final TrapezoidProfile.Constraints DEFAULT_LINEAR_CONSTRAINTS =
-            new TrapezoidProfile.Constraints(6.0, 12.0);
+            new TrapezoidProfile.Constraints(5.0, 10.0);
 
     private static final PID DEFAULT_ANGULAR_PID = new PID(8.0, 0.0, 0.1);
     private static final TrapezoidProfile.Constraints DEFAULT_ANGULAR_CONSTRAINTS =

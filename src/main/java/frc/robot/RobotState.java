@@ -60,8 +60,8 @@ public class RobotState {
     private static final LoggedTunableNumber FEED_TOLERANCE_DEGREES =
             new LoggedTunableNumber("RobotState/FeedToleranceDegrees", 6.0);
 
-    private static final double LINEAR_ODOMETRY_STD_DEV = 0.3;
-    private static final double ANGULAR_ODOMETRY_STD_DEV = 0.15;
+    private static final double LINEAR_ODOMETRY_STD_DEV = 0.003;
+    private static final double ANGULAR_ODOMETRY_STD_DEV = 0.002;
 
     @Getter(lazy = true)
     private static final RobotState instance = new RobotState();

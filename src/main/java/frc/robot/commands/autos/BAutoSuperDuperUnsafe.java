@@ -96,7 +96,7 @@ public class BAutoSuperDuperUnsafe {
                                     .or(routine.observe(thirdFollow.done()))
                                     .onTrue(
                                             Commands.sequence(
-                                                    AutoCommands.shootOnly(ctx, 3.0),
+                                                    AutoCommands.shootOnly(ctx, 2.0),
                                                     ctx.shooter()
                                                             .setHoodAngle(Degrees.of(0.0))
                                                             .asProxy(),
@@ -105,7 +105,7 @@ public class BAutoSuperDuperUnsafe {
                             routine.observe(secondFollow.done())
                                     .onTrue(
                                             Commands.sequence(
-                                                    AutoCommands.shootOnly(ctx, 3.0),
+                                                    AutoCommands.shootOnly(ctx, 2.0),
                                                     ctx.shooter()
                                                             .setHoodAngle(Degrees.of(0.0))
                                                             .asProxy(),

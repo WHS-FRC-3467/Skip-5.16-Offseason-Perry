@@ -35,6 +35,7 @@ import frc.lib.util.LoggedTrigger;
 import frc.lib.util.LoggedTunableBoolean;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.RobotState;
+import frc.robot.RobotState.FieldRegion;
 import frc.robot.subsystems.drive.Drive;
 
 import org.littletonrobotics.junction.Logger;
@@ -337,6 +338,7 @@ public class ResilientTrajectoryFollower extends Command {
     private void updateState(double translationalError) {
         switch (state) {
             case TRACKING -> {
+                if (robotState.getFieldRegion() != FieldRegion.NEUTRAL_ZONE) return;
                 boolean overThreshold =
                         pauseDebouncer.calculate(translationalError > PAUSE_THRESHOLD_METERS.get());
                 if (overThreshold) {
