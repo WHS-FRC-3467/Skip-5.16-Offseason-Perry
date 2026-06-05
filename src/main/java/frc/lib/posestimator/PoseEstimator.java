@@ -83,7 +83,7 @@ public class PoseEstimator {
     private final SwerveOdometry odometry;
 
     /** Base odometry variances */
-    private final double[] odometryVariances;
+    private double[] odometryVariances;
 
     private double odometryStdDevMultiplierLinear = 1.0;
     private double odometryStdDevMultiplierAngular = 1.0;
@@ -102,6 +102,18 @@ public class PoseEstimator {
         this(kinematics, null, odometryBufferSize, linearOdometryStdDev, angularOdometryStdDev);
     }
 
+    public void setOdometryStdDevs(double linearOdometryStdDev, double angularOdometryStdDev) {
+        double linearOdometryVariance = Math.pow(linearOdometryStdDev, 2);
+        double angularOdometryVariance = Math.pow(angularOdometryStdDev, 2);
+
+        odometryVariances =
+                new double[] {
+                    linearOdometryVariance, // X axis
+                    linearOdometryVariance, // Y axis
+                    angularOdometryVariance // Rotation
+                };
+    }
+
     /**
      * If module translations are provided, odometry can ignore skidding wheels using the {@code
      * badWheels} array in {@link OdometryObservation}.
@@ -112,15 +124,7 @@ public class PoseEstimator {
             Time odometryBufferSize,
             double linearOdometryStdDev,
             double angularOdometryStdDev) {
-        double linearOdometryVariance = Math.pow(linearOdometryStdDev, 2);
-        double angularOdometryVariance = Math.pow(angularOdometryStdDev, 2);
-
-        odometryVariances =
-                new double[] {
-                    linearOdometryVariance, // X axis
-                    linearOdometryVariance, // Y axis
-                    angularOdometryVariance // Rotation
-                };
+        setOdometryStdDevs(linearOdometryStdDev, angularOdometryStdDev);
 
         odometry = new SwerveOdometry(kinematics, moduleTranslations, odometryBufferSize);
         refreshOdometryPoseValidator();
