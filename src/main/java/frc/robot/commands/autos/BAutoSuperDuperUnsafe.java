@@ -115,10 +115,7 @@ public class BAutoSuperDuperUnsafe {
                                     .onTrue(
                                             AutoCommands.fullSend(
                                                     ctx,
-                                                    shouldMirror
-                                                            ? BAuto.Y_OFFSET
-                                                            : FieldConstants.FIELD_WIDTH
-                                                                    - BAuto.Y_OFFSET));
+                                                    FieldConstants.FIELD_WIDTH - BAuto.Y_OFFSET));
 
                             return routine;
                         }));
