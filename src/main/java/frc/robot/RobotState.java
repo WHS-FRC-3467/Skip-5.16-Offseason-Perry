@@ -60,10 +60,10 @@ public class RobotState {
     private static final LoggedTunableNumber FEED_TOLERANCE_DEGREES =
             new LoggedTunableNumber("RobotState/FeedToleranceDegrees", 6.0);
 
-    private static final double AUTO_LINEAR_ODOMETRY_STD_DEV = 0.003;
-    private static final double AUTO_ANGULAR_ODOMETRY_STD_DEV = 0.002;
+    private static final double AUTO_LINEAR_ODOMETRY_STD_DEV = 0.03;
+    private static final double AUTO_ANGULAR_ODOMETRY_STD_DEV = 0.02;
     private static final double TELEOP_LINEAR_ODOMETRY_STD_DEV = 0.3;
-    private static final double TELEOP_ODOMETRY_STD_DEV = 0.15;
+    private static final double TELEOP_ANGULAR_ODOMETRY_STD_DEV = 0.15;
 
     @Getter(lazy = true)
     private static final RobotState instance = new RobotState();
@@ -171,7 +171,8 @@ public class RobotState {
     @Getter @Setter private ChassisSpeeds robotRelativeVelocity = new ChassisSpeeds();
 
     public void setTeleop() {
-        poseEstimator.setOdometryStdDevs(TELEOP_LINEAR_ODOMETRY_STD_DEV, TELEOP_ODOMETRY_STD_DEV);
+        poseEstimator.setOdometryStdDevs(
+                TELEOP_LINEAR_ODOMETRY_STD_DEV, TELEOP_ANGULAR_ODOMETRY_STD_DEV);
     }
 
     /**
