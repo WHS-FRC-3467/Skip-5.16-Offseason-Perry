@@ -14,9 +14,12 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 import frc.lib.util.AlwaysTunableNumber;
+import frc.lib.util.FieldUtil;
+import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FullSendToPose;
+import frc.robot.commands.autos.BAuto;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.IntakeSuperstructure;
@@ -134,11 +137,19 @@ public class AutoCommands {
     //     return bestIndex == -1 ? Optional.empty() : Optional.of(bestIndex);
     // }
 
-    public static Command fullSend(AutoContext ctx, double y) {
+    public static Command fullSend(AutoContext ctx, boolean shouldMirror) {
         return Commands.defer(
                 () -> {
+                    double sendY =
+                            (!FieldUtil.shouldFlip() ^ shouldMirror)
+                                    ? BAuto.Y_OFFSET
+                                    : FieldConstants.FIELD_WIDTH - BAuto.Y_OFFSET;
+
                     var pose =
-                            new Pose2d(8.264, y, ctx.robotState().getEstimatedPose().getRotation());
+                            new Pose2d(
+                                    8.264,
+                                    sendY,
+                                    ctx.robotState().getEstimatedPose().getRotation());
 
                     return new FullSendToPose(ctx.drive(), () -> pose);
                 },
