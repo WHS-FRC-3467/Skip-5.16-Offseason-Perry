@@ -109,10 +109,15 @@ public class BAuto {
                                                             .setHoodAngle(Degrees.of(0.0))
                                                             .asProxy(),
                                                     thirdFollow.asProxy()));
+
                             routine.observe(thirdFollow.done())
                                     .onTrue(
                                             AutoCommands.fullSend(
-                                                    ctx, FieldConstants.FIELD_WIDTH - Y_OFFSET));
+                                                    ctx,
+                                                    shouldMirror
+                                                            ? Y_OFFSET
+                                                            : FieldConstants.FIELD_WIDTH
+                                                                    - Y_OFFSET));
 
                             return routine;
                         }));
