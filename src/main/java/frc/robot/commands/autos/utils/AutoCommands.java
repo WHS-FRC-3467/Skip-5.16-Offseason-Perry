@@ -81,7 +81,7 @@ public class AutoCommands {
                                                 indexer.shoot(),
                                                 tower.shoot(),
                                                 Commands.sequence(
-                                                        Commands.waitSeconds(0.5),
+                                                        Commands.waitSeconds(0.2),
                                                         intake.retractIntake()))))
                         .raceWith(
                                 Commands.sequence(
