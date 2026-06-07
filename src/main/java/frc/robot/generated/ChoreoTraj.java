@@ -24,30 +24,30 @@ public record ChoreoTraj(
     public static final ChoreoTraj AggresiveAuto1 = new ChoreoTraj(
         "AggresiveAuto1",
         OptionalInt.empty(),
-        5.47287,
+        5.00914,
         new Pose2d(4.45292, 7.45197, Rotation2d.fromRadians(1.5708)),
         new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj B1 = new ChoreoTraj(
         "B1",
         OptionalInt.empty(),
-        5.19176,
+        5.7048,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj B1Unsafe = new ChoreoTraj(
         "B1Unsafe",
         OptionalInt.empty(),
-        5.83706,
+        6.17241,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj B2 = new ChoreoTraj(
         "B2",
         OptionalInt.empty(),
-        6.86983,
+        7.30606,
         new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187)),
-        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.53986))
+        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.5399))
     );
     public static final ChoreoTraj B2Feed = new ChoreoTraj(
         "B2Feed",
@@ -59,15 +59,15 @@ public record ChoreoTraj(
     public static final ChoreoTraj FullNeutral1 = new ChoreoTraj(
         "FullNeutral1",
         OptionalInt.empty(),
-        4.73751,
+        4.89256,
         new Pose2d(3.65, 7.39928, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(6.93648, 5.40836, Rotation2d.fromRadians(-1.5708))
+        new Pose2d(6.93648, 5.40836, Rotation2d.fromRadians(3.14159))
     );
     public static final ChoreoTraj FullNeutral2 = new ChoreoTraj(
         "FullNeutral2",
         OptionalInt.empty(),
-        2.17983,
-        new Pose2d(6.93648, 5.40836, Rotation2d.fromRadians(-1.5708)),
+        2.37621,
+        new Pose2d(6.93648, 5.40836, Rotation2d.fromRadians(3.14159)),
         new Pose2d(1.99775, 5.35159, Rotation2d.fromRadians(-0.45714))
     );
     public static final ChoreoTraj FullNeutral3 = new ChoreoTraj(
