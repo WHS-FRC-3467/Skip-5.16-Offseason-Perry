@@ -24,36 +24,36 @@ public record ChoreoTraj(
     public static final ChoreoTraj AggresiveAuto1 = new ChoreoTraj(
         "AggresiveAuto1",
         OptionalInt.empty(),
-        6.66347,
+        6.47119,
         new Pose2d(4.45292, 7.45197, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(3.1, 5.40836, Rotation2d.fromRadians(-0.68187))
+        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj B1 = new ChoreoTraj(
         "B1",
         OptionalInt.empty(),
-        5.0477,
+        5.19176,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(3.1, 5.40836, Rotation2d.fromRadians(-0.68187))
+        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj B1Unsafe = new ChoreoTraj(
         "B1Unsafe",
         OptionalInt.empty(),
-        5.62341,
+        5.83706,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(3.1, 5.40836, Rotation2d.fromRadians(-0.68187))
+        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj B2 = new ChoreoTraj(
         "B2",
         OptionalInt.empty(),
-        6.75943,
-        new Pose2d(3.1, 5.40836, Rotation2d.fromRadians(-0.68187)),
-        new Pose2d(3.1, 5.40836, Rotation2d.fromRadians(-0.7621))
+        6.77787,
+        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187)),
+        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.53986))
     );
     public static final ChoreoTraj B2Feed = new ChoreoTraj(
         "B2Feed",
         OptionalInt.empty(),
-        7.07619,
-        new Pose2d(3.1, 5.40836, Rotation2d.fromRadians(-0.68187)),
+        6.92668,
+        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187)),
         new Pose2d(8.29747, 4.04839, Rotation2d.fromRadians(3.14159))
     );
     public static final ChoreoTraj FullNeutral1 = new ChoreoTraj(
@@ -80,9 +80,9 @@ public record ChoreoTraj(
     public static final ChoreoTraj Handoff = new ChoreoTraj(
         "Handoff",
         OptionalInt.empty(),
-        1.52575,
-        new Pose2d(3.1, 5.40836, Rotation2d.fromRadians(-0.68187)),
-        new Pose2d(4.4111, 7.41935, Rotation2d.fromRadians(-1.56165))
+        1.42063,
+        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187)),
+        new Pose2d(4.4111, 7.41935, Rotation2d.fromRadians(-1.55373))
     );
 
     /**
