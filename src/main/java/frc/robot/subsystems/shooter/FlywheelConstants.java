@@ -10,11 +10,13 @@ import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
-
+import edu.wpi.first.wpilibj.RobotBase;
+import frc.lib.util.PID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -32,6 +34,19 @@ public class FlywheelConstants {
     private static final double GEARING = 1.0;
     public static final Distance WHEEL_RADIUS = Inches.of(3.0);
     public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.0);
+    public static final DCMotor MOTOR = DCMotor.getKrakenX60(4);
+
+    private static final PID getPID() {
+        if (RobotBase.isReal()) {
+            return new PID(1000.0, 0.0, 60.0).withS(2.0).withG(12.0);
+        }
+        else {
+            return new PID(1000.0, 0.0, 80.0);
+        }
+    }
+
+    // Speed PID 
+    public static final PID SLOT0_PID = getPID();
 
     // tbc
 
