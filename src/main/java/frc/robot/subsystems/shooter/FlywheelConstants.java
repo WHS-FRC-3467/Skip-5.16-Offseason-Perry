@@ -30,11 +30,12 @@ public class FlywheelConstants {
     public static final AngularVelocity MAX_VELOCITY = RotationsPerSecond.of(20.0);
     public static final AngularAcceleration MAX_ACCELERATION = RotationsPerSecondPerSecond.of(60.0);
     public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(1.0);
+    public static final AngularAcceleration BROWNOUT_MAX_ACCELERATION = RotationsPerSecondPerSecond.of(30.0);
 
     private static final double GEARING = 1.0;
-    public static final Distance WHEEL_RADIUS = Inches.of(3.0);
+    public static final Distance FLYWHEEL_RADIUS = Inches.of(3.0);
     public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.0);
-    public static final DCMotor MOTOR = DCMotor.getKrakenX60(4);
+    private static final DCMotor MOTOR = DCMotor.getKrakenX60(4);
 
     private static final PID getPID() {
         if (RobotBase.isReal()) {
