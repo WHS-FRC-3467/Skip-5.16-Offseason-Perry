@@ -39,6 +39,7 @@ import frc.lib.util.LoggedDashboardChooser;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.PowerProfiler;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.autos.AutoFactory;
 import frc.robot.commands.autos.BAuto;
 import frc.robot.commands.autos.BAutoSingleSuperDuperUnsafe;
 import frc.robot.commands.autos.BAutoSuperDuperUnsafe;
@@ -94,6 +95,7 @@ public class RobotContainer {
     private final Indexer indexer;
     private final Tower tower;
     // private final ObjectDetector objectDetector;
+    public final AutoFactory autoFactory;
 
     // Controller
     public final CommandXboxControllerExtended controller =
@@ -127,6 +129,7 @@ public class RobotContainer {
         indexer = IndexerConstants.get();
         tower = TowerConstants.get();
         VisionConstants.create();
+        autoFactory = new AutoFactory(drive, intake);
         // objectDetector = ObjectDetectorConstants.get();
 
         // Construct the power profiler and register drive/mechanisms

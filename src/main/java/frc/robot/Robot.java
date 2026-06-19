@@ -210,7 +210,8 @@ public class Robot extends LoggedRobot {
         autonomousCommand = robotContainer.getAutonomousCommand();
 
         if (autonomousCommand != null) {
-            CommandScheduler.getInstance().schedule(autonomousCommand);
+            CommandScheduler.getInstance()
+                    .schedule(robotContainer.autoFactory.leftNeutralSweep().getCommand());
         }
     }
 
