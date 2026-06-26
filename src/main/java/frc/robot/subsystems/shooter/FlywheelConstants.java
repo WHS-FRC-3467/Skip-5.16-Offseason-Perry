@@ -7,6 +7,8 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
@@ -14,6 +16,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.lib.util.PID;
@@ -27,22 +30,24 @@ public class FlywheelConstants {
     // Identity & physical/calibration constants
     public static final String NAME = "Flywheel";
 
-    public static final AngularVelocity MAX_VELOCITY = RotationsPerSecond.of(20.0);
-    public static final AngularAcceleration MAX_ACCELERATION = RotationsPerSecondPerSecond.of(60.0);
+    public static final AngularVelocity MAX_VELOCITY = RotationsPerSecond.of(69.0);
+    public static final AngularAcceleration MAX_ACCELERATION = RotationsPerSecondPerSecond.of(30.0);
+    public static final AngularAcceleration BROWNOUT_MAX_ACCELERATION = RotationsPerSecondPerSecond.of(15.0);
     public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(1.0);
-    public static final AngularAcceleration BROWNOUT_MAX_ACCELERATION = RotationsPerSecondPerSecond.of(30.0);
-
-    private static final double GEARING = 1.0;
-    public static final Distance FLYWHEEL_RADIUS = Inches.of(3.0);
-    public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.0);
-    private static final DCMotor MOTOR = DCMotor.getKrakenX60(4);
+    
+    // Sensor-to-mechanism gearing ratio (motor rotations per mechanism rotation)
+    private static final double GEARING = (32.0 / 24.0);
+    public static final Distance FLYWHEEL_RADIUS = Inches.of(4.0);
+    public static final Mass FLYWHEEL_MASS = Kilograms.of(4.95);
+    public static final MomentOfInertia MOI = KilogramSquareMeters.of(FLYWHEEL_MASS.in(Kilograms) * FLYWHEEL_RADIUS.in(Meters) * FLYWHEEL_RADIUS.in(Meters));
+    private static final DCMotor DCMOTOR = DCMotor.getKrakenX60(4);
 
     private static final PID getPID() {
         if (RobotBase.isReal()) {
-            return new PID(1000.0, 0.0, 60.0).withS(2.0).withG(12.0);
+            return new PID(16.0, 0.0, 0.0).withS(5.5).withA(0.8);
         }
         else {
-            return new PID(1000.0, 0.0, 80.0);
+            return new PID(10.0, 0.0, 0.0).withV(1.8);
         }
     }
 
