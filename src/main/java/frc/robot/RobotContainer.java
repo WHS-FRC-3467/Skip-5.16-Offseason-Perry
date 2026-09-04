@@ -40,7 +40,6 @@ import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.PowerProfiler;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.autos.BAuto;
-import frc.robot.commands.autos.BAutoSingleSuperDuperUnsafe;
 import frc.robot.commands.autos.BAutoSuperDuperUnsafe;
 import frc.robot.commands.autos.BAutoUnsafe;
 import frc.robot.commands.autos.FullNeutralAuto;
@@ -168,10 +167,6 @@ public class RobotContainer {
                 .ifPresent(a -> autoChooser.addOption("AggressiveLeft", a));
         BAutoSuperDuperUnsafe.create(ctx, true)
                 .ifPresent(a -> autoChooser.addOption("AggressiveRight", a));
-        BAutoSingleSuperDuperUnsafe.create(ctx, false)
-                .ifPresent(a -> autoChooser.addOption("AggressiveSingleLeft", a));
-        BAutoSingleSuperDuperUnsafe.create(ctx, true)
-                .ifPresent(a -> autoChooser.addOption("AggressiveSingleRight", a));
 
         testCommand = BAuto.create(ctx, false).get();
 
