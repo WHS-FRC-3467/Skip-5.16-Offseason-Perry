@@ -44,10 +44,7 @@ public class BAutoUnsafe {
 
     public static Optional<AutoOption> create(AutoContext ctx, boolean shouldMirror) {
         List<String> names =
-                List.of(
-                        ChoreoTraj.B1Unsafe.name(),
-                        ChoreoTraj.B2.name(),
-                        ChoreoTraj.Handoff.name());
+                List.of(ChoreoTraj.B1Unsafe.name(), ChoreoTraj.B2.name(), ChoreoTraj.B3.name());
 
         List<Trajectory<SwerveSample>> trajectories =
                 AutoUtil.loadTrajectories(names, shouldMirror).orElse(null);
@@ -109,9 +106,6 @@ public class BAutoUnsafe {
                                                             .setHoodAngle(Degrees.of(0.0))
                                                             .asProxy(),
                                                     thirdFollow.asProxy()));
-
-                            routine.observe(thirdFollow.done())
-                                    .onTrue(AutoCommands.fullSend(ctx, shouldMirror));
 
                             return routine;
                         }));
