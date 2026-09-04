@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
-import frc.robot.FieldConstants;
 import frc.robot.commands.ResilientTrajectoryFollower;
 import frc.robot.commands.autos.utils.AutoCommands;
 import frc.robot.commands.autos.utils.AutoContext;
@@ -112,13 +111,7 @@ public class BAutoUnsafe {
                                                     thirdFollow.asProxy()));
 
                             routine.observe(thirdFollow.done())
-                                    .onTrue(
-                                            AutoCommands.fullSend(
-                                                    ctx,
-                                                    shouldMirror
-                                                            ? BAuto.Y_OFFSET
-                                                            : FieldConstants.FIELD_WIDTH
-                                                                    - BAuto.Y_OFFSET));
+                                    .onTrue(AutoCommands.fullSend(ctx, shouldMirror));
 
                             return routine;
                         }));

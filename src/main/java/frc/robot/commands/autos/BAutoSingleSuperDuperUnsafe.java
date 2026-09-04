@@ -21,6 +21,7 @@ import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -37,16 +38,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class BAuto {
+public class BAutoSingleSuperDuperUnsafe {
 
     private static final Alert TRAJECTORIES_MISSING =
             new Alert("Neutral Auto Trajectories Missing, Auto(s) Unavailable", AlertType.kError);
 
-    public static final double Y_OFFSET = 7.530;
-
     public static Optional<AutoOption> create(AutoContext ctx, boolean shouldMirror) {
-        List<String> names =
-                List.of(ChoreoTraj.B1.name(), ChoreoTraj.B2.name(), ChoreoTraj.Handoff.name());
+        List<String> names = List.of(ChoreoTraj.AggresiveAuto1.name(), ChoreoTraj.B2Feed.name());
 
         List<Trajectory<SwerveSample>> trajectories =
                 AutoUtil.loadTrajectories(names, shouldMirror).orElse(null);
@@ -78,10 +76,6 @@ public class BAuto {
                                     ctx.drive()
                                             .followTrajectoryResilient(
                                                     trajectories.get(1), eventBindings);
-                            ResilientTrajectoryFollower thirdFollow =
-                                    ctx.drive()
-                                            .followTrajectoryResilient(
-                                                    trajectories.get(2), eventBindings);
 
                             // Phase 1: Reset controllers, odometry, wait for delay,
                             // then follow the first trajectory. Because the sequence
@@ -91,7 +85,6 @@ public class BAuto {
                                     .onTrue(Commands.sequence(first.resetOdometry(), firstFollow));
 
                             routine.observe(firstFollow.done())
-                                    .or(routine.observe(thirdFollow.done()))
                                     .onTrue(
                                             Commands.sequence(
                                                     AutoCommands.shootOnly(ctx, 2.0),
@@ -103,15 +96,16 @@ public class BAuto {
                             routine.observe(secondFollow.done())
                                     .onTrue(
                                             Commands.sequence(
-                                                    AutoCommands.shootOnly(ctx, 2.0),
-                                                    ctx.shooter()
-                                                            .setHoodAngle(Degrees.of(0.0))
-                                                            .asProxy(),
-                                                    thirdFollow.asProxy()));
-
-                            routine.observe(thirdFollow.done())
-                                    .onTrue(AutoCommands.fullSend(ctx, shouldMirror));
-
+                                                    AutoCommands.shootOnly(ctx, 5.0),
+                                                    ctx.drive()
+                                                            .run(
+                                                                    () ->
+                                                                            ctx.drive()
+                                                                                    .runVelocity(
+                                                                                            new ChassisSpeeds(
+                                                                                                    0.0,
+                                                                                                    0.0,
+                                                                                                    30.0)))));
                             return routine;
                         }));
     }

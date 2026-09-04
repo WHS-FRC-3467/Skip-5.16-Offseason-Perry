@@ -226,6 +226,8 @@ public class Robot extends LoggedRobot {
             autonomousCommand = null;
         }
 
+        robotState.setTeleop();
+
         // Switch to Teleop tab in Elastic Dashboard
         if (RobotBase.isReal()) {
             Elastic.selectTab(0);
