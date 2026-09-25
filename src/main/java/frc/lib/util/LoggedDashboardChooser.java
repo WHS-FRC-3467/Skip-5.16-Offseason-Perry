@@ -146,9 +146,6 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
         lastSelected = "";
     }
 
-
-
-
     public void clear() {
         sendableChooser.close();
         sendableChooser = new SendableChooser<>();
