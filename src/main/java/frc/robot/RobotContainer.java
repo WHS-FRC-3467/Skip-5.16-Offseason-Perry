@@ -49,7 +49,6 @@ import frc.robot.commands.autos.dcmp.*;
 import frc.robot.commands.autos.tuning.WheelCharacterizationAuto;
 import frc.robot.commands.autos.utils.AutoContext;
 import frc.robot.commands.autos.utils.AutoOption;
-import frc.robot.commands.autos.utils.AutoTree;
 import frc.robot.commands.autos.wpi.C1678Auto;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -152,8 +151,7 @@ public class RobotContainer {
                         indexer,
                         tower,
                         shooter,
-                        Optional.empty(),
-                        new AutoTree(AutoTree.Event.CURRENT));
+                        Optional.empty());
 
         autoChooser =
                 new LoggedDashboardDashboardChooser<>(
