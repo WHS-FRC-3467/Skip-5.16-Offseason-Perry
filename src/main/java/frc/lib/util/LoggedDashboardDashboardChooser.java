@@ -34,12 +34,11 @@ public class LoggedDashboardDashboardChooser<V> {
         this.onChange = Optional.of(consumer);
     }
 
-    String treeMapKeyMapper(String in) {
-        return in;
-    }
-
-    Map<String, Optional<V>> treeMapValMapper(Map<String, Optional<V>> in) {
-        return in;
+    public Optional<V> get() {
+        if (treeMode) {
+            return Optional.empty();
+        }
+        return dashboardChooser.get().value;
     }
 
     public LoggedDashboardDashboardChooser(
@@ -52,42 +51,49 @@ public class LoggedDashboardDashboardChooser<V> {
         } else {
             this.treeMap = new HashMap<>();
 
-            for (Entry<String, Map<String, Optional<V>>> val : treeMap.entrySet()) {
+            for (Entry<String, Map<String, Optional<V>>> entry : treeMap.entrySet()) {
                 Map<String, DashboardChoice> map = new HashMap<>();
                 map.put("..", new DashboardChoice(".."));
 
-                for (Entry<String, Optional<V>> inner_val : val.getValue().entrySet()) {
+                for (Entry<String, Optional<V>> innerEntry : entry.getValue().entrySet()) {
                     map.put(
-                            inner_val.getKey(),
-                            new DashboardChoice(inner_val.getKey(), inner_val.getValue()));
+                            innerEntry.getKey(),
+                            new DashboardChoice(innerEntry.getKey(), innerEntry.getValue()));
                 }
-                this.treeMap.put(val.getKey(), map);
+                this.treeMap.put(entry.getKey(), map);
             }
-
-            for (var val : treeMap.entrySet()) {
-                dashboardChooser.addOption(val.getKey(), new DashboardChoice(val.getKey()));
+            for (var entry : treeMap.entrySet()) {
+                dashboardChooser.addOption(entry.getKey(), new DashboardChoice(entry.getKey()));
             }
         }
         this.treeMode = true;
 
         this.dashboardChooser.onChange(
-                val -> {
+                choice -> {
+                    if (choice == null) {
+                        return;
+                    }
                     if (treeMode) {
-                        dashboardChooser.clearOptions(this.treeMap.get(val.name));
+
+                        dashboardChooser.clearOptions(this.treeMap.get(choice.name));
+
+                        dashboardChooser.clearSelected();
+
                         treeMode = false;
+
                     } else {
-                        if (val.name == "..") {
+                        if (choice.name == "..") {
                             dashboardChooser.clear();
-                            for (var veal : this.treeMap.entrySet()) {
+                            for (var entry : this.treeMap.entrySet()) {
                                 dashboardChooser.addOption(
-                                        veal.getKey(), new DashboardChoice(veal.getKey()));
+                                        entry.getKey(), new DashboardChoice(entry.getKey()));
                             }
 
                             this.treeMode = true;
                             return;
-                        } else if (val.value.isPresent()) {
+                        } else if (choice.value.isPresent()) {
 
-                            V value = val.value.get();
+                            V value = choice.value.get();
 
                             if (this.onChange.isPresent()) {
                                 this.onChange.get().accept(value);

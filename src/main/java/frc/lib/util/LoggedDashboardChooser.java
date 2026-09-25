@@ -132,11 +132,7 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
     }
 
     public void clearOptions(Map<String, V> newOptions) {
-        sendableChooser.close();
-        sendableChooser = new SendableChooser<>();
-        SmartDashboard.putData(key, sendableChooser);
-
-        options.clear();
+        this.clear();
 
         for (var option : newOptions.entrySet()) {
 
@@ -150,9 +146,8 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
         lastSelected = "";
     }
 
-    public void setSelected(String selected) {
-        this.selectedValue = selected;
-    }
+
+
 
     public void clear() {
         sendableChooser.close();
