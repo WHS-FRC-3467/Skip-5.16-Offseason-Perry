@@ -39,16 +39,13 @@ import frc.lib.util.LoggedDashboardChooser;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.PowerProfiler;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.autos.BAuto;
-import frc.robot.commands.autos.BAutoSingleSuperDuperUnsafe;
-import frc.robot.commands.autos.BAutoSuperDuperUnsafe;
-import frc.robot.commands.autos.BAutoUnsafe;
-import frc.robot.commands.autos.FullNeutralAuto;
+
 import frc.robot.commands.autos.NoneAuto;
 import frc.robot.commands.autos.PreloadAuto;
 import frc.robot.commands.autos.tuning.WheelCharacterizationAuto;
 import frc.robot.commands.autos.utils.AutoContext;
 import frc.robot.commands.autos.utils.AutoOption;
+import frc.robot.commands.autos.utils.AutoTree;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.indexer.Indexer;
@@ -103,7 +100,7 @@ public class RobotContainer {
 
     // Dashboard inputs
     public final LoggedDashboardChooser<AutoOption> autoChooser;
-    public final AutoOption testCommand;
+
     public final Field2d autoPreviewField = new Field2d();
     private Pose2d[] rawAutoPreviewPoses = new Pose2d[] {}; // Unflipped (blue-alliance) poses
     public Pose2d startPose = new Pose2d(); // Initialize start pose for auto dashboard tab
@@ -142,7 +139,14 @@ public class RobotContainer {
             RobotSim.getInstance().addMechanismData(drive, shooter, indexer, intake);
         }
         AutoContext ctx =
-                AutoContext.create(drive, intake, indexer, tower, shooter, Optional.empty());
+                AutoContext.create(
+                        drive,
+                        intake,
+                        indexer,
+                        tower,
+                        shooter,
+                        Optional.empty(),
+                        new AutoTree(AutoTree.Event.CURRENT));
 
         autoChooser = new LoggedDashboardChooser<>("Auto Choices");
         SmartDashboard.putData("Auto Preview", autoPreviewField);
@@ -158,22 +162,9 @@ public class RobotContainer {
         //         .ifPresent(a -> autoChooser.addOption("ML-Neutral-Safe-Left", a));
 
         // Citrus Autos
-        FullNeutralAuto.create(ctx).ifPresent(a -> autoChooser.addOption("Follow-Left", a));
+                
 
-        BAuto.create(ctx, false).ifPresent(a -> autoChooser.addOption("NeutralSafeLeft", a));
-        BAuto.create(ctx, true).ifPresent(a -> autoChooser.addOption("NeutralSafeRight", a));
-        BAutoUnsafe.create(ctx, false).ifPresent(a -> autoChooser.addOption("NeutralLeft", a));
-        BAutoUnsafe.create(ctx, true).ifPresent(a -> autoChooser.addOption("NeutralRight", a));
-        BAutoSuperDuperUnsafe.create(ctx, false)
-                .ifPresent(a -> autoChooser.addOption("AggressiveLeft", a));
-        BAutoSuperDuperUnsafe.create(ctx, true)
-                .ifPresent(a -> autoChooser.addOption("AggressiveRight", a));
-        BAutoSingleSuperDuperUnsafe.create(ctx, false)
-                .ifPresent(a -> autoChooser.addOption("AggressiveSingleLeft", a));
-        BAutoSingleSuperDuperUnsafe.create(ctx, true)
-                .ifPresent(a -> autoChooser.addOption("AggressiveSingleRight", a));
-
-        testCommand = BAuto.create(ctx, false).get();
+       
 
         // C1678Auto.create(ctx, false, true)
         //         .ifPresent(a -> autoChooser.addOption("NeutralAuto-Safe-Left", a));
@@ -181,6 +172,9 @@ public class RobotContainer {
         //         .ifPresent(a -> autoChooser.addOption("NeutralAuto-Safe-Right", a));
 
         // DepotAuto.create(ctx, false, false).ifPresent(a -> autoChooser.addOption("Depot", a));
+
+
+       
 
         autoChooser.onChange(
                 auto -> {

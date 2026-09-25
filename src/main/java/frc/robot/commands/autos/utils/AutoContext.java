@@ -32,7 +32,8 @@ public record AutoContext(
         ShooterSuperstructure shooter,
         Optional<ObjectDetector> objectDetector,
         RobotState robotState,
-        AutoFactory autoFactory) {
+        AutoFactory autoFactory,
+        AutoTree autoTree) {
     /**
      * Creates the shared autonomous context and configures the Choreo factory used by all autos.
      */
@@ -42,7 +43,8 @@ public record AutoContext(
             Indexer indexer,
             Tower tower,
             ShooterSuperstructure shooter,
-            Optional<ObjectDetector> objectDetector) {
+            Optional<ObjectDetector> objectDetector,
+            AutoTree autoTree) {
         RobotState robotState = RobotState.getInstance();
         AutoFactory autoFactory =
                 new AutoFactory(
@@ -61,6 +63,14 @@ public record AutoContext(
         // Warm up choreo
         CommandScheduler.getInstance().schedule(autoFactory.warmupCmd());
         return new AutoContext(
-                drive, intake, indexer, tower, shooter, objectDetector, robotState, autoFactory);
+                drive,
+                intake,
+                indexer,
+                tower,
+                shooter,
+                objectDetector,
+                robotState,
+                autoFactory,
+                autoTree);
     }
 }

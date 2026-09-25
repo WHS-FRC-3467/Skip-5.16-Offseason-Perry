@@ -45,7 +45,9 @@ public final class AutoUtil {
      * widget without reinstantiating the routine.
      */
     public static AutoOption trajectoryOption(
-            List<Trajectory<SwerveSample>> trajectories, Supplier<AutoRoutine> supplier) {
+            List<Trajectory<SwerveSample>> trajectories,
+            Supplier<AutoRoutine> supplier
+          ) {
         if (trajectories.isEmpty()) {
             return commandOption(Commands::none);
         }
@@ -64,7 +66,8 @@ public final class AutoUtil {
                     return routine.cmd().finallyDo(routine::kill);
                 },
                 List.copyOf(previewPoses),
-                start);
+                start
+                );
     }
 
     /**

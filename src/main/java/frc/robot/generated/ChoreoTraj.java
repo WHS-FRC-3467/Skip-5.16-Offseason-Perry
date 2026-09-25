@@ -49,13 +49,6 @@ public record ChoreoTraj(
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
     );
-    public static final ChoreoTraj CURRENT_Handoff = new ChoreoTraj(
-        "CURRENT_Handoff",
-        OptionalInt.empty(),
-        1.42063,
-        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187)),
-        new Pose2d(4.4111, 7.41935, Rotation2d.fromRadians(-1.55373))
-    );
     public static final ChoreoTraj CURRENT_FullNeutral1 = new ChoreoTraj(
         "CURRENT_FullNeutral1",
         OptionalInt.empty(),
@@ -206,7 +199,6 @@ public record ChoreoTraj(
         Map.entry("WPI_C1678Safe1", WPI_C1678Safe1),
         Map.entry("DCMP_BumpPath", DCMP_BumpPath),
         Map.entry("WPI_C16781", WPI_C16781),
-        Map.entry("CURRENT_Handoff", CURRENT_Handoff),
         Map.entry("CURRENT_FullNeutral1", CURRENT_FullNeutral1),
         Map.entry("DCMP_TunnelPath", DCMP_TunnelPath),
         Map.entry("CURRENT_AggresiveAuto1", CURRENT_AggresiveAuto1),
