@@ -70,6 +70,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -106,6 +108,8 @@ public class RobotContainer {
 
     // Dashboard inputs
     public final LoggedDashboardChooser<AutoOption> autoChooser;
+
+    public final LoggedDashboardChooser<String> eventChooser;
 
     public final Field2d autoPreviewField = new Field2d();
     private Pose2d[] rawAutoPreviewPoses = new Pose2d[] {}; // Unflipped (blue-alliance) poses
@@ -155,6 +159,68 @@ public class RobotContainer {
                         new AutoTree(AutoTree.Event.CURRENT));
 
         autoChooser = new LoggedDashboardChooser<>("Auto Choices");
+        eventChooser = new LoggedDashboardChooser<>("Event Choices");
+
+        eventChooser.addDefaultOption("Current", "Current");
+
+        eventChooser.addOption("Wpi", "Wpi");
+        eventChooser.addOption("Dcmp", "Dcmp");
+        List<Map<String, Optional<AutoOption>>> autoOptions =
+                List.of(
+                        Map.of(
+                                "BSingleSuperDuperUnsafe-Left",
+                                BAutoSingleSuperDuperUnsafe.create(ctx, false),
+                                "BSingleSuperDuperUnsafe-Right",
+                                BAutoSingleSuperDuperUnsafe.create(ctx, true),
+                                "BSuperDuperUnsafe-Left",
+                                BAutoSuperDuperUnsafe.create(ctx, false),
+                                "BSuperDuperUnsafe-Right",
+                                BAutoSuperDuperUnsafe.create(ctx, true),
+                                "BUnsafe-Left",
+                                BAutoUnsafe.create(ctx, false),
+                                "BUnsafe-Right",
+                                BAutoUnsafe.create(ctx, true),
+                                "FullNeutral-Left",
+                                FullNeutralAuto.create(ctx)),
+                        Map.of(
+                                "C1678Unsafe-Left",
+                                C1678Auto.create(ctx, false, false),
+                                "C1678Unsafe-Right",
+                                C1678Auto.create(ctx, true, false),
+                                "C1678Safe-Left",
+                                C1678Auto.create(ctx, false, true),
+                                "C1678Safe-Right",
+                                C1678Auto.create(ctx, true, true)),
+                        Map.of(
+                                "B-Left",
+                                DCMPBAuto.create(ctx, false),
+                                "B-Right",
+                                DCMPBAuto.create(ctx, true),
+                                "C1678Unsafe-Left",
+                                DCMPC1678Auto.create(ctx, false),
+                                "C1678Unsafe-Right",
+                                DCMPC1678Auto.create(ctx, true),
+                                "C1678Safe-Left",
+                                DCMPC1678AutoSafe.create(ctx, false),
+                                "C167Safe-Right",
+                                DCMPC1678AutoSafe.create(ctx, true)));
+
+        eventChooser.onChange(
+                event -> {
+                    switch (event) {
+                        case "Current" -> {
+                            autoChooser.clearOptions(autoOptions.get(0));
+                        }
+
+                        case "Wpi" -> {
+                            autoChooser.clearOptions(autoOptions.get(1));
+                        }
+                        case "Dcmp" -> {
+                            autoChooser.clearOptions(autoOptions.get(2));
+                        }
+                    }
+                });
+
         SmartDashboard.putData("Auto Preview", autoPreviewField);
 
         // Default - No Auto
@@ -170,7 +236,6 @@ public class RobotContainer {
                 .ifPresent(a -> autoChooser.addOption("Current-BSingleSuperDuperUnsafe-Left", a));
         BAutoSingleSuperDuperUnsafe.create(ctx, true)
                 .ifPresent(a -> autoChooser.addOption("Current-BSingleSuperDuperUnsafe-Right", a));
-
         BAutoSuperDuperUnsafe.create(ctx, false)
                 .ifPresent(a -> autoChooser.addOption("Current-BSuperDuperUnsafe-Left", a));
         BAutoSuperDuperUnsafe.create(ctx, true)
@@ -198,17 +263,33 @@ public class RobotContainer {
         C1678Auto.create(ctx, true, true)
                 .ifPresent(a -> autoChooser.addOption("Wpi-C1678Safe-Right", a));
 
-        frc.robot.commands.autos.dcmp.BAuto.create(ctx, false)
-                .ifPresent(a -> autoChooser.addOption("Dcmp-B-Left", a));
-        frc.robot.commands.autos.dcmp.BAuto.create(ctx, true)
-                .ifPresent(a -> autoChooser.addOption("Dcmp-B-Right", a));
-        frc.robot.commands.autos.dcmp.C1678Auto.create(ctx, false)
+        /*
+        "B-Right",
+         DCMPBAuto.create(ctx, true),
+         "C1678Unsafe-Left",
+          DCMPC1678Auto.create(ctx, false),
+          "C1678Unsafe-Right",
+              DCMPC1678Auto.create(ctx, true),
+              "C1678Safe-Left",
+              DCMPC1678AutoSafe.create(ctx, false),
+              "C167Safe-Right",
+              DCMPC1678AutoSafe.create(ctx, true)
+
+
+
+
+
+
+        */
+        DCMPBAuto.create(ctx, false).ifPresent(a -> autoChooser.addOption("Dcmp-B-Left", a));
+        DCMPBAuto.create(ctx, true).ifPresent(a -> autoChooser.addOption("Dcmp-B-Right", a));
+        DCMPC1678Auto.create(ctx, false)
                 .ifPresent(a -> autoChooser.addOption("Dcmp-C1678Unsafe-Left", a));
-        frc.robot.commands.autos.dcmp.C1678Auto.create(ctx, true)
+        DCMPC1678Auto.create(ctx, true)
                 .ifPresent(a -> autoChooser.addOption("Dcmp-C1678Unsafe-Right", a));
-        frc.robot.commands.autos.dcmp.C1678AutoSafe.create(ctx, false)
+        DCMPC1678AutoSafe.create(ctx, false)
                 .ifPresent(a -> autoChooser.addOption("Dcmp-C1678Safe-Left", a));
-        frc.robot.commands.autos.dcmp.C1678AutoSafe.create(ctx, true)
+        DCMPC1678AutoSafe.create(ctx, true)
                 .ifPresent(a -> autoChooser.addOption("Dcmp-C167Safe-Right", a));
 
         // Neutral Autos

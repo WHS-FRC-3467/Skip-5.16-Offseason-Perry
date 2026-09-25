@@ -1,9 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
-// https://github.com/3015RangerRobotics/2024Public/blob/main/RobotCode2024/src/main/java/frc/robot/util/LoggedDashboardChooser.java
-
 package frc.lib.util;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,7 +11,6 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkInput;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -40,7 +33,7 @@ import java.util.function.Consumer;
  * Command selectedAuto = autoChooser.get();
  * }</pre>
  */
-public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
+public class LoggedDashboardTree<V> extends LoggedNetworkInput {
     private final String key;
     private String selectedValue = null;
     private String lastSelected = null;
@@ -67,7 +60,7 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
      * @param key The SmartDashboard key, published to "/SmartDashboard/{key}" for NT or
      *     "/DashboardInputs/{key}" when logged
      */
-    public LoggedDashboardChooser(String key) {
+    public LoggedDashboardTree(String key) {
         this.key = key;
         SmartDashboard.putData(key, sendableChooser);
         periodic();
@@ -82,7 +75,7 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
      * @param chooser Existing SendableChooser to copy options from
      */
     @SuppressWarnings("unchecked")
-    public LoggedDashboardChooser(String key, SendableChooser<V> chooser) {
+    public LoggedDashboardTree(String key, SendableChooser<V> chooser) {
         this(key);
 
         // Get options map
@@ -132,21 +125,6 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
         options.put(key, value);
     }
 
-    public void clearOptions(Map<String, Optional<V>> newOptions) {
-        sendableChooser.close();
-        sendableChooser = new SendableChooser<>();
-        SmartDashboard.putData(key, sendableChooser);
-
-        options.clear();
-
-        for (var option : newOptions.entrySet()) {
-            if (option.getValue().isPresent()) {
-                sendableChooser.addOption(option.getKey(), option.getKey());
-                options.put(option.getKey(), option.getValue().get());
-            }
-        }
-    }
-
     /**
      * Adds a new option and sets it as the default.
      *
@@ -184,13 +162,11 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
             selectedValue = sendableChooser.getSelected();
         }
         Logger.processInputs(prefix, inputs);
-        if (selectedValue != null) {
 
-            if (listener != null && !selectedValue.equals(lastSelected)) {
-                listener.accept(get());
-            }
-            lastSelected = selectedValue;
+        if (listener != null && !selectedValue.equals(lastSelected)) {
+            listener.accept(get());
         }
+        lastSelected = selectedValue;
     }
 
     /**

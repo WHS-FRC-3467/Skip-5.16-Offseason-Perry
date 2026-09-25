@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class C1678Auto {
+public class DCMPBAuto {
 
     private static final Alert TRAJECTORIES_MISSING =
             new Alert("Neutral Auto Trajectories Missing, Auto(s) Unavailable", AlertType.kError);
@@ -45,8 +45,8 @@ public class C1678Auto {
     public static Optional<AutoOption> create(AutoContext ctx, boolean shouldMirror) {
         List<String> names =
                 List.of(
-                        ChoreoTraj.DCMP_C16781.name(),
-                        ChoreoTraj.DCMP_C16782.name(),
+                        ChoreoTraj.DCMP_B1.name(),
+                        ChoreoTraj.DCMP_B2.name(),
                         ChoreoTraj.DCMP_C16783.name());
 
         List<Trajectory<SwerveSample>> trajectories =
@@ -62,8 +62,7 @@ public class C1678Auto {
                         () -> {
                             AutoRoutine routine =
                                     ctx.autoFactory()
-                                            .newRoutine(
-                                                    "C1678" + (shouldMirror ? "Right" : "Left"));
+                                            .newRoutine("B" + (shouldMirror ? "Right" : "Left"));
 
                             // Still use AutoTrajectory for resetOdometry() lifecycle.
                             AutoTrajectory first = routine.trajectory(trajectories.get(0));
