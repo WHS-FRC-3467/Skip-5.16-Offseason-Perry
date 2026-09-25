@@ -39,9 +39,13 @@ import frc.lib.util.LoggedDashboardChooser;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.PowerProfiler;
 import frc.robot.commands.DriveCommands;
-
 import frc.robot.commands.autos.NoneAuto;
 import frc.robot.commands.autos.PreloadAuto;
+import frc.robot.commands.autos.current.BAuto;
+import frc.robot.commands.autos.current.BAutoSingleSuperDuperUnsafe;
+import frc.robot.commands.autos.current.BAutoSuperDuperUnsafe;
+import frc.robot.commands.autos.current.BAutoUnsafe;
+import frc.robot.commands.autos.current.FullNeutralAuto;
 import frc.robot.commands.autos.tuning.WheelCharacterizationAuto;
 import frc.robot.commands.autos.utils.AutoContext;
 import frc.robot.commands.autos.utils.AutoOption;
@@ -157,14 +161,37 @@ public class RobotContainer {
         // Preload Autos
         autoChooser.addOption("PreloadAuto", PreloadAuto.create(ctx));
 
+        BAuto.create(ctx, false).ifPresent(a -> autoChooser.addOption("Current-B-Left", a));
+        BAuto.create(ctx, true).ifPresent(a -> autoChooser.addOption("Current-B-Right", a));
+
+        BAutoSingleSuperDuperUnsafe.create(ctx, false)
+                .ifPresent(a -> autoChooser.addOption("Current-BSingleSuperDuperUnsafe-Left", a));
+        BAutoSingleSuperDuperUnsafe.create(ctx, true)
+                .ifPresent(a -> autoChooser.addOption("Current-BSingleSuperDuperUnsafe-Right", a));
+
+        BAutoSuperDuperUnsafe.create(ctx, false)
+                .ifPresent(a -> autoChooser.addOption("Current-BSuperDuperUnsafe-Left", a));
+        BAutoSuperDuperUnsafe.create(ctx, true)
+                .ifPresent(a -> autoChooser.addOption("Current-BSuperDuperUnsafe-Right", a));
+
+        BAutoSuperDuperUnsafe.create(ctx, false)
+                .ifPresent(a -> autoChooser.addOption("Current-BSuperDuperUnsafe-Left", a));
+        BAutoSuperDuperUnsafe.create(ctx, true)
+                .ifPresent(a -> autoChooser.addOption("Current-BSuperDuperUnsafe-Right", a));
+
+        BAutoUnsafe.create(ctx, false)
+                .ifPresent(a -> autoChooser.addOption("Current-BUnsafe-Left", a));
+        BAutoUnsafe.create(ctx, true)
+                .ifPresent(a -> autoChooser.addOption("Current-BUnsafe-Right", a));
+
+        FullNeutralAuto.create(ctx)
+                .ifPresent(a -> autoChooser.addOption("Current-FullNeutral-Left", a));
+
         // Neutral Autos
         // MLNeutralAuto.create(ctx, false, true)
         //         .ifPresent(a -> autoChooser.addOption("ML-Neutral-Safe-Left", a));
 
         // Citrus Autos
-                
-
-       
 
         // C1678Auto.create(ctx, false, true)
         //         .ifPresent(a -> autoChooser.addOption("NeutralAuto-Safe-Left", a));
@@ -172,9 +199,6 @@ public class RobotContainer {
         //         .ifPresent(a -> autoChooser.addOption("NeutralAuto-Safe-Right", a));
 
         // DepotAuto.create(ctx, false, false).ifPresent(a -> autoChooser.addOption("Depot", a));
-
-
-       
 
         autoChooser.onChange(
                 auto -> {

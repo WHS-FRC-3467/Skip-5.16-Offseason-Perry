@@ -13,10 +13,7 @@ import java.util.function.Supplier;
  * preview poses and an expected start pose before the command is instantiated.
  */
 public record AutoOption(
-        Supplier<Command> commandSupplier,
-        List<Pose2d> previewPoses,
-        Pose2d startingPose
-       ) {
+        Supplier<Command> commandSupplier, List<Pose2d> previewPoses, Pose2d startingPose) {
     /** Builds a fresh command for the selected autonomous option. */
     public Command command() {
         return commandSupplier.get();
