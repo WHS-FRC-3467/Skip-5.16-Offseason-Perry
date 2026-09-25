@@ -17,7 +17,6 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkInput;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -132,7 +131,7 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
         options.put(key, value);
     }
 
-    public void clearOptions(Map<String, Optional<V>> newOptions) {
+    public void clearOptions(Map<String, V> newOptions) {
         sendableChooser.close();
         sendableChooser = new SendableChooser<>();
         SmartDashboard.putData(key, sendableChooser);
@@ -140,11 +139,27 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
         options.clear();
 
         for (var option : newOptions.entrySet()) {
-            if (option.getValue().isPresent()) {
-                sendableChooser.addOption(option.getKey(), option.getKey());
-                options.put(option.getKey(), option.getValue().get());
-            }
+
+            sendableChooser.addOption(option.getKey(), option.getKey());
+            options.put(option.getKey(), option.getValue());
         }
+    }
+
+    public void clearSelected() {
+        selectedValue = "";
+        lastSelected = "";
+    }
+
+    public void setSelected(String selected) {
+        this.selectedValue = selected;
+    }
+
+    public void clear() {
+        sendableChooser.close();
+        sendableChooser = new SendableChooser<>();
+        SmartDashboard.putData(key, sendableChooser);
+
+        options.clear();
     }
 
     /**

@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.CommandXboxControllerExtended;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.LoggedDashboardChooser;
+import frc.lib.util.LoggedDashboardDashboardChooser;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.PowerProfiler;
 import frc.robot.commands.DriveCommands;
@@ -111,6 +112,9 @@ public class RobotContainer {
 
     public final LoggedDashboardChooser<String> eventChooser;
 
+    public final LoggedDashboardDashboardChooser<String> fooChooser;
+    public final LoggedDashboardDashboardChooser<AutoOption> autoChooserChooser;
+
     public final Field2d autoPreviewField = new Field2d();
     private Pose2d[] rawAutoPreviewPoses = new Pose2d[] {}; // Unflipped (blue-alliance) poses
     public Pose2d startPose = new Pose2d(); // Initialize start pose for auto dashboard tab
@@ -161,6 +165,66 @@ public class RobotContainer {
         autoChooser = new LoggedDashboardChooser<>("Auto Choices");
         eventChooser = new LoggedDashboardChooser<>("Event Choices");
 
+        fooChooser =
+                new LoggedDashboardDashboardChooser<>(
+                        "Foo Dashboard",
+                        Map.of(
+                                "FOO",
+                                Map.of("foo", Optional.of("foooo"), "bar", Optional.of("barrr")),
+                                "BAR",
+                                Map.of("baz", Optional.of("bazzz"), "baq", Optional.of("baqqq"))));
+
+        autoChooserChooser =
+                new LoggedDashboardDashboardChooser<>(
+                        "Auto Chooser Chooser",
+                        Map.of(
+                                "Current",
+                                Map.of(
+                                        "BSingleSuperDuperUnsafe-Left",
+                                        BAutoSingleSuperDuperUnsafe.create(ctx, false),
+                                        "BSingleSuperDuperUnsafe-Right",
+                                        BAutoSingleSuperDuperUnsafe.create(ctx, true),
+                                        "BSuperDuperUnsafe-Left",
+                                        BAutoSuperDuperUnsafe.create(ctx, false),
+                                        "BSuperDuperUnsafe-Right",
+                                        BAutoSuperDuperUnsafe.create(ctx, true),
+                                        "BUnsafe-Left",
+                                        BAutoUnsafe.create(ctx, false),
+                                        "BUnsafe-Right",
+                                        BAutoUnsafe.create(ctx, true),
+                                        "FullNeutral-Left",
+                                        FullNeutralAuto.create(ctx)),
+                                "Wpi",
+                                Map.of(
+                                        "C1678Unsafe-Left",
+                                        C1678Auto.create(ctx, false, false),
+                                        "C1678Unsafe-Right",
+                                        C1678Auto.create(ctx, true, false),
+                                        "C1678Safe-Left",
+                                        C1678Auto.create(ctx, false, true),
+                                        "C1678Safe-Right",
+                                        C1678Auto.create(ctx, true, true)),
+                                "Dcmp",
+                                Map.of(
+                                        "B-Left",
+                                        DCMPBAuto.create(ctx, false),
+                                        "B-Right",
+                                        DCMPBAuto.create(ctx, true),
+                                        "C1678Unsafe-Left",
+                                        DCMPC1678Auto.create(ctx, false),
+                                        "C1678Unsafe-Right",
+                                        DCMPC1678Auto.create(ctx, true),
+                                        "C1678Safe-Left",
+                                        DCMPC1678AutoSafe.create(ctx, false),
+                                        "C167Safe-Right",
+                                        DCMPC1678AutoSafe.create(ctx, true)),
+                                "Other",
+                                Map.of(
+                                        "None",
+                                        Optional.of(NoneAuto.create()),
+                                        "Drive Wheel Radius Characterization",
+                                        Optional.of(WheelCharacterizationAuto.create(ctx)))));
+
         eventChooser.addDefaultOption("Current", "Current");
 
         eventChooser.addOption("Wpi", "Wpi");
@@ -209,14 +273,14 @@ public class RobotContainer {
                 event -> {
                     switch (event) {
                         case "Current" -> {
-                            autoChooser.clearOptions(autoOptions.get(0));
+                            //    autoChooser.clearOptions(autoOptions.get(0));
                         }
 
                         case "Wpi" -> {
-                            autoChooser.clearOptions(autoOptions.get(1));
+                            //    autoChooser.clearOptions(autoOptions.get(1));
                         }
                         case "Dcmp" -> {
-                            autoChooser.clearOptions(autoOptions.get(2));
+                            //    autoChooser.clearOptions(autoOptions.get(2));
                         }
                     }
                 });
@@ -305,6 +369,34 @@ public class RobotContainer {
 
         // DepotAuto.create(ctx, false, false).ifPresent(a -> autoChooser.addOption("Depot", a));
 
+        autoChooserChooser.onChange(
+                auto -> {
+                    if (auto == null) {
+                        rawAutoPreviewPoses = new Pose2d[] {};
+                        autoPreviewField.getObject("path").setPoses(new Pose2d[] {});
+                        cachedAutoCommand = null;
+                        return;
+                    }
+                    var pathPoses = auto.previewPoses().toArray(Pose2d[]::new);
+                    if (pathPoses.length == 0) {
+                        rawAutoPreviewPoses = new Pose2d[] {};
+                        return;
+                    }
+                    pathPoses[0] = auto.startingPose();
+                    rawAutoPreviewPoses = pathPoses;
+
+                    // Apply alliance flip for initial preview
+                    var flippedPoses =
+                            Arrays.stream(rawAutoPreviewPoses)
+                                    .map(FieldUtil::apply)
+                                    .toArray(Pose2d[]::new);
+                    autoPreviewField.getObject("path").setPoses(flippedPoses);
+
+                    // Pre-build the auto command now (while still disabled) so that
+                    // autonomousInit() doesn't burn 100-200 ms of cycle time constructing
+                    // routines, triggers, and command objects.
+                    cachedAutoCommand = auto.command();
+                });
         autoChooser.onChange(
                 auto -> {
                     if (auto == null) {
