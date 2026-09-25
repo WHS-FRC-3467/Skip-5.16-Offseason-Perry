@@ -46,10 +46,12 @@ import frc.robot.commands.autos.current.BAutoSingleSuperDuperUnsafe;
 import frc.robot.commands.autos.current.BAutoSuperDuperUnsafe;
 import frc.robot.commands.autos.current.BAutoUnsafe;
 import frc.robot.commands.autos.current.FullNeutralAuto;
+import frc.robot.commands.autos.dcmp.*;
 import frc.robot.commands.autos.tuning.WheelCharacterizationAuto;
 import frc.robot.commands.autos.utils.AutoContext;
 import frc.robot.commands.autos.utils.AutoOption;
 import frc.robot.commands.autos.utils.AutoTree;
+import frc.robot.commands.autos.wpi.C1678Auto;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.indexer.Indexer;
@@ -186,6 +188,28 @@ public class RobotContainer {
 
         FullNeutralAuto.create(ctx)
                 .ifPresent(a -> autoChooser.addOption("Current-FullNeutral-Left", a));
+
+        C1678Auto.create(ctx, false, false)
+                .ifPresent(a -> autoChooser.addOption("Wpi-C1678Unsafe-Left", a));
+        C1678Auto.create(ctx, true, false)
+                .ifPresent(a -> autoChooser.addOption("Wpi-C1678Unsafe-Right", a));
+        C1678Auto.create(ctx, false, true)
+                .ifPresent(a -> autoChooser.addOption("Wpi-C1678Safe-Left", a));
+        C1678Auto.create(ctx, true, true)
+                .ifPresent(a -> autoChooser.addOption("Wpi-C1678Safe-Right", a));
+
+        frc.robot.commands.autos.dcmp.BAuto.create(ctx, false)
+                .ifPresent(a -> autoChooser.addOption("Dcmp-B-Left", a));
+        frc.robot.commands.autos.dcmp.BAuto.create(ctx, true)
+                .ifPresent(a -> autoChooser.addOption("Dcmp-B-Right", a));
+        frc.robot.commands.autos.dcmp.C1678Auto.create(ctx, false)
+                .ifPresent(a -> autoChooser.addOption("Dcmp-C1678Unsafe-Left", a));
+        frc.robot.commands.autos.dcmp.C1678Auto.create(ctx, true)
+                .ifPresent(a -> autoChooser.addOption("Dcmp-C1678Unsafe-Right", a));
+        frc.robot.commands.autos.dcmp.C1678AutoSafe.create(ctx, false)
+                .ifPresent(a -> autoChooser.addOption("Dcmp-C1678Safe-Left", a));
+        frc.robot.commands.autos.dcmp.C1678AutoSafe.create(ctx, true)
+                .ifPresent(a -> autoChooser.addOption("Dcmp-C167Safe-Right", a));
 
         // Neutral Autos
         // MLNeutralAuto.create(ctx, false, true)
