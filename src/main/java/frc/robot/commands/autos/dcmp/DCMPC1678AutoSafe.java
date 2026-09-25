@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License along with this program. If
  * not, see <https://www.gnu.org/licenses/>.
  */
-package frc.robot.commands.autos;
+package frc.robot.commands.autos.dcmp;
 
 import static edu.wpi.first.units.Units.Degrees;
 
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class BAutoSuperDuperUnsafe {
+public class DCMPC1678AutoSafe {
 
     private static final Alert TRAJECTORIES_MISSING =
             new Alert("Neutral Auto Trajectories Missing, Auto(s) Unavailable", AlertType.kError);
@@ -45,9 +45,9 @@ public class BAutoSuperDuperUnsafe {
     public static Optional<AutoOption> create(AutoContext ctx, boolean shouldMirror) {
         List<String> names =
                 List.of(
-                        ChoreoTraj.AggresiveAuto1.name(),
-                        ChoreoTraj.B2.name(),
-                        ChoreoTraj.Handoff.name());
+                        ChoreoTraj.DCMP_C1678Safe1.name(),
+                        ChoreoTraj.DCMP_C16782.name(),
+                        ChoreoTraj.DCMP_C16783.name());
 
         List<Trajectory<SwerveSample>> trajectories =
                 AutoUtil.loadTrajectories(names, shouldMirror).orElse(null);
@@ -62,7 +62,9 @@ public class BAutoSuperDuperUnsafe {
                         () -> {
                             AutoRoutine routine =
                                     ctx.autoFactory()
-                                            .newRoutine("B" + (shouldMirror ? "Right" : "Left"));
+                                            .newRoutine(
+                                                    "C1678Safe"
+                                                            + (shouldMirror ? "Right" : "Left"));
 
                             // Still use AutoTrajectory for resetOdometry() lifecycle.
                             AutoTrajectory first = routine.trajectory(trajectories.get(0));
@@ -95,7 +97,7 @@ public class BAutoSuperDuperUnsafe {
                                     .or(routine.observe(thirdFollow.done()))
                                     .onTrue(
                                             Commands.sequence(
-                                                    AutoCommands.shootOnly(ctx, 2.0),
+                                                    AutoCommands.shootOnly(ctx, 3.0),
                                                     ctx.shooter()
                                                             .setHoodAngle(Degrees.of(0.0))
                                                             .asProxy(),
@@ -104,14 +106,11 @@ public class BAutoSuperDuperUnsafe {
                             routine.observe(secondFollow.done())
                                     .onTrue(
                                             Commands.sequence(
-                                                    AutoCommands.shootOnly(ctx, 2.0),
+                                                    AutoCommands.shootOnly(ctx, 5.0),
                                                     ctx.shooter()
                                                             .setHoodAngle(Degrees.of(0.0))
                                                             .asProxy(),
                                                     thirdFollow.asProxy()));
-
-                            routine.observe(thirdFollow.done())
-                                    .onTrue(AutoCommands.fullSend(ctx, shouldMirror));
 
                             return routine;
                         }));

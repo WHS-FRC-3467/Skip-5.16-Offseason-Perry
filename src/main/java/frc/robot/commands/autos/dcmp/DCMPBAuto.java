@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License along with this program. If
  * not, see <https://www.gnu.org/licenses/>.
  */
-package frc.robot.commands.autos;
+package frc.robot.commands.autos.dcmp;
 
 import static edu.wpi.first.units.Units.Degrees;
 
@@ -37,16 +37,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class BAuto {
+public class DCMPBAuto {
 
     private static final Alert TRAJECTORIES_MISSING =
             new Alert("Neutral Auto Trajectories Missing, Auto(s) Unavailable", AlertType.kError);
 
-    public static final double Y_OFFSET = 7.530;
-
     public static Optional<AutoOption> create(AutoContext ctx, boolean shouldMirror) {
         List<String> names =
-                List.of(ChoreoTraj.B1.name(), ChoreoTraj.B2.name(), ChoreoTraj.Handoff.name());
+                List.of(
+                        ChoreoTraj.DCMP_B1.name(),
+                        ChoreoTraj.DCMP_B2.name(),
+                        ChoreoTraj.DCMP_C16783.name());
 
         List<Trajectory<SwerveSample>> trajectories =
                 AutoUtil.loadTrajectories(names, shouldMirror).orElse(null);
@@ -94,7 +95,7 @@ public class BAuto {
                                     .or(routine.observe(thirdFollow.done()))
                                     .onTrue(
                                             Commands.sequence(
-                                                    AutoCommands.shootOnly(ctx, 2.0),
+                                                    AutoCommands.shootOnly(ctx, 3.0),
                                                     ctx.shooter()
                                                             .setHoodAngle(Degrees.of(0.0))
                                                             .asProxy(),
@@ -103,14 +104,11 @@ public class BAuto {
                             routine.observe(secondFollow.done())
                                     .onTrue(
                                             Commands.sequence(
-                                                    AutoCommands.shootOnly(ctx, 2.0),
+                                                    AutoCommands.shootOnly(ctx, 5.0),
                                                     ctx.shooter()
                                                             .setHoodAngle(Degrees.of(0.0))
                                                             .asProxy(),
                                                     thirdFollow.asProxy()));
-
-                            routine.observe(thirdFollow.done())
-                                    .onTrue(AutoCommands.fullSend(ctx, shouldMirror));
 
                             return routine;
                         }));

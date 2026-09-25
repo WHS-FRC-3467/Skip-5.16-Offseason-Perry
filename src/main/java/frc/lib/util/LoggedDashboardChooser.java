@@ -131,6 +131,29 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
         options.put(key, value);
     }
 
+    public void clearOptions(Map<String, V> newOptions) {
+        this.clear();
+
+        for (var option : newOptions.entrySet()) {
+
+            sendableChooser.addOption(option.getKey(), option.getKey());
+            options.put(option.getKey(), option.getValue());
+        }
+    }
+
+    public void clearSelected() {
+        selectedValue = "";
+        lastSelected = "";
+    }
+
+    public void clear() {
+        sendableChooser.close();
+        sendableChooser = new SendableChooser<>();
+        SmartDashboard.putData(key, sendableChooser);
+
+        options.clear();
+    }
+
     /**
      * Adds a new option and sets it as the default.
      *
@@ -168,11 +191,13 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
             selectedValue = sendableChooser.getSelected();
         }
         Logger.processInputs(prefix, inputs);
+        if (selectedValue != null) {
 
-        if (listener != null && !selectedValue.equals(lastSelected)) {
-            listener.accept(get());
+            if (listener != null && !selectedValue.equals(lastSelected)) {
+                listener.accept(get());
+            }
+            lastSelected = selectedValue;
         }
-        lastSelected = selectedValue;
     }
 
     /**

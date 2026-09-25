@@ -12,9 +12,12 @@
  * You should have received a copy of the GNU General Public License along with this program. If
  * not, see <https://www.gnu.org/licenses/>.
  */
-package frc.robot.commands.autos;
+package frc.robot.commands.autos.wpi;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 
@@ -33,34 +36,40 @@ import frc.robot.generated.ChoreoTraj;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
-public class FullNeutralAuto {
+public class C1678Auto {
 
     private static final Alert TRAJECTORIES_MISSING =
-            new Alert(
-                    "Full Neutral Auto Trajectories Missing, Auto(s) Unavailable",
-                    AlertType.kError);
+            new Alert("Neutral Auto Trajectories Missing, Auto(s) Unavailable", AlertType.kError);
 
-    public static Optional<AutoOption> create(AutoContext ctx) {
+    public static Optional<AutoOption> create(
+            AutoContext ctx, boolean shouldMirror, boolean isSafe) {
         List<String> names =
-                List.of(
-                        ChoreoTraj.FullNeutral1.name(),
-                        ChoreoTraj.FullNeutral2.name(),
-                        ChoreoTraj.FullNeutral3.name());
+                isSafe
+                        ? List.of(ChoreoTraj.WPI_C1678Safe1.name(), ChoreoTraj.WPI_C16782.name())
+                        : List.of(ChoreoTraj.WPI_C16781.name(), ChoreoTraj.WPI_C16782.name());
 
         List<Trajectory<SwerveSample>> trajectories =
-                AutoUtil.loadTrajectories(names, false).orElse(null);
+                AutoUtil.loadTrajectories(names, shouldMirror).orElse(null);
+
+        Optional<Trajectory<SwerveSample>> bumpTrajectory =
+                AutoUtil.loadTrajectory(ChoreoTraj.WPI_BumpPath.name(), shouldMirror);
         if (trajectories == null) {
             TRAJECTORIES_MISSING.set(true);
             return Optional.empty();
         }
-
         return Optional.of(
                 AutoUtil.trajectoryOption(
                         trajectories,
                         () -> {
-                            AutoRoutine routine = ctx.autoFactory().newRoutine("FullNeutralAuto");
+                            AutoRoutine routine =
+                                    ctx.autoFactory()
+                                            .newRoutine(
+                                                    "STSE"
+                                                            + (isSafe ? "Safe" : "Aggressive")
+                                                            + (shouldMirror ? "Right" : "Left"));
+
+                            AutoTrajectory first = routine.trajectory(trajectories.get(0));
 
                             Map<String, Command> eventBindings = AutoUtil.createEventBindings(ctx);
 
@@ -68,45 +77,32 @@ public class FullNeutralAuto {
                                     ctx.drive()
                                             .followTrajectoryResilient(
                                                     trajectories.get(0), eventBindings);
+
                             ResilientTrajectoryFollower secondFollow =
                                     ctx.drive()
                                             .followTrajectoryResilient(
                                                     trajectories.get(1), eventBindings);
-                            ResilientTrajectoryFollower thirdFollow =
-                                    ctx.drive()
-                                            .followTrajectoryResilient(
-                                                    trajectories.get(2), eventBindings);
 
                             routine.active()
-                                    .onTrue(
-                                            Commands.sequence(
-                                                    Commands.defer(
-                                                            () ->
-                                                                    Commands.waitSeconds(
-                                                                            AutoCommands
-                                                                                    .getStartDelay()),
-                                                            Set.of()),
-                                                    firstFollow));
+                                    .onTrue(Commands.sequence(first.resetOdometry(), firstFollow));
 
                             routine.observe(firstFollow.done())
                                     .onTrue(
                                             Commands.sequence(
-                                                    Commands.defer(
-                                                            () ->
-                                                                    Commands.waitSeconds(
-                                                                            AutoCommands
-                                                                                    .getBumpDelay()),
-                                                            Set.of()),
+                                                    AutoCommands.shootOnly(ctx, 2.0),
+                                                    ctx.shooter()
+                                                            .setHoodAngle(Degrees.of(0.0))
+                                                            .asProxy(),
                                                     secondFollow.asProxy()));
 
                             routine.observe(secondFollow.done())
                                     .onTrue(
                                             Commands.sequence(
                                                     AutoCommands.shootOnly(ctx, 2.0),
-                                                    thirdFollow.asProxy()));
-
-                            routine.observe(thirdFollow.done())
-                                    .onTrue(Commands.sequence(AutoCommands.shootOnly(ctx, 5.0)));
+                                                    ctx.shooter()
+                                                            .setHoodAngle(Degrees.of(0.0))
+                                                            .asProxy(),
+                                                    secondFollow.asProxy()));
 
                             return routine;
                         }));

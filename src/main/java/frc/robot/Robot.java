@@ -145,13 +145,13 @@ public class Robot extends LoggedRobot {
 
         ChoreoAllianceFlipUtil.getFlipper();
         FieldConstants.initialize();
-        CommandScheduler.getInstance()
-                .schedule(
-                        robotContainer
-                                .testCommand
-                                .command()
-                                .ignoringDisable(true)
-                                .withTimeout(0.1));
+        /*   CommandScheduler.getInstance()
+        .schedule(
+                robotContainer
+                        .testCommand
+                        .command()
+                        .ignoringDisable(true)
+                        .withTimeout(0.1)); */
     }
 
     /**

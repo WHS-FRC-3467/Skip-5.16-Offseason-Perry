@@ -35,20 +35,21 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.lib.util.CommandXboxControllerExtended;
 import frc.lib.util.FieldUtil;
-import frc.lib.util.LoggedDashboardChooser;
+import frc.lib.util.LoggedDashboardDashboardChooser;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.PowerProfiler;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.autos.BAuto;
-import frc.robot.commands.autos.BAutoSingleSuperDuperUnsafe;
-import frc.robot.commands.autos.BAutoSuperDuperUnsafe;
-import frc.robot.commands.autos.BAutoUnsafe;
-import frc.robot.commands.autos.FullNeutralAuto;
 import frc.robot.commands.autos.NoneAuto;
 import frc.robot.commands.autos.PreloadAuto;
+import frc.robot.commands.autos.current.BAutoSingleSuperDuperUnsafe;
+import frc.robot.commands.autos.current.BAutoSuperDuperUnsafe;
+import frc.robot.commands.autos.current.BAutoUnsafe;
+import frc.robot.commands.autos.current.FullNeutralAuto;
+import frc.robot.commands.autos.dcmp.*;
 import frc.robot.commands.autos.tuning.WheelCharacterizationAuto;
 import frc.robot.commands.autos.utils.AutoContext;
 import frc.robot.commands.autos.utils.AutoOption;
+import frc.robot.commands.autos.wpi.C1678Auto;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.indexer.Indexer;
@@ -67,6 +68,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -102,8 +104,9 @@ public class RobotContainer {
             new CommandXboxControllerExtended(1).withDeadband(0.1);
 
     // Dashboard inputs
-    public final LoggedDashboardChooser<AutoOption> autoChooser;
-    public final AutoOption testCommand;
+
+    public final LoggedDashboardDashboardChooser<AutoOption> autoChooser;
+
     public final Field2d autoPreviewField = new Field2d();
     private Pose2d[] rawAutoPreviewPoses = new Pose2d[] {}; // Unflipped (blue-alliance) poses
     public Pose2d startPose = new Pose2d(); // Initialize start pose for auto dashboard tab
@@ -144,43 +147,62 @@ public class RobotContainer {
         AutoContext ctx =
                 AutoContext.create(drive, intake, indexer, tower, shooter, Optional.empty());
 
-        autoChooser = new LoggedDashboardChooser<>("Auto Choices");
+        autoChooser =
+                new LoggedDashboardDashboardChooser<>(
+                        "Auto Choices",
+                        Map.of(
+                                "Current",
+                                Map.of(
+                                        "BSingleSuperDuperUnsafe-Left",
+                                        BAutoSingleSuperDuperUnsafe.create(ctx, false),
+                                        "BSingleSuperDuperUnsafe-Right",
+                                        BAutoSingleSuperDuperUnsafe.create(ctx, true),
+                                        "BSuperDuperUnsafe-Left",
+                                        BAutoSuperDuperUnsafe.create(ctx, false),
+                                        "BSuperDuperUnsafe-Right",
+                                        BAutoSuperDuperUnsafe.create(ctx, true),
+                                        "BUnsafe-Left",
+                                        BAutoUnsafe.create(ctx, false),
+                                        "BUnsafe-Right",
+                                        BAutoUnsafe.create(ctx, true),
+                                        "FullNeutral-Left",
+                                        FullNeutralAuto.create(ctx)),
+                                "Wpi",
+                                Map.of(
+                                        "C1678Unsafe-Left",
+                                        C1678Auto.create(ctx, false, false),
+                                        "C1678Unsafe-Right",
+                                        C1678Auto.create(ctx, true, false),
+                                        "C1678Safe-Left",
+                                        C1678Auto.create(ctx, false, true),
+                                        "C1678Safe-Right",
+                                        C1678Auto.create(ctx, true, true)),
+                                "Dcmp",
+                                Map.of(
+                                        "B-Left",
+                                        DCMPBAuto.create(ctx, false),
+                                        "B-Right",
+                                        DCMPBAuto.create(ctx, true),
+                                        "C1678Unsafe-Left",
+                                        DCMPC1678Auto.create(ctx, false),
+                                        "C1678Unsafe-Right",
+                                        DCMPC1678Auto.create(ctx, true),
+                                        "C1678Safe-Left",
+                                        DCMPC1678AutoSafe.create(ctx, false),
+                                        "C167Safe-Right",
+                                        DCMPC1678AutoSafe.create(ctx, true)),
+                                "Other",
+                                Map.of(
+                                        "None",
+                                        Optional.of(NoneAuto.create()),
+                                        "Drive Wheel Radius Characterization",
+                                        Optional.of(WheelCharacterizationAuto.create(ctx)),
+                                        "PreloadAuto",
+                                        Optional.of(PreloadAuto.create(ctx)),
+                                        " ",
+                                        Optional.empty())));
+
         SmartDashboard.putData("Auto Preview", autoPreviewField);
-
-        // Default - No Auto
-        autoChooser.addDefaultOption("None", NoneAuto.create());
-
-        // Preload Autos
-        autoChooser.addOption("PreloadAuto", PreloadAuto.create(ctx));
-
-        // Neutral Autos
-        // MLNeutralAuto.create(ctx, false, true)
-        //         .ifPresent(a -> autoChooser.addOption("ML-Neutral-Safe-Left", a));
-
-        // Citrus Autos
-        FullNeutralAuto.create(ctx).ifPresent(a -> autoChooser.addOption("Follow-Left", a));
-
-        BAuto.create(ctx, false).ifPresent(a -> autoChooser.addOption("NeutralSafeLeft", a));
-        BAuto.create(ctx, true).ifPresent(a -> autoChooser.addOption("NeutralSafeRight", a));
-        BAutoUnsafe.create(ctx, false).ifPresent(a -> autoChooser.addOption("NeutralLeft", a));
-        BAutoUnsafe.create(ctx, true).ifPresent(a -> autoChooser.addOption("NeutralRight", a));
-        BAutoSuperDuperUnsafe.create(ctx, false)
-                .ifPresent(a -> autoChooser.addOption("AggressiveLeft", a));
-        BAutoSuperDuperUnsafe.create(ctx, true)
-                .ifPresent(a -> autoChooser.addOption("AggressiveRight", a));
-        BAutoSingleSuperDuperUnsafe.create(ctx, false)
-                .ifPresent(a -> autoChooser.addOption("AggressiveSingleLeft", a));
-        BAutoSingleSuperDuperUnsafe.create(ctx, true)
-                .ifPresent(a -> autoChooser.addOption("AggressiveSingleRight", a));
-
-        testCommand = BAuto.create(ctx, false).get();
-
-        // C1678Auto.create(ctx, false, true)
-        //         .ifPresent(a -> autoChooser.addOption("NeutralAuto-Safe-Left", a));
-        // C1678Auto.create(ctx, true, true)
-        //         .ifPresent(a -> autoChooser.addOption("NeutralAuto-Safe-Right", a));
-
-        // DepotAuto.create(ctx, false, false).ifPresent(a -> autoChooser.addOption("Depot", a));
 
         autoChooser.onChange(
                 auto -> {
@@ -210,9 +232,6 @@ public class RobotContainer {
                     // routines, triggers, and command objects.
                     cachedAutoCommand = auto.command();
                 });
-
-        autoChooser.addOption(
-                "Drive Wheel Radius Characterization", WheelCharacterizationAuto.create(ctx));
 
         // autoChooser.addOption(
         //         "Feedforward Characterization", FeedforwardCharacterizationAuto.create(ctx));
@@ -538,8 +557,8 @@ public class RobotContainer {
             return cmd;
         }
         // Fallback: no cached command (e.g. chooser was never changed)
-        AutoOption option = autoChooser.get();
-        return option == null ? Commands.none() : option.command();
+        var auto = autoChooser.get();
+        return auto.isPresent() ? auto.get().command() : Commands.none();
     }
 
     /**
@@ -550,8 +569,8 @@ public class RobotContainer {
      * JVM overhead spike that occurs when constructing them inside {@code autonomousInit()}.
      */
     public void rebuildAutoCache() {
-        AutoOption option = autoChooser.get();
-        cachedAutoCommand = (option == null) ? null : option.command();
+        var option = autoChooser.get();
+        cachedAutoCommand = option.isPresent() ? null : option.get().command();
     }
 
     /**
