@@ -24,14 +24,14 @@ public record ChoreoTraj(
     public static final ChoreoTraj CURRENT_AggresiveAuto1 = new ChoreoTraj(
         "CURRENT_AggresiveAuto1",
         OptionalInt.empty(),
-        5.27294,
+        5.76148,
         new Pose2d(4.45292, 7.45197, Rotation2d.fromRadians(1.5708)),
         new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj CURRENT_B1 = new ChoreoTraj(
         "CURRENT_B1",
         OptionalInt.empty(),
-        5.8577,
+        6.44263,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
     );
@@ -171,7 +171,7 @@ public record ChoreoTraj(
     public static final ChoreoTraj WPI_C1678Safe1 = new ChoreoTraj(
         "WPI_C1678Safe1",
         OptionalInt.empty(),
-        5.4724,
+        5.86388,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
     );
