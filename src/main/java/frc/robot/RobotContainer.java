@@ -141,18 +141,9 @@ public class RobotContainer {
 
         autoChooser = new LoggedDashboardChooser<>("Auto Choices");
 
-        /*
-        * "BAuto-Left",
-                                       BAuto.create(ctx, false),
-                                       "BAuto-Right",
-                                       BAuto.create(ctx, true),
-                                       "FullNeutral-Left",
-                                       FullNeutralAuto.create(ctx)
-        */
-
         BAuto.create(ctx, false).ifPresent(a -> autoChooser.addOption("BAuto-Left", a));
         BAuto.create(ctx, true).ifPresent(a -> autoChooser.addOption("BAuto-Right", a));
-        FullNeutralAuto.create(ctx).ifPresent(a -> autoChooser.addOption("FullNeutralAUto", a));
+        FullNeutralAuto.create(ctx).ifPresent(a -> autoChooser.addOption("FullNeutralAuto", a));
 
         SmartDashboard.putData("Auto Preview", autoPreviewField);
 
