@@ -157,21 +157,21 @@ public record ChoreoTraj(
     public static final ChoreoTraj WPI_C16781 = new ChoreoTraj(
         "WPI_C16781",
         OptionalInt.empty(),
-        5.96605,
+        5.96627,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj WPI_C16782 = new ChoreoTraj(
         "WPI_C16782",
         OptionalInt.empty(),
-        7.5358,
+        8.23632,
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187)),
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68186))
     );
     public static final ChoreoTraj WPI_C1678Safe1 = new ChoreoTraj(
         "WPI_C1678Safe1",
         OptionalInt.empty(),
-        5.86388,
+        5.87545,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
     );
