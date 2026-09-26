@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.lib.util.CommandXboxControllerExtended;
 import frc.lib.util.FieldUtil;
+import frc.lib.util.LoggedDashboardChooser;
 import frc.lib.util.LoggedDashboardDashboardChooser;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.PowerProfiler;
@@ -103,7 +104,7 @@ public class RobotContainer {
 
     // Dashboard inputs
 
-    public final LoggedDashboardDashboardChooser<AutoOption> autoChooser;
+    public final LoggedDashboardChooser<AutoOption> autoChooser;
 
     public final Field2d autoPreviewField = new Field2d();
     private Pose2d[] rawAutoPreviewPoses = new Pose2d[] {}; // Unflipped (blue-alliance) poses
@@ -146,51 +147,20 @@ public class RobotContainer {
                 AutoContext.create(drive, intake, indexer, tower, shooter, Optional.empty());
 
         autoChooser =
-                new LoggedDashboardDashboardChooser<>(
-                        "Auto Choices",
-                        Map.of(
-                                "Current",
-                                Map.of(
-                                        "BAuto-Left",
+                new LoggedDashboardChooser<>("Auto Choices");
+
+        /*
+         * "BAuto-Left",
                                         BAuto.create(ctx, false),
                                         "BAuto-Right",
                                         BAuto.create(ctx, true),
                                         "FullNeutral-Left",
-                                        FullNeutralAuto.create(ctx)),
-                                "Wpi",
-                                Map.of(
-                                        "C1678Unsafe-Left",
-                                        C1678Auto.create(ctx, false, false),
-                                        "C1678Unsafe-Right",
-                                        C1678Auto.create(ctx, true, false),
-                                        "C1678Safe-Left",
-                                        C1678Auto.create(ctx, false, true),
-                                        "C1678Safe-Right",
-                                        C1678Auto.create(ctx, true, true)),
-                                "Dcmp",
-                                Map.of(
-                                        "B-Left",
-                                        DCMPBAuto.create(ctx, false),
-                                        "B-Right",
-                                        DCMPBAuto.create(ctx, true),
-                                        "C1678Unsafe-Left",
-                                        DCMPC1678Auto.create(ctx, false),
-                                        "C1678Unsafe-Right",
-                                        DCMPC1678Auto.create(ctx, true),
-                                        "C1678Safe-Left",
-                                        DCMPC1678AutoSafe.create(ctx, false),
-                                        "C167Safe-Right",
-                                        DCMPC1678AutoSafe.create(ctx, true)),
-                                "Other",
-                                Map.of(
-                                        "None",
-                                        Optional.of(NoneAuto.create()),
-                                        "Drive Wheel Radius Characterization",
-                                        Optional.of(WheelCharacterizationAuto.create(ctx)),
-                                        "PreloadAuto",
-                                        Optional.of(PreloadAuto.create(ctx)),
-                                        " ",
-                                        Optional.empty())));
+                                        FullNeutralAuto.create(ctx)
+         */
+
+        BAuto.create(ctx, false).ifPresent(a -> autoChooser.addOption("BAuto-Left", a));
+        BAuto.create(ctx, true).ifPresent(a -> autoChooser.addOption("BAuto-Right", a));
+        FullNeutralAuto.create(ctx).ifPresent(a -> autoChooser.addOption("FullNeutralAUto", a));
 
         SmartDashboard.putData("Auto Preview", autoPreviewField);
 
