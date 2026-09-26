@@ -45,7 +45,8 @@ public class BAuto {
     public static final double Y_OFFSET = 7.530;
 
     public static Optional<AutoOption> create(AutoContext ctx, boolean shouldMirror) {
-        List<String> names = List.of(ChoreoTraj.CURRENT_B1.name(), ChoreoTraj.CURRENT_B2.name());
+        List<String> names =
+                List.of(ChoreoTraj.CURRENT_B1BadBalls.name(), ChoreoTraj.CURRENT_B2.name());
 
         List<Trajectory<SwerveSample>> trajectories =
                 AutoUtil.loadTrajectories(names, shouldMirror).orElse(null);

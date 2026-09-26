@@ -21,12 +21,12 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj CURRENT_AggresiveAuto1 = new ChoreoTraj(
-        "CURRENT_AggresiveAuto1",
+    public static final ChoreoTraj CURRENT_B1BadBalls = new ChoreoTraj(
+        "CURRENT_B1BadBalls",
         OptionalInt.empty(),
-        5.76148,
+        5.74947,
         new Pose2d(4.45292, 7.45197, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
+        new Pose2d(2.69643, 5.40836, Rotation2d.fromRadians(-0.61249))
     );
     public static final ChoreoTraj CURRENT_B1 = new ChoreoTraj(
         "CURRENT_B1",
@@ -48,13 +48,6 @@ public record ChoreoTraj(
         7.30606,
         new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187)),
         new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.5399))
-    );
-    public static final ChoreoTraj CURRENT_B2Feed = new ChoreoTraj(
-        "CURRENT_B2Feed",
-        OptionalInt.empty(),
-        6.92668,
-        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187)),
-        new Pose2d(8.29747, 4.04839, Rotation2d.fromRadians(3.14159))
     );
     public static final ChoreoTraj CURRENT_FullNeutral1 = new ChoreoTraj(
         "CURRENT_FullNeutral1",
@@ -171,7 +164,7 @@ public record ChoreoTraj(
     public static final ChoreoTraj WPI_C1678Safe1 = new ChoreoTraj(
         "WPI_C1678Safe1",
         OptionalInt.empty(),
-        5.87545,
+        6.15803,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
     );
@@ -195,11 +188,10 @@ public record ChoreoTraj(
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-        Map.entry("CURRENT_AggresiveAuto1", CURRENT_AggresiveAuto1),
+        Map.entry("CURRENT_B1BadBalls", CURRENT_B1BadBalls),
         Map.entry("CURRENT_B1", CURRENT_B1),
         Map.entry("CURRENT_B1Unsafe", CURRENT_B1Unsafe),
         Map.entry("CURRENT_B2", CURRENT_B2),
-        Map.entry("CURRENT_B2Feed", CURRENT_B2Feed),
         Map.entry("CURRENT_FullNeutral1", CURRENT_FullNeutral1),
         Map.entry("CURRENT_FullNeutral2", CURRENT_FullNeutral2),
         Map.entry("CURRENT_FullNeutral3", CURRENT_FullNeutral3),

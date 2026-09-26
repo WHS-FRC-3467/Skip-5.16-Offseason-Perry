@@ -41,9 +41,7 @@ import frc.lib.util.PowerProfiler;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.autos.NoneAuto;
 import frc.robot.commands.autos.PreloadAuto;
-import frc.robot.commands.autos.current.BAutoSingleSuperDuperUnsafe;
-import frc.robot.commands.autos.current.BAutoSuperDuperUnsafe;
-import frc.robot.commands.autos.current.BAutoUnsafe;
+import frc.robot.commands.autos.current.BAuto;
 import frc.robot.commands.autos.current.FullNeutralAuto;
 import frc.robot.commands.autos.dcmp.*;
 import frc.robot.commands.autos.tuning.WheelCharacterizationAuto;
@@ -153,18 +151,10 @@ public class RobotContainer {
                         Map.of(
                                 "Current",
                                 Map.of(
-                                        "BSingleSuperDuperUnsafe-Left",
-                                        BAutoSingleSuperDuperUnsafe.create(ctx, false),
-                                        "BSingleSuperDuperUnsafe-Right",
-                                        BAutoSingleSuperDuperUnsafe.create(ctx, true),
-                                        "BSuperDuperUnsafe-Left",
-                                        BAutoSuperDuperUnsafe.create(ctx, false),
-                                        "BSuperDuperUnsafe-Right",
-                                        BAutoSuperDuperUnsafe.create(ctx, true),
-                                        "BUnsafe-Left",
-                                        BAutoUnsafe.create(ctx, false),
-                                        "BUnsafe-Right",
-                                        BAutoUnsafe.create(ctx, true),
+                                        "BAuto-Left",
+                                        BAuto.create(ctx, false),
+                                        "BAuto-Right",
+                                        BAuto.create(ctx, true),
                                         "FullNeutral-Left",
                                         FullNeutralAuto.create(ctx)),
                                 "Wpi",
