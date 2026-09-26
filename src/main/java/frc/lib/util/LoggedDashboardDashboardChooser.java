@@ -38,7 +38,7 @@ public class LoggedDashboardDashboardChooser<V> {
         if (treeMode) {
             return Optional.empty();
         }
-        return dashboardChooser.get().value;
+        return Optional.ofNullable(dashboardChooser.get()).flatMap(d -> d.value);
     }
 
     public LoggedDashboardDashboardChooser(
