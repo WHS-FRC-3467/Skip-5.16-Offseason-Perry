@@ -36,19 +36,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.CommandXboxControllerExtended;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.LoggedDashboardChooser;
-import frc.lib.util.LoggedDashboardDashboardChooser;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.PowerProfiler;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.autos.NoneAuto;
-import frc.robot.commands.autos.PreloadAuto;
 import frc.robot.commands.autos.current.BAuto;
 import frc.robot.commands.autos.current.FullNeutralAuto;
-import frc.robot.commands.autos.dcmp.*;
-import frc.robot.commands.autos.tuning.WheelCharacterizationAuto;
 import frc.robot.commands.autos.utils.AutoContext;
 import frc.robot.commands.autos.utils.AutoOption;
-import frc.robot.commands.autos.wpi.C1678Auto;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.indexer.Indexer;
@@ -67,7 +61,6 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -146,17 +139,16 @@ public class RobotContainer {
         AutoContext ctx =
                 AutoContext.create(drive, intake, indexer, tower, shooter, Optional.empty());
 
-        autoChooser =
-                new LoggedDashboardChooser<>("Auto Choices");
+        autoChooser = new LoggedDashboardChooser<>("Auto Choices");
 
         /*
-         * "BAuto-Left",
-                                        BAuto.create(ctx, false),
-                                        "BAuto-Right",
-                                        BAuto.create(ctx, true),
-                                        "FullNeutral-Left",
-                                        FullNeutralAuto.create(ctx)
-         */
+        * "BAuto-Left",
+                                       BAuto.create(ctx, false),
+                                       "BAuto-Right",
+                                       BAuto.create(ctx, true),
+                                       "FullNeutral-Left",
+                                       FullNeutralAuto.create(ctx)
+        */
 
         BAuto.create(ctx, false).ifPresent(a -> autoChooser.addOption("BAuto-Left", a));
         BAuto.create(ctx, true).ifPresent(a -> autoChooser.addOption("BAuto-Right", a));
@@ -518,7 +510,7 @@ public class RobotContainer {
         }
         // Fallback: no cached command (e.g. chooser was never changed)
         var auto = autoChooser.get();
-        return auto.isPresent() ? auto.get().command() : Commands.none();
+        return auto != null ? auto.command() : Commands.none();
     }
 
     /**
@@ -530,7 +522,7 @@ public class RobotContainer {
      */
     public void rebuildAutoCache() {
         var option = autoChooser.get();
-        cachedAutoCommand = option.isPresent() ? null : option.get().command();
+        cachedAutoCommand = option == null ? null : option.command();
     }
 
     /**
