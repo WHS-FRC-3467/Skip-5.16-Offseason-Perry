@@ -21,19 +21,19 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj CURRENT_B1BadBalls = new ChoreoTraj(
-        "CURRENT_B1BadBalls",
-        OptionalInt.empty(),
-        5.74947,
-        new Pose2d(4.45292, 7.45197, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(2.69643, 5.40836, Rotation2d.fromRadians(-0.61249))
-    );
     public static final ChoreoTraj CURRENT_B1 = new ChoreoTraj(
         "CURRENT_B1",
         OptionalInt.empty(),
         6.44263,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
+    );
+    public static final ChoreoTraj CURRENT_B1BadBalls = new ChoreoTraj(
+        "CURRENT_B1BadBalls",
+        OptionalInt.empty(),
+        5.74947,
+        new Pose2d(4.45292, 7.45197, Rotation2d.fromRadians(1.5708)),
+        new Pose2d(2.69643, 5.40836, Rotation2d.fromRadians(-0.61249))
     );
     public static final ChoreoTraj CURRENT_B1Unsafe = new ChoreoTraj(
         "CURRENT_B1Unsafe",
@@ -45,9 +45,9 @@ public record ChoreoTraj(
     public static final ChoreoTraj CURRENT_B2 = new ChoreoTraj(
         "CURRENT_B2",
         OptionalInt.empty(),
-        7.30606,
-        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187)),
-        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.5399))
+        7.3228,
+        new Pose2d(2.69643, 5.40836, Rotation2d.fromRadians(-0.61249)),
+        new Pose2d(2.69643, 5.40836, Rotation2d.fromRadians(-0.64589))
     );
     public static final ChoreoTraj CURRENT_FullNeutral1 = new ChoreoTraj(
         "CURRENT_FullNeutral1",
@@ -164,7 +164,7 @@ public record ChoreoTraj(
     public static final ChoreoTraj WPI_C1678Safe1 = new ChoreoTraj(
         "WPI_C1678Safe1",
         OptionalInt.empty(),
-        6.15803,
+        5.87545,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
     );
@@ -188,8 +188,8 @@ public record ChoreoTraj(
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-        Map.entry("CURRENT_B1BadBalls", CURRENT_B1BadBalls),
         Map.entry("CURRENT_B1", CURRENT_B1),
+        Map.entry("CURRENT_B1BadBalls", CURRENT_B1BadBalls),
         Map.entry("CURRENT_B1Unsafe", CURRENT_B1Unsafe),
         Map.entry("CURRENT_B2", CURRENT_B2),
         Map.entry("CURRENT_FullNeutral1", CURRENT_FullNeutral1),
