@@ -15,9 +15,9 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"TunnelExit.x", "val":5.65}, "y":{"exp":"TunnelExit.y", "val":7.399277210235596}, "heading":{"exp":"TunnelExit.heading", "val":-1.5707963267948966}, "intervals":25, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"TunnelEntrance.x", "val":4.0}, "y":{"exp":"TunnelEntrance.y", "val":7.399277210235596}, "heading":{"exp":"TunnelEntrance.heading", "val":-1.5707963267948966}, "intervals":26, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
-    {"x":{"exp":"NeutralShoot.x", "val":3.1251399517059326}, "y":{"exp":"NeutralShoot.y", "val":7.308919906616211}, "heading":{"exp":"NeutralShoot.heading", "val":-1.1536837053307711}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"dcmpTunnelExit.x", "val":5.65}, "y":{"exp":"dcmpTunnelExit.y", "val":7.399277210235596}, "heading":{"exp":"dcmpTunnelExit.heading", "val":-1.5707963267948966}, "intervals":25, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"dcmpTunnelEntrance.x", "val":4.0}, "y":{"exp":"dcmpTunnelEntrance.y", "val":7.399277210235596}, "heading":{"exp":"dcmpTunnelEntrance.heading", "val":-1.5707963267948966}, "intervals":26, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
+    {"x":{"exp":"dcmpNeutralShoot.x", "val":3.1251399517059326}, "y":{"exp":"dcmpNeutralShoot.y", "val":7.308919906616211}, "heading":{"exp":"dcmpNeutralShoot.heading", "val":-1.1536837053307711}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":0, "to":2, "data":{"type":"MaxVelocity", "props":{"max":{"exp":"3 m / s", "val":3.0}}}, "enabled":true},
