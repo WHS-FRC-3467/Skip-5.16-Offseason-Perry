@@ -145,13 +145,7 @@ public class RobotContainer {
             RobotSim.getInstance().addMechanismData(drive, shooter, indexer, intake);
         }
         AutoContext ctx =
-                AutoContext.create(
-                        drive,
-                        intake,
-                        indexer,
-                        tower,
-                        shooter,
-                        Optional.empty());
+                AutoContext.create(drive, intake, indexer, tower, shooter, Optional.empty());
 
         autoChooser =
                 new LoggedDashboardDashboardChooser<>(

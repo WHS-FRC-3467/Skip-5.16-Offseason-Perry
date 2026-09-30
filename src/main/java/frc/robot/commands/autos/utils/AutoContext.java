@@ -42,8 +42,7 @@ public record AutoContext(
             Indexer indexer,
             Tower tower,
             ShooterSuperstructure shooter,
-            Optional<ObjectDetector> objectDetector
-           ) {
+            Optional<ObjectDetector> objectDetector) {
         RobotState robotState = RobotState.getInstance();
         AutoFactory autoFactory =
                 new AutoFactory(
@@ -62,14 +61,6 @@ public record AutoContext(
         // Warm up choreo
         CommandScheduler.getInstance().schedule(autoFactory.warmupCmd());
         return new AutoContext(
-                drive,
-                intake,
-                indexer,
-                tower,
-                shooter,
-                objectDetector,
-                robotState,
-                autoFactory
-           );
+                drive, intake, indexer, tower, shooter, objectDetector, robotState, autoFactory);
     }
 }
