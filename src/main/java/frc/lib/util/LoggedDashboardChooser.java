@@ -139,6 +139,8 @@ public class LoggedDashboardChooser<V> extends LoggedNetworkInput {
             sendableChooser.addOption(option.getKey(), option.getKey());
             options.put(option.getKey(), option.getValue());
         }
+        sendableChooser.setDefaultOption("No Value Selected", "  ");
+        SmartDashboard.putString(key + "/selected", "No Value Selected");
     }
 
     public void clearSelected() {

@@ -198,9 +198,7 @@ public class RobotContainer {
                                         "Drive Wheel Radius Characterization",
                                         Optional.of(WheelCharacterizationAuto.create(ctx)),
                                         "PreloadAuto",
-                                        Optional.of(PreloadAuto.create(ctx)),
-                                        " ",
-                                        Optional.empty())));
+                                        Optional.of(PreloadAuto.create(ctx)))));
 
         SmartDashboard.putData("Auto Preview", autoPreviewField);
 
