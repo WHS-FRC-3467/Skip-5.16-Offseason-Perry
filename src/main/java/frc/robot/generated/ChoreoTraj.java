@@ -63,8 +63,8 @@ public record ChoreoTraj(
         new Pose2d(5.65, 7.39928, Rotation2d.fromRadians(-1.5708)),
         new Pose2d(3.12514, 7.30892, Rotation2d.fromRadians(-1.15368))
     );
-    public static final ChoreoTraj CURRENT_AggresiveAuto1 = new ChoreoTraj(
-        "CURRENT_AggresiveAuto1",
+    public static final ChoreoTraj CURRENT_B1Aggressive = new ChoreoTraj(
+        "CURRENT_B1Aggressive",
         OptionalInt.empty(),
         5.00914,
         new Pose2d(4.45292, 7.45197, Rotation2d.fromRadians(1.5708)),
@@ -201,7 +201,7 @@ public record ChoreoTraj(
         Map.entry("WPI_C16781", WPI_C16781),
         Map.entry("CURRENT_FullNeutral1", CURRENT_FullNeutral1),
         Map.entry("DCMP_TunnelPath", DCMP_TunnelPath),
-        Map.entry("CURRENT_AggresiveAuto1", CURRENT_AggresiveAuto1),
+        Map.entry("CURRENT_B1Aggressive", CURRENT_B1Aggressive),
         Map.entry("DCMP_B1", DCMP_B1),
         Map.entry("CURRENT_B1Unsafe", CURRENT_B1Unsafe),
         Map.entry("CURRENT_B1", CURRENT_B1),

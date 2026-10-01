@@ -80,8 +80,8 @@
             "title": "Auto Preview",
             "x": 0.0,
             "y": 0.0,
-            "width": 900.0,
-            "height": 400.0,
+            "width": 1150.0,
+            "height": 550.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Auto Preview",
@@ -99,9 +99,9 @@
           },
           {
             "title": "Auto Choices",
-            "x": 900.0,
-            "y": 400.0,
-            "width": 450.0,
+            "x": 1150.0,
+            "y": 0.0,
+            "width": 300.0,
             "height": 150.0,
             "type": "ComboBox Chooser",
             "properties": {
@@ -111,69 +111,9 @@
             }
           },
           {
-            "title": "Inches from Start",
-            "x": 450.0,
-            "y": 400.0,
-            "width": 450.0,
-            "height": 300.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Auto Pose Check/Inches from Start",
-              "period": 0.06,
-              "data_type": "double"
-            }
-          },
-          {
-            "title": "Degrees from Start",
-            "x": 0.0,
-            "y": 400.0,
-            "width": 450.0,
-            "height": 300.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Auto Pose Check/Degrees from Start",
-              "period": 0.06,
-              "data_type": "double"
-            }
-          },
-          {
-            "title": "Position Good",
-            "x": 900.0,
-            "y": 0.0,
-            "width": 300.0,
-            "height": 400.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/Auto Pose Check/Robot Position within 2.9999999999999996 inches",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "Checkmark",
-              "false_icon": "Exclamation Point"
-            }
-          },
-          {
-            "title": "Rotation Good",
-            "x": 1200.0,
-            "y": 0.0,
-            "width": 300.0,
-            "height": 400.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/Auto Pose Check/Robot Rotation within 5.0 degrees",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "Checkmark",
-              "false_icon": "Exclamation Point"
-            }
-          },
-          {
             "title": "BumpDelay",
-            "x": 1050.0,
-            "y": 550.0,
+            "x": 1150.0,
+            "y": 650.0,
             "width": 150.0,
             "height": 150.0,
             "type": "Text Display",
@@ -186,8 +126,8 @@
           },
           {
             "title": "StartDelay",
-            "x": 900.0,
-            "y": 550.0,
+            "x": 1300.0,
+            "y": 650.0,
             "width": 150.0,
             "height": 150.0,
             "type": "Text Display",
@@ -200,10 +140,10 @@
           },
           {
             "title": "Auto OK?",
-            "x": 1200.0,
-            "y": 550.0,
-            "width": 200.0,
-            "height": 200.0,
+            "x": 1150.0,
+            "y": 350.0,
+            "width": 300.0,
+            "height": 300.0,
             "type": "Boolean Box",
             "properties": {
               "topic": "/SmartDashboard/Auto ChoicesIsOk",
