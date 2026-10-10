@@ -112,7 +112,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     private final RotaryMechanism<?, ?> hoodIO;
     private final FlywheelMechanism<?> flywheelIO;
 
-    private final Debouncer nearGoalDebouncer = new Debouncer(0.1, DebounceType.kRising);
+    private final Debouncer nearGoalDebouncer = new Debouncer(0.6, DebounceType.kRising);
     public final LoggedTrigger isNearGoal =
             new LoggedTrigger(
                     this.getName() + "/isNearGoal",
