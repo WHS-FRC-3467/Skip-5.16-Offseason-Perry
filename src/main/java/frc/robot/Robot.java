@@ -239,8 +239,8 @@ public class Robot extends LoggedRobot {
                         robotContainer.drive,
                         DriveCommands.joystickDrive(
                                 robotContainer.drive,
-                                () -> -robotContainer.controller.getLeftY() * 0.85,
-                                () -> -robotContainer.controller.getLeftX() * 0.85,
+                                () -> -robotContainer.controller.getLeftY() * 0.9,
+                                () -> -robotContainer.controller.getLeftX() * 0.9,
                                 () -> -robotContainer.controller.getRightX()));
 
         // Stop and stow the shooter at start of teleop
