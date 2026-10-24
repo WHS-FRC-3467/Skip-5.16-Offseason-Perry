@@ -42,7 +42,7 @@ public class ShotTracker {
 
     // Power draw required to assume a shot has passed through shooter
     private final LoggedTunableNumber powerDetectionThresholdWatts =
-            new LoggedTunableNumber("ShotTracker/PowerDetectionThresholdWatts", 105);
+            new LoggedTunableNumber("ShotTracker/PowerDetectionThresholdWatts", 95);
 
     /**
      * Trigger determining whether a shot is believed to have potentially passed through the shooter
