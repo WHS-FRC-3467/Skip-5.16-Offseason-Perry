@@ -36,7 +36,7 @@ public final class Constants {
     public static final Mode currentMode =
             RobotBase.isReal() ? Mode.REAL : (forceSim ? Mode.SIM : simMode);
 
-    public static final boolean tuningMode = false;
+    public static final boolean tuningMode = true;
     public static final boolean disableHAL = false;
 
     public static enum Mode {
