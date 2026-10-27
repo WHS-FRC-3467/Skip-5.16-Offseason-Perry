@@ -126,8 +126,13 @@ public class IntakeSuperstructure extends SubsystemBase implements AutoCloseable
                 .withName(name);
     }
 
-    private Command runRoller(double amps) {
-        return this.runOnce(() -> intakeRollerIO.runCurrent(Amps.of(amps))).withName("Run Roller");
+    private Command runRoller() {
+        return this.runOnce(
+                        () ->
+                                intakeRollerIO.runVelocity(
+                                        IntakeRollerConstants.MAX_VELOCITY.times(0.9),
+                                        PIDSlot.SLOT_0))
+                .withName("Run Roller");
     }
 
     public Command stopRoller() {
@@ -148,7 +153,7 @@ public class IntakeSuperstructure extends SubsystemBase implements AutoCloseable
                                 IntakeLinearConstants.MAX_ACCELERATION,
                                 "Extend Linear"),
                         Commands.waitUntil(isRollerSafe),
-                        runRoller(80.0),
+                        runRoller(),
                         Commands.waitUntil(isExtended))
                 .withName("Extend Intake With Roller");
     }
@@ -160,7 +165,7 @@ public class IntakeSuperstructure extends SubsystemBase implements AutoCloseable
                                 IntakeLinearConstants.CRUISE_VELOCITY,
                                 IntakeLinearConstants.MAX_ACCELERATION,
                                 "Retract Linear"),
-                        runRoller(80.0).onlyIf(isRollerSafe),
+                        runRoller().onlyIf(isRollerSafe),
                         Commands.waitUntil(isRollerSafe.negate()),
                         stopRoller(),
                         Commands.waitUntil(isRetracted))

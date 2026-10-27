@@ -17,7 +17,6 @@ package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -25,7 +24,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
 
@@ -49,16 +47,14 @@ public class IntakeRollerConstants {
 
     public static final String NAME = "Intake Roller";
 
-    public static final AngularVelocity MAX_VELOCITY = RotationsPerSecond.of(35.0);
-    public static final AngularAcceleration MAX_ACCELERATION =
-            RotationsPerSecondPerSecond.of(110.0);
-
     private static final double GEARING = (22.0 / 12.0) * (24.0 / 18.0);
 
     public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(5.0);
 
     private static final DCMotor DCMOTOR = DCMotor.getKrakenX60Foc(1);
     public static final MomentOfInertia MOI = KilogramSquareMeters.of(0.1);
+
+    public static final AngularVelocity MAX_VELOCITY = RotationsPerSecond.of(60.0);
 
     // Velocity PID
     public static final PID SLOT0_PID = new PID(8.0, 0.0, 0.0).withS(5.0);
@@ -96,9 +92,6 @@ public class IntakeRollerConstants {
         config.Feedback.SensorToMechanismRatio = GEARING;
 
         config.Slot0 = Slot0Configs.from(SLOT0_PID.toSlotConfigs());
-        config.MotionMagic.MotionMagicCruiseVelocity = MAX_VELOCITY.in(RotationsPerSecond);
-        config.MotionMagic.MotionMagicAcceleration =
-                MAX_ACCELERATION.in(RotationsPerSecondPerSecond);
 
         return config;
     }
