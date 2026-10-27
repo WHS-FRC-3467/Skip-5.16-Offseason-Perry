@@ -308,6 +308,8 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+    // Unit tests always use the physics sim, regardless of Constants.simMode
+    systemProperty 'robot.forceSim', 'true'
 }
 
 // Simulation configuration (e.g. environment variables).
