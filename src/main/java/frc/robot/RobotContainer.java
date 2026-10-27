@@ -37,6 +37,7 @@ import frc.lib.util.CommandXboxControllerExtended;
 import frc.lib.util.FieldUtil;
 import frc.lib.util.LoggedDashboardChooser;
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.OutputLogger;
 import frc.lib.util.PowerProfiler;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.autos.current.BAuto;
@@ -58,7 +59,6 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.util.RobotSim;
 
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -527,7 +527,7 @@ public class RobotContainer {
 
         try {
             startPose = autoPreviewField.getObject("path").getPoses().get(0);
-            Logger.recordOutput("Auto/StartPose", startPose);
+            OutputLogger.recordOutput("Auto/StartPose", startPose);
 
             autoPreviewField.getObject("startPose").setPose(startPose);
 

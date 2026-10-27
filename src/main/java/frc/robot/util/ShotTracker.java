@@ -16,13 +16,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 
 import frc.lib.util.LoggedTrigger;
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.OutputLogger;
 import frc.robot.RobotState;
 import frc.robot.subsystems.shooter.FlywheelConstants;
 import frc.robot.subsystems.shooter.ShooterSuperstructure;
 
 import lombok.Getter;
-
-import org.littletonrobotics.junction.Logger;
 
 public class ShotTracker {
 
@@ -102,8 +101,8 @@ public class ShotTracker {
                             }
                             if (hopperEmpty.negate().getAsBoolean())
                                 totalFuelCount = totalFuelCount + 2.6;
-                            Logger.recordOutput("ShotTracker/powerSink", powerSink);
-                            Logger.recordOutput("ShotTracker/TotalFuelCount", totalFuelCount);
+                            OutputLogger.recordOutput("ShotTracker/powerSink", powerSink);
+                            OutputLogger.recordOutput("ShotTracker/TotalFuelCount", totalFuelCount);
                         }));
     }
 

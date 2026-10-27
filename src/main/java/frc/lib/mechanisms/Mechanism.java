@@ -35,6 +35,7 @@ import frc.lib.io.motor.MotorIO;
 import frc.lib.io.motor.MotorIO.PIDSlot;
 import frc.lib.io.motor.MotorInputsAutoLogged;
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.OutputLogger;
 import frc.lib.util.PID;
 
 import lombok.Getter;
@@ -183,10 +184,10 @@ public abstract class Mechanism<T extends MotorIO> {
 
         // If a radius has been configured, also log linear equivalents of position/velocity.
         if (radiusMeters != null) {
-            Logger.recordOutput(this.name + "/LinearPosition", getLinearPosition());
-            Logger.recordOutput(this.name + "/LinearPositionError", getLinearPositionError());
-            Logger.recordOutput(this.name + "/LinearVelocity", getLinearVelocity());
-            Logger.recordOutput(this.name + "/LinearVelocityError", getLinearVelocityError());
+            OutputLogger.recordOutput(this.name + "/LinearPosition", getLinearPosition());
+            OutputLogger.recordOutput(this.name + "/LinearPositionError", getLinearPositionError());
+            OutputLogger.recordOutput(this.name + "/LinearVelocity", getLinearVelocity());
+            OutputLogger.recordOutput(this.name + "/LinearVelocityError", getLinearVelocityError());
         }
     }
 

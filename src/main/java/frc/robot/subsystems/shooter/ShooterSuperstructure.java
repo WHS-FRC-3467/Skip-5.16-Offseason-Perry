@@ -44,11 +44,10 @@ import frc.lib.util.LoggedTrigger;
 import frc.lib.util.LoggedTunableBoolean;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.LoggerHelper;
+import frc.lib.util.OutputLogger;
 import frc.lib.util.PowerProfiler;
 import frc.robot.RobotState;
 import frc.robot.util.ShotTracker;
-
-import org.littletonrobotics.junction.Logger;
 
 import java.util.function.Supplier;
 
@@ -195,7 +194,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
                 setHoodPosition(Degrees.of(tuningHoodAngleDegrees.get()));
             }
 
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     getName() + "/Tuning/DistanceToTargetMeters",
                     robotState.getDistanceToTarget().in(Meters));
         }
@@ -208,12 +207,12 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
         shotTracker.ballTrigger.getAsBoolean();
         robotState.hopperEmpty.getAsBoolean();
 
-        Logger.recordOutput(getName() + "/TotalDrawWatts", getFlywheelPowerDraw().in(Watts));
+        OutputLogger.recordOutput(getName() + "/TotalDrawWatts", getFlywheelPowerDraw().in(Watts));
 
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 getName() + "/FlywheelTrimRPS", getFlywheelTrim().in(RotationsPerSecond));
 
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 getName() + "/DesiredFlywheelLinearVelocityMPS",
                 getDesiredFlywheelLinearVelocity().in(MetersPerSecond));
     }

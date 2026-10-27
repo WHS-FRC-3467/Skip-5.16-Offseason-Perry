@@ -32,12 +32,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.OutputLogger;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
 
 import lombok.Getter;
-
-import org.littletonrobotics.junction.Logger;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -200,7 +199,7 @@ public class DriveCommands {
                                                     .getRadians(),
                                             rotationSupplier.get().getRadians());
 
-                            Logger.recordOutput("AngleAtGoal", angleController.atGoal());
+                            OutputLogger.recordOutput("AngleAtGoal", angleController.atGoal());
                             if (angleController.atSetpoint()) {
                                 if (Math.hypot(linearVelocity.getX(), linearVelocity.getY())
                                                 < DEADBAND

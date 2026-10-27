@@ -10,8 +10,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 
 import lombok.Getter;
 
-import org.littletonrobotics.junction.Logger;
-
 /**
  * Utility for tracking and visualizing game piece positions in simulation.
  *
@@ -49,7 +47,7 @@ public class GamePieceVisualizer {
     public GamePieceVisualizer(String name, Pose3d pose3d) {
         this.name = name;
         this.gamePiecePose = pose3d;
-        Logger.recordOutput(name + " Visualizer", this.gamePiecePose);
+        OutputLogger.recordOutput(name + " Visualizer", this.gamePiecePose);
     }
 
     /**
@@ -59,12 +57,12 @@ public class GamePieceVisualizer {
      */
     public void setPose(Pose3d pose) {
         this.gamePiecePose = pose;
-        Logger.recordOutput(name + " Visualizer", this.gamePiecePose);
+        OutputLogger.recordOutput(name + " Visualizer", this.gamePiecePose);
     }
 
     /** Hides the game piece by setting its pose to the origin. */
     public void hide() {
         this.gamePiecePose = new Pose3d();
-        Logger.recordOutput(name + " Visualizer", this.gamePiecePose);
+        OutputLogger.recordOutput(name + " Visualizer", this.gamePiecePose);
     }
 }

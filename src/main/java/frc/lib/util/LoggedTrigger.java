@@ -18,8 +18,6 @@ package frc.lib.util;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import org.littletonrobotics.junction.Logger;
-
 import java.util.function.BooleanSupplier;
 
 /**
@@ -71,7 +69,7 @@ public class LoggedTrigger extends Trigger {
 
             // Log on state change or first evaluation
             if (!initialized || currentState != lastState) {
-                Logger.recordOutput(logKey, currentState);
+                OutputLogger.recordOutput(logKey, currentState);
                 lastState = currentState;
                 initialized = true;
             }

@@ -34,11 +34,10 @@ import frc.lib.util.FieldUtil;
 import frc.lib.util.LoggedTrigger;
 import frc.lib.util.LoggedTunableBoolean;
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.OutputLogger;
 import frc.robot.RobotState;
 import frc.robot.RobotState.FieldRegion;
 import frc.robot.subsystems.drive.Drive;
-
-import org.littletonrobotics.junction.Logger;
 
 import java.util.Comparator;
 import java.util.List;
@@ -214,9 +213,9 @@ public class ResilientTrajectoryFollower extends Command {
         yController.reset();
         thetaController.reset();
 
-        Logger.recordOutput("Odometry/Trajectory", FieldUtil.apply(trajectory.getPoses()));
-        Logger.recordOutput("Auto/ResilientFollower/State", state.name());
-        Logger.recordOutput("Auto/Init Delay", Timer.getFPGATimestamp() - time);
+        OutputLogger.recordOutput("Odometry/Trajectory", FieldUtil.apply(trajectory.getPoses()));
+        OutputLogger.recordOutput("Auto/ResilientFollower/State", state.name());
+        OutputLogger.recordOutput("Auto/Init Delay", Timer.getFPGATimestamp() - time);
     }
 
     @Override
@@ -241,9 +240,9 @@ public class ResilientTrajectoryFollower extends Command {
             Pose2d nudgedPose = new Pose2d(nudgedTranslation, currentPose.getRotation());
             robotState.resetPose(nudgedPose);
             currentPose = nudgedPose;
-            Logger.recordOutput("Auto/ResilientFollower/SimNudgeApplied", true);
+            OutputLogger.recordOutput("Auto/ResilientFollower/SimNudgeApplied", true);
         } else {
-            Logger.recordOutput("Auto/ResilientFollower/SimNudgeApplied", false);
+            OutputLogger.recordOutput("Auto/ResilientFollower/SimNudgeApplied", false);
         }
         previousNudgeState = nudgeNow;
 
@@ -328,11 +327,11 @@ public class ResilientTrajectoryFollower extends Command {
         robotState.setActiveTrajPose(targetPose);
 
         // --- Logging ---
-        Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
-        Logger.recordOutput("Auto/ResilientFollower/State", state.name());
-        Logger.recordOutput("Auto/ResilientFollower/TrajectoryTime", trajectoryTime);
-        Logger.recordOutput("Auto/ResilientFollower/TotalPausedTime", totalPausedTime);
-        Logger.recordOutput("Auto/ResilientFollower/TranslationalError", translationalError);
+        OutputLogger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        OutputLogger.recordOutput("Auto/ResilientFollower/State", state.name());
+        OutputLogger.recordOutput("Auto/ResilientFollower/TrajectoryTime", trajectoryTime);
+        OutputLogger.recordOutput("Auto/ResilientFollower/TotalPausedTime", totalPausedTime);
+        OutputLogger.recordOutput("Auto/ResilientFollower/TranslationalError", translationalError);
     }
 
     private void updateState(double translationalError) {
@@ -383,9 +382,9 @@ public class ResilientTrajectoryFollower extends Command {
     public void end(boolean interrupted) {
         finished = !interrupted;
         drive.stop();
-        Logger.recordOutput("Odometry/Trajectory", new Pose2d[] {});
-        Logger.recordOutput("Odometry/TrajectorySetpoint", new Pose2d());
-        Logger.recordOutput("Auto/ResilientFollower/State", "DONE");
+        OutputLogger.recordOutput("Odometry/Trajectory", new Pose2d[] {});
+        OutputLogger.recordOutput("Odometry/TrajectorySetpoint", new Pose2d());
+        OutputLogger.recordOutput("Auto/ResilientFollower/State", "DONE");
     }
 
     @Override

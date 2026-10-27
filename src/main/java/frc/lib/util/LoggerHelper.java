@@ -3,8 +3,6 @@ package frc.lib.util;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import org.littletonrobotics.junction.Logger;
-
 import java.util.List;
 
 /**
@@ -19,7 +17,7 @@ public class LoggerHelper {
      */
     public static void recordCurrentCommand(String name, SubsystemBase subsystem) {
         final var currentCommand = subsystem.getCurrentCommand();
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 name + "/Current Command",
                 currentCommand == null ? "None" : currentCommand.getName());
     }
@@ -33,6 +31,6 @@ public class LoggerHelper {
     public static void recordPose2dList(String key, List<Pose2d> list) {
         Pose2d[] array = new Pose2d[list.size()];
         list.toArray(array);
-        Logger.recordOutput(key, array);
+        OutputLogger.recordOutput(key, array);
     }
 }

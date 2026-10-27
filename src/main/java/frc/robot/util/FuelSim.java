@@ -552,7 +552,7 @@ public class FuelSim {
         // lines[i][1] = FIELD_XZ_LINE_ENDS[i];
         // }
 
-        // Logger.recordOutput("Fuel Simulation/Lines (debug)", lines);
+        // OutputLogger.recordOutput("Fuel Simulation/Lines (debug)", lines);
     }
 
     protected StructArrayPublisher<Translation3d> fuelPublisher;

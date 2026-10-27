@@ -31,12 +31,11 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Time;
 
 import frc.lib.posestimator.SwerveOdometry.OdometryObservation;
+import frc.lib.util.OutputLogger;
 import frc.robot.FieldConstants.AprilTagLayoutType;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-
-import org.littletonrobotics.junction.Logger;
 
 import java.util.List;
 import java.util.Optional;
@@ -418,25 +417,27 @@ public class PoseEstimator {
                             .orElse(Pose3d.kZero);
         }
 
-        Logger.recordOutput(LOG_PREFIX + "Vision/Accepted", accepted);
-        Logger.recordOutput(LOG_PREFIX + "Vision/Reason", reason.name());
-        Logger.recordOutput(LOG_PREFIX + "Vision/ObservationPose", observation.robotPose());
-        Logger.recordOutput(LOG_PREFIX + "Vision/TimestampSeconds", observation.timestampSeconds());
-        Logger.recordOutput(
+        OutputLogger.recordOutput(LOG_PREFIX + "Vision/Accepted", accepted);
+        OutputLogger.recordOutput(LOG_PREFIX + "Vision/Reason", reason.name());
+        OutputLogger.recordOutput(LOG_PREFIX + "Vision/ObservationPose", observation.robotPose());
+        OutputLogger.recordOutput(
+                LOG_PREFIX + "Vision/TimestampSeconds", observation.timestampSeconds());
+        OutputLogger.recordOutput(
                 LOG_PREFIX + "Vision/AvgTagDistanceMeters", observation.avgTagDistance());
-        Logger.recordOutput(LOG_PREFIX + "Vision/SeenTagIds", seenTagIds);
-        Logger.recordOutput(LOG_PREFIX + "Vision/SeenTagPoses", seenTagPoses);
-        Logger.recordOutput(LOG_PREFIX + "Vision/LinearStdDev", observation.linearStdDev());
-        Logger.recordOutput(LOG_PREFIX + "Vision/AngularStdDev", observation.angularStdDev());
-        Logger.recordOutput(LOG_PREFIX + "Vision/TranslationNSigma", translationNSigma);
-        Logger.recordOutput(LOG_PREFIX + "Vision/RotationNSigma", rotationNSigma);
-        Logger.recordOutput(
+        OutputLogger.recordOutput(LOG_PREFIX + "Vision/SeenTagIds", seenTagIds);
+        OutputLogger.recordOutput(LOG_PREFIX + "Vision/SeenTagPoses", seenTagPoses);
+        OutputLogger.recordOutput(LOG_PREFIX + "Vision/LinearStdDev", observation.linearStdDev());
+        OutputLogger.recordOutput(LOG_PREFIX + "Vision/AngularStdDev", observation.angularStdDev());
+        OutputLogger.recordOutput(LOG_PREFIX + "Vision/TranslationNSigma", translationNSigma);
+        OutputLogger.recordOutput(LOG_PREFIX + "Vision/RotationNSigma", rotationNSigma);
+        OutputLogger.recordOutput(
                 LOG_PREFIX + "Vision/CandidatePose",
                 new Pose2d[] {candidatePose != null ? candidatePose : Pose2d.kZero});
         if (accepted && candidatePose != null) {
-            Logger.recordOutput(LOG_PREFIX + "Vision/AcceptedPose", new Pose2d[] {candidatePose});
+            OutputLogger.recordOutput(
+                    LOG_PREFIX + "Vision/AcceptedPose", new Pose2d[] {candidatePose});
         } else {
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     LOG_PREFIX + "Vision/RejectedPose",
                     new Pose2d[] {candidatePose != null ? candidatePose : observation.robotPose()});
         }

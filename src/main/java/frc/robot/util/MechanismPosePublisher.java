@@ -25,17 +25,16 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 
+import frc.lib.util.OutputLogger;
 import frc.robot.subsystems.intake.IntakeLinearConstants;
 import frc.robot.subsystems.intake.IntakeSuperstructure;
 import frc.robot.subsystems.shooter.ShooterSuperstructure;
-
-import org.littletonrobotics.junction.Logger;
 
 public record MechanismPosePublisher(IntakeSuperstructure intake, ShooterSuperstructure shooter) {
     private static final double DOOHICKEY_MAX_ROTATION_DEGREES = 60;
 
     public void update() {
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "MechanismZeros", new Pose3d[] {new Pose3d(), new Pose3d(), new Pose3d()});
 
         var hood =
@@ -75,6 +74,6 @@ public record MechanismPosePublisher(IntakeSuperstructure intake, ShooterSuperst
                                                                 * linearExtensionPercent),
                                                 Degrees.zero())));
 
-        Logger.recordOutput("MechanismPoses", new Pose3d[] {hood, linearSlide, doohickey});
+        OutputLogger.recordOutput("MechanismPoses", new Pose3d[] {hood, linearSlide, doohickey});
     }
 }

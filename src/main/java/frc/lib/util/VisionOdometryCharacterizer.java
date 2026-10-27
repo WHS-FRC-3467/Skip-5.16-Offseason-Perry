@@ -24,8 +24,6 @@ import frc.lib.posestimator.PoseEstimator.VisionPoseObservation;
 import frc.robot.Robot;
 import frc.robot.RobotState;
 
-import org.littletonrobotics.junction.Logger;
-
 /**
  * Attempts to semi-autonomously characterize both vision and odometry covariance diagonals for use
  * in WPILib Kalman filter gain calculation. This utility produces baseline estimates that can be
@@ -331,19 +329,19 @@ public class VisionOdometryCharacterizer {
     /** Print result to AScope for analysis */
     public static void printResults() {
         String prefix = "Pose Stats/";
-        Logger.recordOutput(prefix + "VisionSigmaX", getVisionStdDevX());
-        Logger.recordOutput(prefix + "VisionSigmaY", getVisionStdDevY());
-        Logger.recordOutput(prefix + "VisionSigmaTheta", getVisionStdDevTheta());
-        Logger.recordOutput(prefix + "VisionSamples", getVisionSampleSize());
-        Logger.recordOutput(prefix + "OdoSamples", getOdoSampleSize());
-        Logger.recordOutput(prefix + "VisionAvgDistance", meanVisDistance);
-        Logger.recordOutput(prefix + "VisionAvgNumTags", meanNumVisTags);
-        Logger.recordOutput(prefix + "VisionBiasX", meanVisX);
-        Logger.recordOutput(prefix + "VisionBiasY", meanVisY);
-        Logger.recordOutput(prefix + "VisionBiasTheta", meanVisTheta);
+        OutputLogger.recordOutput(prefix + "VisionSigmaX", getVisionStdDevX());
+        OutputLogger.recordOutput(prefix + "VisionSigmaY", getVisionStdDevY());
+        OutputLogger.recordOutput(prefix + "VisionSigmaTheta", getVisionStdDevTheta());
+        OutputLogger.recordOutput(prefix + "VisionSamples", getVisionSampleSize());
+        OutputLogger.recordOutput(prefix + "OdoSamples", getOdoSampleSize());
+        OutputLogger.recordOutput(prefix + "VisionAvgDistance", meanVisDistance);
+        OutputLogger.recordOutput(prefix + "VisionAvgNumTags", meanNumVisTags);
+        OutputLogger.recordOutput(prefix + "VisionBiasX", meanVisX);
+        OutputLogger.recordOutput(prefix + "VisionBiasY", meanVisY);
+        OutputLogger.recordOutput(prefix + "VisionBiasTheta", meanVisTheta);
 
-        Logger.recordOutput(prefix + "OdoSigmaX", getOdoStdDevX());
-        Logger.recordOutput(prefix + "OdoSigmaY", getOdoStdDevY());
-        Logger.recordOutput(prefix + "OdoSigmaTheta", getOdoStdDevTheta());
+        OutputLogger.recordOutput(prefix + "OdoSigmaX", getOdoStdDevX());
+        OutputLogger.recordOutput(prefix + "OdoSigmaY", getOdoStdDevY());
+        OutputLogger.recordOutput(prefix + "OdoSigmaTheta", getOdoStdDevTheta());
     }
 }

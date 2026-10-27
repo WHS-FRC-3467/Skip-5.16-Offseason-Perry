@@ -30,13 +30,13 @@ import frc.lib.devices.ObjectDetection.ContourSelectionMode;
 import frc.lib.devices.ObjectDetection.ObjectDetectionObservation;
 import frc.lib.io.objectdetection.ObjectDetectionIO;
 import frc.lib.util.FieldUtil;
+import frc.lib.util.OutputLogger;
 import frc.robot.FieldConstants;
 import frc.robot.RobotState;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import java.util.Arrays;
@@ -234,7 +234,7 @@ public class ObjectDetector extends SubsystemBase {
         int detectionSize = observation.size();
         maxDetectionsSize = Math.max(detectionSize, maxDetectionsSize);
 
-        Logger.recordOutput(prefix + "Active Detections", detectionSize);
+        OutputLogger.recordOutput(prefix + "Active Detections", detectionSize);
         for (int i = 0; i < maxDetectionsSize; i++) {
             Translation2d translation = INVALID_TRANSLATION;
             if (i < detectionSize) {
@@ -243,7 +243,7 @@ public class ObjectDetector extends SubsystemBase {
                     translation = detection.get().objectPose().get().getTranslation();
                 }
             }
-            Logger.recordOutput(prefix + i, translation);
+            OutputLogger.recordOutput(prefix + i, translation);
         }
     }
 
@@ -253,13 +253,13 @@ public class ObjectDetector extends SubsystemBase {
         String prefix = "Detection/" + "Contour: " + mode + ": ";
         if (observation.isPresent()) {
             ObjectDetectionObservation obs = observation.get();
-            Logger.recordOutput(prefix + "Object ID", obs.objID());
-            Logger.recordOutput(prefix + "Confidence", obs.confidence());
-            Logger.recordOutput(prefix + "Pitch", obs.pitch().in(Degrees));
-            Logger.recordOutput(prefix + "Yaw", obs.yaw().in(Degrees));
-            Logger.recordOutput(prefix + "Area", obs.area());
+            OutputLogger.recordOutput(prefix + "Object ID", obs.objID());
+            OutputLogger.recordOutput(prefix + "Confidence", obs.confidence());
+            OutputLogger.recordOutput(prefix + "Pitch", obs.pitch().in(Degrees));
+            OutputLogger.recordOutput(prefix + "Yaw", obs.yaw().in(Degrees));
+            OutputLogger.recordOutput(prefix + "Area", obs.area());
         } else {
-            Logger.recordOutput(prefix + "Object ID", -9999);
+            OutputLogger.recordOutput(prefix + "Object ID", -9999);
         }
     }
 
@@ -275,7 +275,7 @@ public class ObjectDetector extends SubsystemBase {
         Translation2d c = new Translation2d(Math.min(x1, x2), Math.min(y1, y2));
         Translation2d d = new Translation2d(Math.max(x1, x2), Math.min(y1, y2));
 
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "Detection/ROI",
                 new Pose2d[] {
                     new Pose2d(a, Rotation2d.kZero),
@@ -302,7 +302,7 @@ public class ObjectDetector extends SubsystemBase {
             Translation2d c = new Translation2d(Math.min(x1, x2), Math.min(y1, y2));
             Translation2d d = new Translation2d(Math.max(x1, x2), Math.min(y1, y2));
 
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     "Detection/BestLane",
                     new Pose2d[] {
                         new Pose2d(a, Rotation2d.kZero),
@@ -311,15 +311,16 @@ public class ObjectDetector extends SubsystemBase {
                         new Pose2d(d, Rotation2d.kZero),
                         new Pose2d(a, Rotation2d.kZero)
                     });
-            Logger.recordOutput("Detection/Best Lane Target X", xLane);
-            Logger.recordOutput("Detection/Best Lane Target Width", wLane);
-            Logger.recordOutput("Detection/Best Lane Target Count", bestLaneTarget.get().count());
+            OutputLogger.recordOutput("Detection/Best Lane Target X", xLane);
+            OutputLogger.recordOutput("Detection/Best Lane Target Width", wLane);
+            OutputLogger.recordOutput(
+                    "Detection/Best Lane Target Count", bestLaneTarget.get().count());
         } else {
-            Logger.recordOutput("Detection/Best Lane Target X", -1.0);
-            Logger.recordOutput("Detection/Best Lane Target Width", -1.0);
-            Logger.recordOutput("Detection/Best Lane Target Count", -1);
+            OutputLogger.recordOutput("Detection/Best Lane Target X", -1.0);
+            OutputLogger.recordOutput("Detection/Best Lane Target Width", -1.0);
+            OutputLogger.recordOutput("Detection/Best Lane Target Count", -1);
 
-            Logger.recordOutput("Detection/BestLane", new Pose2d[] {});
+            OutputLogger.recordOutput("Detection/BestLane", new Pose2d[] {});
         }
     }
 

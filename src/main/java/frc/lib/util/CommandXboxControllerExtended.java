@@ -26,8 +26,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import org.littletonrobotics.junction.Logger;
-
 /**
  * Extended Xbox controller with additional functionality for FRC use.
  *
@@ -92,7 +90,8 @@ public class CommandXboxControllerExtended extends CommandXboxController {
     }
 
     private void setRumble(double intensity) {
-        Logger.recordOutput("Controllers/" + hid.getPort() + "/VibrationIntensity", intensity);
+        OutputLogger.recordOutput(
+                "Controllers/" + hid.getPort() + "/VibrationIntensity", intensity);
         hid.setRumble(RumbleType.kBothRumble, intensity);
     }
 

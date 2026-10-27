@@ -36,6 +36,7 @@ import frc.lib.devices.AprilTagCamera.CameraProperties;
 import frc.lib.io.vision.VisionIO;
 import frc.lib.io.vision.VisionIOC2;
 import frc.lib.io.vision.VisionIOPhotonVisionSim;
+import frc.lib.util.OutputLogger;
 import frc.robot.Constants;
 import frc.robot.FieldConstants.AprilTagLayoutType;
 import frc.robot.RobotState;
@@ -43,7 +44,6 @@ import frc.robot.RobotState;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.simulation.VisionSystemSim;
 
 import java.util.Optional;
@@ -379,9 +379,9 @@ public class VisionConstants {
      * mode. Instantiates cameras with appropriate IO implementations (real, sim, or replay).
      */
     public static void create() {
-        // Logger.recordOutput("zero", Pose2d.kZero);
-        Logger.recordOutput("frontleft", FRONT_LEFT_TRANSFORM);
-        Logger.recordOutput("frontright", FRONT_RIGHT_TRANSFORM);
+        // OutputLogger.recordOutput("zero", Pose2d.kZero);
+        OutputLogger.recordOutput("frontleft", FRONT_LEFT_TRANSFORM);
+        OutputLogger.recordOutput("frontright", FRONT_RIGHT_TRANSFORM);
 
         switch (Constants.currentMode) {
             case REAL -> {

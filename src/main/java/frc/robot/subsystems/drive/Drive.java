@@ -52,6 +52,7 @@ import frc.lib.posestimator.SwerveOdometry.OdometryObservation;
 import frc.lib.util.LoggedTunableBoolean;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.LoggerHelper;
+import frc.lib.util.OutputLogger;
 import frc.lib.util.PID;
 import frc.lib.util.PowerProfiler;
 import frc.robot.Constants;
@@ -243,7 +244,8 @@ public class Drive extends SubsystemBase {
                                 null,
                                 null,
                                 (state) ->
-                                        Logger.recordOutput("Drive/SysIdState", state.toString())),
+                                        OutputLogger.recordOutput(
+                                                "Drive/SysIdState", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
 
@@ -280,8 +282,9 @@ public class Drive extends SubsystemBase {
 
         // Log empty setpoint states when disabled
         if (DriverStation.isDisabled()) {
-            Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
-            Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
+            OutputLogger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
+            OutputLogger.recordOutput(
+                    "SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
         }
 
         LoggedTunableNumber.ifChanged(
@@ -394,7 +397,7 @@ public class Drive extends SubsystemBase {
         // Update RobotState velocity
         robotState.setRobotRelativeVelocity(getChassisSpeeds());
 
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "Drive/Speed",
                 new Translation2d(
                                         getChassisSpeeds().vxMetersPerSecond,
@@ -415,8 +418,8 @@ public class Drive extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.kSpeedAt12Volts);
 
         // Log unoptimized setpoints and setpoint speeds
-        Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-        Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
+        OutputLogger.recordOutput("SwerveStates/Setpoints", setpointStates);
+        OutputLogger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
 
         // Send setpoints to modules
         for (int i = 0; i < 4; i++) {
@@ -424,7 +427,7 @@ public class Drive extends SubsystemBase {
         }
 
         // Log optimized setpoints (runSetpoint mutates each state)
-        Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
+        OutputLogger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
     }
 
     /**
@@ -469,15 +472,15 @@ public class Drive extends SubsystemBase {
                                     autoXController.reset();
                                     autoYController.reset();
                                     autoThetaController.reset();
-                                    Logger.recordOutput(
+                                    OutputLogger.recordOutput(
                                             "Odometry/Trajectory", trajectory.getPoses());
                                 }),
                         createTrajectoryFollower(trajectory))
                 .finallyDo(
                         () -> {
                             stop();
-                            Logger.recordOutput("Odometry/Trajectory", new Pose2d[] {});
-                            Logger.recordOutput("Odometry/TrajectorySetpoint", new Pose2d());
+                            OutputLogger.recordOutput("Odometry/Trajectory", new Pose2d[] {});
+                            OutputLogger.recordOutput("Odometry/TrajectorySetpoint", new Pose2d());
                         })
                 .withName("FollowTrajectory_" + trajectory.name());
     }
@@ -497,7 +500,7 @@ public class Drive extends SubsystemBase {
 
         runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(targetSpeeds, currentPose.getRotation()));
         robotState.setActiveTrajPose(targetPose);
-        Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        OutputLogger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
     }
 
     /**
@@ -581,7 +584,7 @@ public class Drive extends SubsystemBase {
                                     ChassisSpeeds.fromFieldRelativeSpeeds(
                                             targetSpeeds, currentPose.getRotation()));
                             robotState.setActiveTrajPose(targetPose);
-                            Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+                            OutputLogger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
                         },
                         this::stop,
                         this)

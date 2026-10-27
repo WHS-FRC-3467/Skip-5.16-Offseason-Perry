@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import frc.lib.util.FieldUtil;
+import frc.lib.util.OutputLogger;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
@@ -13,8 +14,6 @@ import frc.robot.subsystems.intake.IntakeSuperstructure;
 import frc.robot.subsystems.objectdetector.ObjectDetector;
 import frc.robot.subsystems.shooter.ShooterSuperstructure;
 import frc.robot.subsystems.tower.Tower;
-
-import org.littletonrobotics.junction.Logger;
 
 import java.util.Optional;
 
@@ -52,7 +51,7 @@ public record AutoContext(
                         true,
                         drive,
                         (trajectory, starting) ->
-                                Logger.recordOutput(
+                                OutputLogger.recordOutput(
                                         "Odometry/Trajectory",
                                         starting
                                                 ? FieldUtil.apply(trajectory.getPoses())

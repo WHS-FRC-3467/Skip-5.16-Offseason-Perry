@@ -19,11 +19,10 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.OutputLogger;
 import frc.lib.util.PID;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
-
-import org.littletonrobotics.junction.Logger;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -291,32 +290,35 @@ public class FullSendToPose extends Command {
                 ChassisSpeeds.fromFieldRelativeSpeeds(
                         fieldRelativeSpeed, currentPose.getRotation()));
 
-        Logger.recordOutput("FullSendToPose/Target Pose", target);
-        Logger.recordOutput("FullSendToPose/Distance To Target (m)", translationToTarget.getNorm());
-        Logger.recordOutput(
+        OutputLogger.recordOutput("FullSendToPose/Target Pose", target);
+        OutputLogger.recordOutput(
+                "FullSendToPose/Distance To Target (m)", translationToTarget.getNorm());
+        OutputLogger.recordOutput(
                 "FullSendToPose/Linear Angle To Target (deg)", directionToTarget.getDegrees());
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "FullSendToPose/LinearController/ErrorMeters", linearController.getError());
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "FullSendToPose/LinearController/ProfilePositionMeters",
                 linearProfileState.position);
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "FullSendToPose/LinearController/ProfileVelocityMetersPerSec",
                 linearProfileState.velocity);
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "FullSendToPose/LinearController/ProfileGoalMeters", linearProfileGoal.position);
-        Logger.recordOutput("FullSendToPose/LinearController/OutputMetersPerSec", linearOutput);
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
+                "FullSendToPose/LinearController/OutputMetersPerSec", linearOutput);
+        OutputLogger.recordOutput(
                 "FullSendToPose/AngularController/ErrorRads", angularController.getError());
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "FullSendToPose/AngularController/ProfilePositionRads",
                 angularProfileState.position);
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "FullSendToPose/AngularController/ProfileVelocityRadsPerSec",
                 angularProfileState.velocity);
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "FullSendToPose/AngularController/ProfileGoalRads", angularProfileGoal.position);
-        Logger.recordOutput("FullSendToPose/AngularController/OutputRadsPerSec", angularOutput);
+        OutputLogger.recordOutput(
+                "FullSendToPose/AngularController/OutputRadsPerSec", angularOutput);
     }
 
     // Returns true when the command should end.
@@ -352,11 +354,14 @@ public class FullSendToPose extends Command {
                                                         < ANGULAR_VELOCITY_TOLERANCE_RADIANS_PER_SECOND)
                         .orElse(true);
 
-        Logger.recordOutput(
+        OutputLogger.recordOutput(
                 "FullSendToPose/Distance Tolerance Present", distanceTolerance.isPresent());
-        Logger.recordOutput("FullSendToPose/Within Distance Tolerance", withinDistanceTolerance);
-        Logger.recordOutput("FullSendToPose/Angular Tolerance Present", angleTolerance.isPresent());
-        Logger.recordOutput("FullSendToPose/Within Angular Tolerance", withinAngularTolerance);
+        OutputLogger.recordOutput(
+                "FullSendToPose/Within Distance Tolerance", withinDistanceTolerance);
+        OutputLogger.recordOutput(
+                "FullSendToPose/Angular Tolerance Present", angleTolerance.isPresent());
+        OutputLogger.recordOutput(
+                "FullSendToPose/Within Angular Tolerance", withinAngularTolerance);
 
         if (distanceTolerance.isPresent() && angleTolerance.isPresent()) {
             return withinDistanceTolerance && withinAngularTolerance;

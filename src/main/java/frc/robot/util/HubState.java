@@ -5,12 +5,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.lib.util.LoggedTrigger;
+import frc.lib.util.OutputLogger;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
 
@@ -141,7 +140,7 @@ public class HubState {
             next = 0;
         }
 
-        Logger.recordOutput("Hub/Time Until Next Phase", matchTime - next);
+        OutputLogger.recordOutput("Hub/Time Until Next Phase", matchTime - next);
     }
 
     private Alliance opposite(Alliance alliance) {

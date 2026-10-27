@@ -97,7 +97,7 @@ public class PowerProfiler {
             double currentAmps = Math.abs(reg.mechanism().getSupplyCurrent().in(Amps)) * numMotors;
             double appliedVolts = Math.abs(reg.mechanism().getAppliedVoltage().in(Volts));
             reportUsage(reg.key(), currentAmps, appliedVolts, loopTimeSeconds);
-            Logger.recordOutput("PowerProfiler/NumRegisteredMotors/" + reg.key(), numMotors);
+            OutputLogger.recordOutput("PowerProfiler/NumRegisteredMotors/" + reg.key(), numMotors);
         }
 
         for (var reg : generics) {
@@ -106,19 +106,21 @@ public class PowerProfiler {
             reportUsage(reg.key(), currentAmps, appliedVolts, loopTimeSeconds);
         }
 
-        Logger.recordOutput("PowerProfiler/CurrentAmps", totalCurrentAmps);
-        Logger.recordOutput("PowerProfiler/PowerWatts", totalPowerWatts);
-        Logger.recordOutput(
+        OutputLogger.recordOutput("PowerProfiler/CurrentAmps", totalCurrentAmps);
+        OutputLogger.recordOutput("PowerProfiler/PowerWatts", totalPowerWatts);
+        OutputLogger.recordOutput(
                 "PowerProfiler/TotalEnergyWattHours", energyToWattHours(totalEnergyJoules));
 
         for (var entry : subsystemCurrents.entrySet()) {
-            Logger.recordOutput("PowerProfiler/CurrentAmps/" + entry.getKey(), entry.getValue());
+            OutputLogger.recordOutput(
+                    "PowerProfiler/CurrentAmps/" + entry.getKey(), entry.getValue());
         }
         for (var entry : subsystemPowers.entrySet()) {
-            Logger.recordOutput("PowerProfiler/PowerWatts/" + entry.getKey(), entry.getValue());
+            OutputLogger.recordOutput(
+                    "PowerProfiler/PowerWatts/" + entry.getKey(), entry.getValue());
         }
         for (var entry : subsystemEnergies.entrySet()) {
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     "PowerProfiler/EnergyWattHours/" + entry.getKey(),
                     energyToWattHours(entry.getValue()));
         }

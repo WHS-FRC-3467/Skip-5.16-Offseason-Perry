@@ -30,8 +30,7 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
 import frc.lib.util.CANdlePatterns;
-
-import org.littletonrobotics.junction.Logger;
+import frc.lib.util.OutputLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +87,7 @@ public class LightsIOSim implements LightsIO {
         if (requestInfo.containsKey(key)) {
             return requestInfo.get(key);
         } else {
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     this.toString() + "/KeyNotFound", "Request Does Not Contain Key Of: " + key);
             return "EmptyKey";
         }
@@ -128,7 +127,7 @@ public class LightsIOSim implements LightsIO {
         double direction = "Backward".equals(checkAndGet("Direction")) ? -1.0 : 1.0;
 
         int slot = Integer.valueOf(checkAndGet("Slot"));
-        Logger.recordOutput("LEDs/Slot" + slot, requestInfo.toString());
+        OutputLogger.recordOutput("LEDs/Slot" + slot, requestInfo.toString());
 
         final Distance kLedSpacing = // do not set to double, LEDPattern casts the input as an int
                 Inches.of(1);

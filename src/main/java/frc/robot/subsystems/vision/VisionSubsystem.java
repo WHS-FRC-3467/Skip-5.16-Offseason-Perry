@@ -23,11 +23,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.devices.AprilTagCamera;
 import frc.lib.posestimator.PoseEstimator.VisionPoseObservation;
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.OutputLogger;
 import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.AprilTagLayoutType;
 import frc.robot.RobotState;
 
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -256,28 +256,28 @@ public class VisionSubsystem extends SubsystemBase {
             Set<Integer> tagsAccepted = new HashSet<>();
             Set<Integer> tagsRejected = new HashSet<>();
 
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     cameraLogPrefix + "/Results/AcceptedLength", acceptedResults.size());
             for (int i = 0; i < acceptedResults.size(); i++) {
-                Logger.recordOutput(
+                OutputLogger.recordOutput(
                         cameraLogPrefix + "/Results/Accepted/" + i, acceptedResults.get(i));
 
                 tagsAccepted.addAll(getTagsUsed(acceptedResults.get(i).targets));
             }
 
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     cameraLogPrefix + "/Results/RejectedLength", rejectedResults.size());
             for (int i = 0; i < rejectedResults.size(); i++) {
-                Logger.recordOutput(
+                OutputLogger.recordOutput(
                         cameraLogPrefix + "/Results/Rejected/" + i, rejectedResults.get(i));
 
                 tagsRejected.addAll(getTagsUsed(rejectedResults.get(i).targets));
             }
 
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     cameraLogPrefix + "/Poses/Accepted", acceptedPoses.toArray(Pose3d[]::new));
 
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     cameraLogPrefix + "/Poses/Rejected", rejectedPoses.toArray(Pose3d[]::new));
 
             List<Pose3d> tagPosesAccepted =
@@ -294,11 +294,11 @@ public class VisionSubsystem extends SubsystemBase {
                             .map(Optional::get)
                             .toList();
 
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     cameraLogPrefix + "/TagPoses/Accepted",
                     tagPosesAccepted.toArray(Pose3d[]::new));
 
-            Logger.recordOutput(
+            OutputLogger.recordOutput(
                     cameraLogPrefix + "/TagPoses/Rejected",
                     tagPosesRejected.toArray(Pose3d[]::new));
         }

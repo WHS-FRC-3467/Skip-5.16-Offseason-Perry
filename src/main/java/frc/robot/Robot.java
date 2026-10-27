@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import frc.lib.util.OutputLogger;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.util.Elastic;
@@ -136,7 +137,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         // Log first 8 character of robot serial
-        Logger.recordOutput("Robot Serial", System.getenv("serialnum"));
+        OutputLogger.recordOutput("Robot Serial", System.getenv("serialnum"));
 
         SmartDashboard.putData("Robot Pose Field Map", fieldMap);
 
@@ -172,7 +173,7 @@ public class Robot extends LoggedRobot {
 
         // Log the names of all currently running commands so we can review them in
         // AdvantageScope log files
-        Logger.recordOutput("ActiveCommands", activeCommandNames.toArray(new String[0]));
+        OutputLogger.recordOutput("ActiveCommands", activeCommandNames.toArray(new String[0]));
 
         // Driver Elastic Dashboard - Update the robot's pose on the main fieldmap
         fieldMap.setRobotPose(robotState.getEstimatedPose());
