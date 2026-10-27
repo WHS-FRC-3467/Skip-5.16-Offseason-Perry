@@ -201,7 +201,7 @@ public class DriveCommands {
                                             rotationSupplier.get().getRadians());
 
                             Logger.recordOutput("AngleAtGoal", angleController.atGoal());
-                            if (angleController.atSetpoint()) {
+                            if (angleController.atGoal()) {
                                 if (Math.hypot(linearVelocity.getX(), linearVelocity.getY())
                                                 < DEADBAND
                                         && stopWithX) {
