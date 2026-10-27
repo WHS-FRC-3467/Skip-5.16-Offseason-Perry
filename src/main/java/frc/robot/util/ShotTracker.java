@@ -42,7 +42,7 @@ public class ShotTracker {
 
     // Power draw required to assume a shot has passed through shooter
     private final LoggedTunableNumber powerDetectionThresholdWatts =
-            new LoggedTunableNumber("ShotTracker/PowerDetectionThresholdWatts", 105);
+            new LoggedTunableNumber("ShotTracker/PowerDetectionThresholdWatts", 95);
 
     /**
      * Trigger determining whether a shot is believed to have potentially passed through the shooter
@@ -64,7 +64,7 @@ public class ShotTracker {
 
     // Heuristic for whether a shot has passed through the shooter in ~ 0.5s using flywheel velocity
     // drop and power spike
-    private final Debouncer hopperEmptyDebouncer = new Debouncer(0.7, DebounceType.kRising);
+    private final Debouncer hopperEmptyDebouncer = new Debouncer(1.2, DebounceType.kRising);
 
     /**
      * Trigger input for hopperEmpty trigger, made explicit for compartmentalization and
