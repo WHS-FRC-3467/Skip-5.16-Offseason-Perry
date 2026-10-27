@@ -29,7 +29,12 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
     public static final Mode simMode = Mode.REPLAY;
-    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+
+    /** Set by the Gradle test task so unit tests always run against the physics sim. */
+    private static final boolean forceSim = Boolean.getBoolean("robot.forceSim");
+
+    public static final Mode currentMode =
+            RobotBase.isReal() ? Mode.REAL : (forceSim ? Mode.SIM : simMode);
 
     public static final boolean tuningMode = false;
     public static final boolean disableHAL = false;
