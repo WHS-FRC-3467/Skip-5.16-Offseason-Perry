@@ -111,6 +111,7 @@ public class ObjectDetectorConstants {
     public static final CameraProperties CAMERA0 =
             new CameraProperties(
                     CAMERA0_NAME,
+                    -1, // PhotonVision camera, no C2 output topic
                     CAMERA0_TRANSFORM,
                     CAMERA0_MATRIX,
                     CAMERA0_DIST_COEFFS,
