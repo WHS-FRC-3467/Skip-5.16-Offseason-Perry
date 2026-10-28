@@ -78,7 +78,7 @@ public class VisionSubsystem extends SubsystemBase {
             Pose3d pose, List<Integer> tagsUsed, double averageDistanceMeters) {}
 
     private static final LoggedTunableNumber TIMESTAMP_OFFSET =
-            new LoggedTunableNumber("VisionSubsystem/TimestampOffset", -(1.0 / 45.0));
+            new LoggedTunableNumber("VisionSubsystem/TimestampOffset", -0.08);
 
     private final RobotState robotState = RobotState.getInstance();
 
