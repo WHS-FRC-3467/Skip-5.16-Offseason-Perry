@@ -711,4 +711,20 @@ class EkfPoseEstimatorTest {
                 IllegalArgumentException.class,
                 () -> Config.DEFAULT.toBuilder().gateRecoveryFraction(1.5).build());
     }
+
+    @Test
+    void lateVisionFrameDoesNotEraseANewerFrameThatWasAlreadyApplied() {
+        EkfPoseEstimator estimator = new EkfPoseEstimator(KINEMATICS);
+        estimator.resetPose(Pose2d.kZero);
+        drive(estimator, 0.0, 1.0);
+
+        // A precise frame at 0.9 s says the robot is 10 cm to the left of where odometry has it.
+        estimator.addVisionObservation(
+                vision(0.9, new Pose2d(0.9, 0.1, Rotation2d.kZero), 0.01, 0.1));
+        // An older, vague frame arrives afterwards. It is replayed over the newer correction.
+        estimator.addVisionObservation(
+                vision(0.5, new Pose2d(0.5, 0.1, Rotation2d.kZero), 1.0, 1.0));
+
+        assertEquals(0.1, estimator.estimatedPose().getY(), 0.01);
+    }
 }
