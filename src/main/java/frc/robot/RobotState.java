@@ -158,6 +158,16 @@ public class RobotState {
                                     Drive.MODULE_TRANSLATIONS.toArray(Translation2d[]::new)))
                     .withPoseValidator(this::isPoseWithinField);
 
+    // private final PoseEstsimator poseEstimator =
+    //     new PoseEstimator(
+    //                     new SwerveDriveKinematics(
+    //                             Drive.MODULE_TRANSLATIONS.toArray(Translation2d[]::new)),
+    //                     Drive.MODULE_TRANSLATIONS.toArray(Translation2d[]::new),
+    //                     Seconds.of(2),
+    //                     AUTO_LINEAR_ODOMETRY_STD_DEV,
+    //                     AUTO_ANGULAR_ODOMETRY_STD_DEV)
+    //             .withPoseValidator(this::isPoseWithinField);
+
     @Getter @Setter private ChassisSpeeds robotRelativeVelocity = new ChassisSpeeds();
 
     /**
