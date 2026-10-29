@@ -21,164 +21,164 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj CURRENT_B1 = new ChoreoTraj(
-        "CURRENT_B1",
-        OptionalInt.empty(),
-        6.44263,
-        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
-    );
     public static final ChoreoTraj CURRENT_B1BadBalls = new ChoreoTraj(
         "CURRENT_B1BadBalls",
         OptionalInt.empty(),
-        5.74947,
+        5.06782,
         new Pose2d(4.45292, 7.45197, Rotation2d.fromRadians(1.5708)),
         new Pose2d(2.69643, 5.40836, Rotation2d.fromRadians(-0.61249))
-    );
-    public static final ChoreoTraj CURRENT_B1Unsafe = new ChoreoTraj(
-        "CURRENT_B1Unsafe",
-        OptionalInt.empty(),
-        6.60597,
-        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
-    );
-    public static final ChoreoTraj CURRENT_B2 = new ChoreoTraj(
-        "CURRENT_B2",
-        OptionalInt.empty(),
-        7.92818,
-        new Pose2d(2.69643, 5.40836, Rotation2d.fromRadians(-0.61249)),
-        new Pose2d(2.69643, 5.40836, Rotation2d.fromRadians(-0.64589))
-    );
-    public static final ChoreoTraj CURRENT_FullNeutral1 = new ChoreoTraj(
-        "CURRENT_FullNeutral1",
-        OptionalInt.empty(),
-        4.89256,
-        new Pose2d(3.65, 7.39928, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(6.93648, 5.40836, Rotation2d.fromRadians(3.14159))
-    );
-    public static final ChoreoTraj CURRENT_FullNeutral2 = new ChoreoTraj(
-        "CURRENT_FullNeutral2",
-        OptionalInt.empty(),
-        2.37621,
-        new Pose2d(6.93648, 5.40836, Rotation2d.fromRadians(3.14159)),
-        new Pose2d(1.99775, 5.35159, Rotation2d.fromRadians(-0.45714))
-    );
-    public static final ChoreoTraj CURRENT_FullNeutral3 = new ChoreoTraj(
-        "CURRENT_FullNeutral3",
-        OptionalInt.empty(),
-        4.39292,
-        new Pose2d(1.99775, 5.35159, Rotation2d.fromRadians(-0.45714)),
-        new Pose2d(1.99775, 5.35159, Rotation2d.fromRadians(-0.45714))
-    );
-    public static final ChoreoTraj DCMP_B1 = new ChoreoTraj(
-        "DCMP_B1",
-        OptionalInt.empty(),
-        5.03023,
-        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
-    );
-    public static final ChoreoTraj DCMP_B2 = new ChoreoTraj(
-        "DCMP_B2",
-        OptionalInt.empty(),
-        7.2773,
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187)),
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68186))
-    );
-    public static final ChoreoTraj DCMP_B22 = new ChoreoTraj(
-        "DCMP_B22",
-        OptionalInt.empty(),
-        6.34957,
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187)),
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68186))
-    );
-    public static final ChoreoTraj DCMP_BumpPath = new ChoreoTraj(
-        "DCMP_BumpPath",
-        OptionalInt.empty(),
-        1.47681,
-        new Pose2d(6.18074, 5.40836, Rotation2d.fromRadians(-1.5708)),
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
-    );
-    public static final ChoreoTraj DCMP_C16781 = new ChoreoTraj(
-        "DCMP_C16781",
-        OptionalInt.empty(),
-        6.25004,
-        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj DCMP_C16782 = new ChoreoTraj(
         "DCMP_C16782",
         OptionalInt.empty(),
-        7.79328,
+        6.08715,
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187)),
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68186))
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68183))
+    );
+    public static final ChoreoTraj CURRENT_FullNeutral1 = new ChoreoTraj(
+        "CURRENT_FullNeutral1",
+        OptionalInt.empty(),
+        3.9782,
+        new Pose2d(3.65, 7.39928, Rotation2d.fromRadians(1.5708)),
+        new Pose2d(6.93648, 5.40836, Rotation2d.fromRadians(3.14159))
+    );
+    public static final ChoreoTraj CURRENT_B1 = new ChoreoTraj(
+        "CURRENT_B1",
+        OptionalInt.empty(),
+        4.63532,
+        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
+        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj DCMP_C16783 = new ChoreoTraj(
         "DCMP_C16783",
         OptionalInt.empty(),
-        7.25329,
+        5.86912,
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187)),
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
-    );
-    public static final ChoreoTraj DCMP_C1678Safe1 = new ChoreoTraj(
-        "DCMP_C1678Safe1",
-        OptionalInt.empty(),
-        5.60576,
-        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
-    );
-    public static final ChoreoTraj DCMP_Depot1 = new ChoreoTraj(
-        "DCMP_Depot1",
-        OptionalInt.empty(),
-        3.85487,
-        new Pose2d(3.51757, 4.05254, Rotation2d.fromRadians(0)),
-        new Pose2d(2.51318, 4.05254, Rotation2d.fromRadians(0))
-    );
-    public static final ChoreoTraj DCMP_TunnelPath = new ChoreoTraj(
-        "DCMP_TunnelPath",
-        OptionalInt.empty(),
-        1.23667,
-        new Pose2d(5.65, 7.39928, Rotation2d.fromRadians(-1.5708)),
-        new Pose2d(3.12514, 7.30892, Rotation2d.fromRadians(-1.15368))
     );
     public static final ChoreoTraj WPI_BumpPath = new ChoreoTraj(
         "WPI_BumpPath",
         OptionalInt.empty(),
-        1.46435,
+        1.27495,
         new Pose2d(6.18074, 5.3, Rotation2d.fromRadians(-1.5708)),
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj WPI_C16781 = new ChoreoTraj(
         "WPI_C16781",
         OptionalInt.empty(),
-        5.96627,
+        5.01669,
         new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj WPI_C16782 = new ChoreoTraj(
         "WPI_C16782",
         OptionalInt.empty(),
-        8.23632,
+        7.07866,
         new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187)),
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68186))
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68183))
     );
-    public static final ChoreoTraj WPI_C1678Safe1 = new ChoreoTraj(
-        "WPI_C1678Safe1",
+    public static final ChoreoTraj DCMP_B2 = new ChoreoTraj(
+        "DCMP_B2",
         OptionalInt.empty(),
-        5.87545,
-        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
-        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
+        5.66372,
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187)),
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68183))
     );
     public static final ChoreoTraj WPI_Depot1 = new ChoreoTraj(
         "WPI_Depot1",
         OptionalInt.empty(),
-        3.85487,
+        3.47175,
         new Pose2d(3.51757, 4.05254, Rotation2d.fromRadians(0)),
         new Pose2d(2.51318, 4.05254, Rotation2d.fromRadians(0))
+    );
+    public static final ChoreoTraj DCMP_Depot1 = new ChoreoTraj(
+        "DCMP_Depot1",
+        OptionalInt.empty(),
+        3.47175,
+        new Pose2d(3.51757, 4.05254, Rotation2d.fromRadians(0)),
+        new Pose2d(2.51318, 4.05254, Rotation2d.fromRadians(0))
+    );
+    public static final ChoreoTraj DCMP_C16781 = new ChoreoTraj(
+        "DCMP_C16781",
+        OptionalInt.empty(),
+        5.26541,
+        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
+    );
+    public static final ChoreoTraj DCMP_C1678Safe1 = new ChoreoTraj(
+        "DCMP_C1678Safe1",
+        OptionalInt.empty(),
+        4.56893,
+        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
+    );
+    public static final ChoreoTraj DCMP_B22 = new ChoreoTraj(
+        "DCMP_B22",
+        OptionalInt.empty(),
+        4.98827,
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187)),
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68183))
+    );
+    public static final ChoreoTraj DCMP_BumpPath = new ChoreoTraj(
+        "DCMP_BumpPath",
+        OptionalInt.empty(),
+        1.27962,
+        new Pose2d(6.18074, 5.40836, Rotation2d.fromRadians(-1.5708)),
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
+    );
+    public static final ChoreoTraj CURRENT_B2 = new ChoreoTraj(
+        "CURRENT_B2",
+        OptionalInt.empty(),
+        6.7735,
+        new Pose2d(2.69643, 5.40836, Rotation2d.fromRadians(-0.61249)),
+        new Pose2d(2.69643, 5.40836, Rotation2d.fromRadians(-0.64586))
+    );
+    public static final ChoreoTraj CURRENT_FullNeutral3 = new ChoreoTraj(
+        "CURRENT_FullNeutral3",
+        OptionalInt.empty(),
+        4.17433,
+        new Pose2d(1.99775, 5.35159, Rotation2d.fromRadians(-0.45714)),
+        new Pose2d(1.99775, 5.35159, Rotation2d.fromRadians(-0.45714))
+    );
+    public static final ChoreoTraj CURRENT_B1Unsafe = new ChoreoTraj(
+        "CURRENT_B1Unsafe",
+        OptionalInt.empty(),
+        5.89728,
+        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
+        new Pose2d(2.19643, 5.40836, Rotation2d.fromRadians(-0.68187))
+    );
+    public static final ChoreoTraj CURRENT_FullNeutral2 = new ChoreoTraj(
+        "CURRENT_FullNeutral2",
+        OptionalInt.empty(),
+        1.95246,
+        new Pose2d(6.93648, 5.40836, Rotation2d.fromRadians(3.14159)),
+        new Pose2d(1.99775, 5.35159, Rotation2d.fromRadians(-0.45714))
+    );
+    public static final ChoreoTraj WPI_C1678Safe1 = new ChoreoTraj(
+        "WPI_C1678Safe1",
+        OptionalInt.empty(),
+        5.04376,
+        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
+    );
+    public static final ChoreoTraj DCMP_B1 = new ChoreoTraj(
+        "DCMP_B1",
+        OptionalInt.empty(),
+        3.97748,
+        new Pose2d(4.45, 7.39928, Rotation2d.fromRadians(1.5708)),
+        new Pose2d(3.1, 5.2, Rotation2d.fromRadians(-0.68187))
     );
     public static final ChoreoTraj WPI_TunnelPath = new ChoreoTraj(
         "WPI_TunnelPath",
         OptionalInt.empty(),
-        1.23667,
+        1.06297,
+        new Pose2d(5.65, 7.39928, Rotation2d.fromRadians(-1.5708)),
+        new Pose2d(3.12514, 7.30892, Rotation2d.fromRadians(-1.15368))
+    );
+    public static final ChoreoTraj DCMP_TunnelPath = new ChoreoTraj(
+        "DCMP_TunnelPath",
+        OptionalInt.empty(),
+        1.06297,
         new Pose2d(5.65, 7.39928, Rotation2d.fromRadians(-1.5708)),
         new Pose2d(3.12514, 7.30892, Rotation2d.fromRadians(-1.15368))
     );
@@ -188,29 +188,29 @@ public record ChoreoTraj(
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-        Map.entry("CURRENT_B1", CURRENT_B1),
         Map.entry("CURRENT_B1BadBalls", CURRENT_B1BadBalls),
-        Map.entry("CURRENT_B1Unsafe", CURRENT_B1Unsafe),
-        Map.entry("CURRENT_B2", CURRENT_B2),
-        Map.entry("CURRENT_FullNeutral1", CURRENT_FullNeutral1),
-        Map.entry("CURRENT_FullNeutral2", CURRENT_FullNeutral2),
-        Map.entry("CURRENT_FullNeutral3", CURRENT_FullNeutral3),
-        Map.entry("DCMP_B1", DCMP_B1),
-        Map.entry("DCMP_B2", DCMP_B2),
-        Map.entry("DCMP_B22", DCMP_B22),
-        Map.entry("DCMP_BumpPath", DCMP_BumpPath),
-        Map.entry("DCMP_C16781", DCMP_C16781),
         Map.entry("DCMP_C16782", DCMP_C16782),
+        Map.entry("CURRENT_FullNeutral1", CURRENT_FullNeutral1),
+        Map.entry("CURRENT_B1", CURRENT_B1),
         Map.entry("DCMP_C16783", DCMP_C16783),
-        Map.entry("DCMP_C1678Safe1", DCMP_C1678Safe1),
-        Map.entry("DCMP_Depot1", DCMP_Depot1),
-        Map.entry("DCMP_TunnelPath", DCMP_TunnelPath),
         Map.entry("WPI_BumpPath", WPI_BumpPath),
         Map.entry("WPI_C16781", WPI_C16781),
         Map.entry("WPI_C16782", WPI_C16782),
-        Map.entry("WPI_C1678Safe1", WPI_C1678Safe1),
+        Map.entry("DCMP_B2", DCMP_B2),
         Map.entry("WPI_Depot1", WPI_Depot1),
-        Map.entry("WPI_TunnelPath", WPI_TunnelPath)
+        Map.entry("DCMP_Depot1", DCMP_Depot1),
+        Map.entry("DCMP_C16781", DCMP_C16781),
+        Map.entry("DCMP_C1678Safe1", DCMP_C1678Safe1),
+        Map.entry("DCMP_B22", DCMP_B22),
+        Map.entry("DCMP_BumpPath", DCMP_BumpPath),
+        Map.entry("CURRENT_B2", CURRENT_B2),
+        Map.entry("CURRENT_FullNeutral3", CURRENT_FullNeutral3),
+        Map.entry("CURRENT_B1Unsafe", CURRENT_B1Unsafe),
+        Map.entry("CURRENT_FullNeutral2", CURRENT_FullNeutral2),
+        Map.entry("WPI_C1678Safe1", WPI_C1678Safe1),
+        Map.entry("DCMP_B1", DCMP_B1),
+        Map.entry("WPI_TunnelPath", WPI_TunnelPath),
+        Map.entry("DCMP_TunnelPath", DCMP_TunnelPath)
     );
 
     /**
