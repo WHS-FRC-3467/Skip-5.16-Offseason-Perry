@@ -17,7 +17,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -32,7 +31,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import frc.lib.posestimator.PoseEstimator;
+import frc.lib.posestimator.EkfPoseEstimator;
 import frc.lib.posestimator.PoseEstimator.VisionPoseObservation;
 import frc.lib.posestimator.SwerveOdometry.OdometryObservation;
 import frc.lib.util.FieldUtil;
@@ -59,11 +58,6 @@ public class RobotState {
 
     private static final LoggedTunableNumber FEED_TOLERANCE_DEGREES =
             new LoggedTunableNumber("RobotState/FeedToleranceDegrees", 6.0);
-
-    private static final double AUTO_LINEAR_ODOMETRY_STD_DEV = 0.03;
-    private static final double AUTO_ANGULAR_ODOMETRY_STD_DEV = 0.02;
-    private static final double TELEOP_LINEAR_ODOMETRY_STD_DEV = 0.3;
-    private static final double TELEOP_ANGULAR_ODOMETRY_STD_DEV = 0.15;
 
     @Getter(lazy = true)
     private static final RobotState instance = new RobotState();
@@ -158,22 +152,23 @@ public class RobotState {
 
     // -------- POSE ESTIMATION --------
 
-    private final PoseEstimator poseEstimator =
-            new PoseEstimator(
+    private final EkfPoseEstimator poseEstimator =
+            new EkfPoseEstimator(
                             new SwerveDriveKinematics(
-                                    Drive.MODULE_TRANSLATIONS.toArray(Translation2d[]::new)),
-                            Drive.MODULE_TRANSLATIONS.toArray(Translation2d[]::new),
-                            Seconds.of(2),
-                            AUTO_LINEAR_ODOMETRY_STD_DEV,
-                            AUTO_ANGULAR_ODOMETRY_STD_DEV)
+                                    Drive.MODULE_TRANSLATIONS.toArray(Translation2d[]::new)))
                     .withPoseValidator(this::isPoseWithinField);
 
-    @Getter @Setter private ChassisSpeeds robotRelativeVelocity = new ChassisSpeeds();
+    // private final PoseEstsimator poseEstimator =
+    //     new PoseEstimator(
+    //                     new SwerveDriveKinematics(
+    //                             Drive.MODULE_TRANSLATIONS.toArray(Translation2d[]::new)),
+    //                     Drive.MODULE_TRANSLATIONS.toArray(Translation2d[]::new),
+    //                     Seconds.of(2),
+    //                     AUTO_LINEAR_ODOMETRY_STD_DEV,
+    //                     AUTO_ANGULAR_ODOMETRY_STD_DEV)
+    //             .withPoseValidator(this::isPoseWithinField);
 
-    public void setTeleop() {
-        poseEstimator.setOdometryStdDevs(
-                TELEOP_LINEAR_ODOMETRY_STD_DEV, TELEOP_ANGULAR_ODOMETRY_STD_DEV);
-    }
+    @Getter @Setter private ChassisSpeeds robotRelativeVelocity = new ChassisSpeeds();
 
     /**
      * Returns the robot's odometry-only pose (without vision corrections).
@@ -224,6 +219,17 @@ public class RobotState {
     }
 
     /**
+     * Tells the pose estimator whether the robot is tipped. While tipped, odometry is trusted less,
+     * so vision pulls the pose back harder, during the tip and in the first frames after it. Call
+     * every cycle, before that cycle's odometry observations.
+     *
+     * @param tipped whether the robot is tipped
+     */
+    public void setTipped(boolean tipped) {
+        poseEstimator.setTipped(tipped);
+    }
+
+    /**
      * Adds a new vision observation to the pose estimator.
      *
      * @param observation the vision observation to add
@@ -240,6 +246,17 @@ public class RobotState {
      */
     public Optional<Pose2d> getPoseAtTime(double timestampSeconds) {
         return poseEstimator.getPoseAtTime(timestampSeconds);
+    }
+
+    /**
+     * Returns the robot's robot-relative velocity around a past time, so a vision frame can be
+     * judged by how fast the robot was moving when it was captured.
+     *
+     * @param timestampSeconds the time to look up, in the odometry timebase
+     * @return the velocity then, or the current velocity if the history does not reach that time
+     */
+    public ChassisSpeeds getRobotRelativeVelocityAtTime(double timestampSeconds) {
+        return poseEstimator.getVelocityAtTime(timestampSeconds).orElse(robotRelativeVelocity);
     }
 
     /**
