@@ -7,7 +7,6 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -15,7 +14,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
@@ -38,11 +36,6 @@ import frc.robot.Robot;
 public class FlywheelConstants {
 
     public static String NAME = "Flywheel";
-
-    public static final AngularVelocity MAX_VELOCITY = RotationsPerSecond.of(69.0);
-    public static final AngularAcceleration MAX_ACCELERATION = RotationsPerSecondPerSecond.of(30.0);
-    public static final AngularAcceleration BROWNOUT_MAX_ACCELERATION =
-            RotationsPerSecondPerSecond.of(15.0);
 
     private static final double GEARING = (32.0 / 24.0);
 
@@ -99,9 +92,6 @@ public class FlywheelConstants {
         }
 
         config.Slot0 = Slot0Configs.from(SLOT0_PID.toSlotConfigs());
-        config.MotionMagic.MotionMagicCruiseVelocity = MAX_VELOCITY.in(RotationsPerSecond);
-        config.MotionMagic.MotionMagicAcceleration =
-                MAX_ACCELERATION.in(RotationsPerSecondPerSecond);
 
         return config;
     }

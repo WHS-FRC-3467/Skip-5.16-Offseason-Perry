@@ -219,12 +219,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     }
 
     private void setFlywheelVelocity(AngularVelocity velocity) {
-        flywheelIO.runVelocity(
-                velocity.plus(getFlywheelTrim()),
-                brownedOut
-                        ? FlywheelConstants.BROWNOUT_MAX_ACCELERATION
-                        : FlywheelConstants.MAX_ACCELERATION,
-                PIDSlot.SLOT_0);
+        flywheelIO.runVelocity(velocity.plus(getFlywheelTrim()), PIDSlot.SLOT_0);
     }
 
     private void setHoodPosition(Angle angle) {
