@@ -35,6 +35,7 @@ import frc.lib.devices.AprilTagCamera;
 import frc.lib.devices.AprilTagCamera.CameraProperties;
 import frc.lib.io.vision.VisionIO;
 import frc.lib.io.vision.VisionIOC2;
+import frc.lib.io.vision.VisionIOPhotonVision;
 import frc.lib.io.vision.VisionIOPhotonVisionSim;
 import frc.robot.Constants;
 import frc.robot.FieldConstants.AprilTagLayoutType;
@@ -79,32 +80,32 @@ public class VisionConstants {
 
     public static final Transform3d FRONT_LEFT_TRANSFORM =
             new Transform3d(
-                    Units.inchesToMeters(13.106),
+                    Units.inchesToMeters(13.23),
                     Units.inchesToMeters(5.25),
-                    Units.inchesToMeters(12.681),
+                    Units.inchesToMeters(13.142),
                     new Rotation3d(
                             Units.degreesToRadians(0.0),
                             Units.degreesToRadians(-25.0),
                             Units.degreesToRadians(0.0)));
     public static final Transform3d LEFT_TRANSFORM =
             new Transform3d(
-                    Units.inchesToMeters(12.749),
-                    Units.inchesToMeters(13.293334),
-                    Units.inchesToMeters(16.758),
+                    Units.inchesToMeters(12.175),
+                    Units.inchesToMeters(13.766),
+                    Units.inchesToMeters(16.429),
                     new Rotation3d(
                             0.0, Units.degreesToRadians(-20.0), Units.degreesToRadians(90.0)));
     public static final Transform3d RIGHT_TRANSFORM =
             new Transform3d(
-                    Units.inchesToMeters(12.749),
-                    Units.inchesToMeters(-13.299),
-                    Units.inchesToMeters(16.758),
+                    Units.inchesToMeters(12.175),
+                    Units.inchesToMeters(-13.766),
+                    Units.inchesToMeters(16.429),
                     new Rotation3d(
                             0.0, Units.degreesToRadians(-20.0), Units.degreesToRadians(-90.00)));
     public static final Transform3d FRONT_RIGHT_TRANSFORM =
             new Transform3d(
-                    Units.inchesToMeters(13.106),
+                    Units.inchesToMeters(13.23),
                     Units.inchesToMeters(-5.25),
-                    Units.inchesToMeters(12.681),
+                    Units.inchesToMeters(13.142),
                     new Rotation3d(
                             Units.degreesToRadians(0.0),
                             Units.degreesToRadians(-25.0),
@@ -216,19 +217,19 @@ public class VisionConstants {
                     0.0033869449584776738,
                     0.013942594262017396);
 
-    public static final int FRONT_LEFT_RESOLUTION_WIDTH = 1600;
-    public static final int FRONT_LEFT_RESOLUTION_HEIGHT = 1304;
-    public static final int LEFT_RESOLUTION_WIDTH = 1600;
-    public static final int LEFT_RESOLUTION_HEIGHT = 1304;
-    public static final int RIGHT_RESOLUTION_WIDTH = 1600;
-    public static final int RIGHT_RESOLUTION_HEIGHT = 1304;
-    public static final int FRONT_RIGHT_RESOLUTION_WIDTH = 1600;
-    public static final int FRONT_RIGHT_RESOLUTION_HEIGHT = 1304;
+    public static final int FRONT_LEFT_RESOLUTION_WIDTH = 1280;
+    public static final int FRONT_LEFT_RESOLUTION_HEIGHT = 800;
+    public static final int LEFT_RESOLUTION_WIDTH = 1280;
+    public static final int LEFT_RESOLUTION_HEIGHT = 800;
+    public static final int RIGHT_RESOLUTION_WIDTH = 1280;
+    public static final int RIGHT_RESOLUTION_HEIGHT = 800;
+    public static final int FRONT_RIGHT_RESOLUTION_WIDTH = 1280;
+    public static final int FRONT_RIGHT_RESOLUTION_HEIGHT = 800;
 
-    public static final Angle FRONT_LEFT_FOV = Degrees.of(80); // from Thrifty docs
-    public static final Angle LEFT_FOV = Degrees.of(55);
-    public static final Angle RIGHT_FOV = Degrees.of(55);
-    public static final Angle FRONT_RIGHT_FOV = Degrees.of(55);
+    public static final Angle FRONT_LEFT_FOV = Degrees.of(92); // from Thrifty docs
+    public static final Angle LEFT_FOV = Degrees.of(92);
+    public static final Angle RIGHT_FOV = Degrees.of(92);
+    public static final Angle FRONT_RIGHT_FOV = Degrees.of(92);
 
     // Performance
     public static final double FRONT_LEFT_FPS = 22;
@@ -327,7 +328,7 @@ public class VisionConstants {
     }
 
     private static VisionIO getFrontLeftIOReal() {
-        return new VisionIOC2(FRONT_LEFT, FRONT_LEFT_C2_CONFIG);
+        return new VisionIOPhotonVision(FRONT_LEFT);
     }
 
     private static VisionIOPhotonVisionSim getFrontLeftIOSim() {
@@ -339,7 +340,7 @@ public class VisionConstants {
     }
 
     private static VisionIO getLeftIOReal() {
-        return new VisionIOC2(LEFT, LEFT_C2_CONFIG);
+        return new VisionIOPhotonVision(LEFT);
     }
 
     private static VisionIOPhotonVisionSim getLeftIOSim() {
@@ -351,7 +352,7 @@ public class VisionConstants {
     }
 
     private static VisionIO getRightIOReal() {
-        return new VisionIOC2(RIGHT, RIGHT_C2_CONFIG);
+        return new VisionIOPhotonVision(RIGHT);
     }
 
     private static VisionIOPhotonVisionSim getRightIOSim() {
@@ -363,7 +364,7 @@ public class VisionConstants {
     }
 
     private static VisionIO getFrontRightIOReal() {
-        return new VisionIOC2(FRONT_RIGHT, FRONT_RIGHT_C2_CONFIG);
+        return new VisionIOPhotonVision(FRONT_RIGHT);
     }
 
     private static VisionIOPhotonVisionSim getFrontRightIOSim() {
