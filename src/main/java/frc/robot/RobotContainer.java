@@ -484,7 +484,7 @@ public class RobotContainer {
                                                         DriveCommands.joystickDrive(
                                                                 drive,
                                                                 () -> -controller.getLeftY() * 0.85,
-                                                                () -> -controller.getLeftX() * 0.85 `,
+                                                                () -> -controller.getLeftX() * 0.85,
                                                                 () -> -controller.getRightX()))));
 
         // SmartDashboard.putBoolean("Browned Out!", false);
