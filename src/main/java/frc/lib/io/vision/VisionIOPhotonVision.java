@@ -46,6 +46,7 @@ public class VisionIOPhotonVision implements VisionIO {
      */
     public VisionIOPhotonVision(CameraProperties cameraProperties) {
         this.photonCamera = new PhotonCamera(cameraProperties.name());
+        photonCamera.setFPSLimit(45);
     }
 
     @Override
