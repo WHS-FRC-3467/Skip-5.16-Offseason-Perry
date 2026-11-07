@@ -52,7 +52,7 @@ public class VisionIOPhotonVision implements VisionIO {
     public void updateInputs(VisionIOInputs inputs) {
         // Set the FPS limit to 45 to reduce CPU usage and network traffic
         // Done as quick hack
-        photonCamera.setFPSLimit(45);
+        photonCamera.setFPSLimit(30);
         inputs.connected = photonCamera.isConnected();
 
         if (!inputs.connected) {
