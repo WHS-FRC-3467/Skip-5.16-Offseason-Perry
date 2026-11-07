@@ -4,15 +4,12 @@
 
 package frc.lib.util;
 
-import static edu.wpi.first.units.Units.Meters;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 
 import frc.robot.Constants;
@@ -128,20 +125,6 @@ public class FieldUtil {
                 && DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
     }
-
-    /**
-     * Checks if a given pose is within the field boundaries, with a specified margin.
-     *
-     * @param translation The translation to check.
-     * @param margin The distance inset from the boundaries.
-     * @return True if the pose is within the field boundaries, false otherwise.
-     */
-    public static boolean isPoseInField(Translation2d translation, Distance margin) {
-        return translation.getX() >= margin.in(Meters)
-                && translation.getX() <= FieldConstants.FIELD_LENGTH - margin.in(Meters)
-                && translation.getY() >= margin.in(Meters)
-                && translation.getY() <= FieldConstants.FIELD_WIDTH - margin.in(Meters);
-    }
 }
 
     // /**
@@ -177,4 +160,19 @@ public class FieldUtil {
     // return shouldFlip()
     // ? blue_translation.rotateAround(fieldCenter3D, new Rotation3d(0, 0, 180.00))
     // : blue_translation;
+    // }
+
+    // /**
+    // * Checks if a given pose is within the field boundaries, with a specified margin.
+    // *
+    // * @param translation The tranlslation to check.
+    // * @param margin The distance inset from the boundaries.
+    // * @return True if the pose is within the field boundaries, false otherwise.
+    // */
+    // public static boolean isPoseInField(Translation2d translation, Distance margin)
+    // {
+    // return translation.getX() >= margin.in(Meters)
+    // && translation.getX() <= FieldConstants.FIELD_LENGTH - margin.in(Meters)
+    // && translation.getY() >= margin.in(Meters)
+    // && translation.getY() <= FieldConstants.FIELD_WIDTH - margin.in(Meters);
     // }
