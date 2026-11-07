@@ -49,7 +49,6 @@ import frc.robot.commands.autos.dcmp.DCMPC1678AutoSafe;
 import frc.robot.commands.autos.tuning.WheelCharacterizationAuto;
 import frc.robot.commands.autos.utils.AutoContext;
 import frc.robot.commands.autos.utils.AutoOption;
-import frc.robot.commands.autos.wpi.C1678Auto;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.indexer.Indexer;
@@ -159,16 +158,6 @@ public class RobotContainer {
                                         BAuto.create(ctx, true),
                                         "FullNeutral-Left",
                                         FullNeutralAuto.create(ctx)),
-                                "Wpi",
-                                Map.of(
-                                        "C1678Unsafe-Left",
-                                        C1678Auto.create(ctx, false, false),
-                                        "C1678Unsafe-Right",
-                                        C1678Auto.create(ctx, true, false),
-                                        "C1678Safe-Left",
-                                        C1678Auto.create(ctx, false, true),
-                                        "C1678Safe-Right",
-                                        C1678Auto.create(ctx, true, true)),
                                 "Dcmp",
                                 Map.of(
                                         "B-Left",
