@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -460,6 +461,31 @@ public class RobotContainer {
         new Trigger(RobotController::isBrownedOut)
                 .debounce(0.5, DebounceType.kFalling)
                 .whileTrue(controller.rumble(1.0));
+
+        operatorController
+                .rightBumper()
+                .onTrue(
+                        Commands.runOnce(
+                                () ->
+                                        CommandScheduler.getInstance()
+                                                .setDefaultCommand(
+                                                        drive,
+                                                        DriveCommands.joystickDrive(
+                                                                drive,
+                                                                () -> -controller.getLeftY(),
+                                                                () -> -controller.getLeftX(),
+                                                                () -> -controller.getRightX()))))
+                .onFalse(
+                        Commands.runOnce(
+                                () ->
+                                        CommandScheduler.getInstance()
+                                                .setDefaultCommand(
+                                                        drive,
+                                                        DriveCommands.joystickDrive(
+                                                                drive,
+                                                                () -> -controller.getLeftY() * 0.85,
+                                                                () -> -controller.getLeftX() * 0.85 `,
+                                                                () -> -controller.getRightX()))));
 
         // SmartDashboard.putBoolean("Browned Out!", false);
         // new Trigger(Count.over(1.0, RobotController::isBrownedOut).greaterThanEquals(5))
