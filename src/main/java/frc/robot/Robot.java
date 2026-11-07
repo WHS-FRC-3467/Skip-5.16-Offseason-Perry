@@ -111,10 +111,10 @@ public class Robot extends LoggedRobot {
                     || constants.SteerMotorType != SteerMotorArrangement.TalonFX_Integrated) {
                 throw new RuntimeException(
                         "You are using an unsupported swerve configuration, which this template"
-                                + " does not support without manual customization. The 2025 release of"
-                                + " Phoenix supports some swerve configurations which were not"
-                                + " available during 2025 beta testing, preventing any development and"
-                                + " support from the AdvantageKit developers.");
+                            + " does not support without manual customization. The 2025 release of"
+                            + " Phoenix supports some swerve configurations which were not"
+                            + " available during 2025 beta testing, preventing any development and"
+                            + " support from the AdvantageKit developers.");
             }
         }
 
@@ -241,7 +241,7 @@ public class Robot extends LoggedRobot {
                                 robotContainer.drive,
                                 () -> -robotContainer.controller.getLeftY(),
                                 () -> -robotContainer.controller.getLeftX(),
-                                () -> -robotContainer.controller.getRightX()));%
+                                () -> -robotContainer.controller.getRightX()));
 
         // Stop and stow the shooter at start of teleop
         CommandScheduler.getInstance().schedule(robotContainer.shooter.stopAndStow());
