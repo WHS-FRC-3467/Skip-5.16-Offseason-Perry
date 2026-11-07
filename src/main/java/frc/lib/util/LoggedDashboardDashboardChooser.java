@@ -1,5 +1,7 @@
 package frc.lib.util;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,6 +47,7 @@ public class LoggedDashboardDashboardChooser<V> {
             String key, Map<String, Map<String, Optional<V>>> treeMap) {
 
         this.dashboardChooser = new LoggedDashboardChooser<>(key);
+        SmartDashboard.putBoolean(key + "IsOk", false);
 
         if (treeMap.isEmpty()) {
             this.treeMap = Map.of("null", Map.of());
@@ -73,15 +76,17 @@ public class LoggedDashboardDashboardChooser<V> {
                     if (choice == null) {
                         return;
                     }
+                    SmartDashboard.putBoolean(key + "IsOk", choice.value.isPresent());
                     if (treeMode) {
 
                         dashboardChooser.clearOptions(this.treeMap.get(choice.name));
 
-                        dashboardChooser.clearSelected();
+                        // dashboardChooser.clearSelected();
 
                         treeMode = false;
 
                     } else {
+
                         if (choice.name == "..") {
                             dashboardChooser.clear();
                             for (var entry : this.treeMap.entrySet()) {
@@ -96,6 +101,7 @@ public class LoggedDashboardDashboardChooser<V> {
                             V value = choice.value.get();
 
                             if (this.onChange.isPresent()) {
+
                                 this.onChange.get().accept(value);
                             }
                         }
