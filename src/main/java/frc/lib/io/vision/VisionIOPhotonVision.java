@@ -60,18 +60,16 @@ public class VisionIOPhotonVision implements VisionIO {
         }
 
         var unreadResults = photonCamera.getAllUnreadResults();
-        inputs.rawResults =
-                unreadResults.stream()
-                        .map(VisionIOPhotonVision::packPhotonResult)
-                        .toArray(byte[][]::new);
-        inputs.captureTimestampsUs =
-                unreadResults.stream()
-                        .mapToLong(result -> result.metadata.captureTimestampMicros)
-                        .toArray();
-        inputs.publishTimestampsUs =
-                unreadResults.stream()
-                        .mapToLong(result -> result.metadata.publishTimestampMicros)
-                        .toArray();
+        if (!unreadResults.isEmpty()) {
+            var result = unreadResults.get(unreadResults.size() - 1);
+            inputs.rawResults = new byte[][] {packPhotonResult(result)};
+            inputs.captureTimestampsUs = new long[] {result.metadata.captureTimestampMicros};
+            inputs.publishTimestampsUs = new long[] {result.metadata.publishTimestampMicros};
+        } else {
+            inputs.rawResults = new byte[0][];
+            inputs.captureTimestampsUs = new long[0];
+            inputs.publishTimestampsUs = new long[0];
+        }
     }
 
     private static byte[] packPhotonResult(PhotonPipelineResult result) {
