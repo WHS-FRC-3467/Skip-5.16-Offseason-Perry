@@ -15,19 +15,14 @@
 
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static org.wpilib.units.Units.KilogramSquareMeters;
+import static org.wpilib.units.Units.RotationsPerSecond;
+import static org.wpilib.units.Units.RotationsPerSecondPerSecond;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.MomentOfInertia;
 
 import frc.lib.io.motor.MotorIO;
 import frc.lib.io.motor.MotorIO.PIDSlot;
@@ -43,6 +38,11 @@ import frc.robot.Robot;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import org.wpilib.math.system.DCMotor;
+import org.wpilib.units.measure.AngularAcceleration;
+import org.wpilib.units.measure.AngularVelocity;
+import org.wpilib.units.measure.MomentOfInertia;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class IntakeRollerConstants {

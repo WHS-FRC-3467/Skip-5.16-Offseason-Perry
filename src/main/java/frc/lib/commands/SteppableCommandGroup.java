@@ -5,10 +5,9 @@
 // https://github.com/Mechanical-Advantage/RobotCode2024Public/blob/main/src/main/java/org/littletonrobotics/frc2024/util/SteppableCommandGroup.java
 package frc.lib.commands;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.command2.button.Trigger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ public class SteppableCommandGroup extends Command {
     private int currentCommandIndex = -1;
     private boolean commandFinished = false;
     private boolean runsWhenDisabled = true;
-    private InterruptionBehavior interruptionBehavior = InterruptionBehavior.kCancelIncoming;
+    private InterruptionBehavior interruptionBehavior = InterruptionBehavior.CANCEL_INCOMING;
 
     /**
      * Constructs a SteppableCommandGroup.
@@ -51,8 +50,8 @@ public class SteppableCommandGroup extends Command {
             this.commands.add(command);
             this.addRequirements(command.getRequirements());
             runsWhenDisabled &= command.runsWhenDisabled();
-            if (command.getInterruptionBehavior() == InterruptionBehavior.kCancelSelf) {
-                interruptionBehavior = InterruptionBehavior.kCancelSelf;
+            if (command.getInterruptionBehavior() == InterruptionBehavior.CANCEL_SELF) {
+                interruptionBehavior = InterruptionBehavior.CANCEL_SELF;
             }
         }
     }
@@ -90,7 +89,7 @@ public class SteppableCommandGroup extends Command {
         reverseTriggerState = reverseTrigger.getAsBoolean();
 
         int step = stepForward ? 1 : (stepReverse ? -1 : 0);
-        int newCommandIndex = MathUtil.clamp(currentCommandIndex + step, 0, commands.size() - 1);
+        int newCommandIndex = Math.clamp(currentCommandIndex + step, 0, commands.size() - 1);
         if (newCommandIndex != currentCommandIndex) {
             if (!commandFinished) {
                 currentCommand.end(true);

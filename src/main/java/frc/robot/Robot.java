@@ -21,14 +21,6 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.util.Elastic;
@@ -42,6 +34,13 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.hardware.power.PowerDistribution.ModuleType;
+import org.wpilib.smartdashboard.Field2d;
+import org.wpilib.telemetry.Telemetry;
+import org.wpilib.tunable.Tunables;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -77,7 +76,8 @@ public class Robot extends LoggedRobot {
                 // Running on a real robot, log to a USB stick ("/U/logs")
                 Logger.addDataReceiver(new WPILOGWriter());
                 Logger.addDataReceiver(new NT4Publisher());
-                LoggedPowerDistribution.getInstance(Ports.pdh.id(), ModuleType.kRev);
+                LoggedPowerDistribution.getInstance(
+                        Ports.pdh.canPort().orElseThrow().value, Ports.pdh.id(), ModuleType.REV);
             }
 
             case SIM -> {
@@ -130,15 +130,14 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance()
                 .onCommandInterrupt(command -> activeCommandNames.remove(command.getName()));
 
-        DriverStation.silenceJoystickConnectionWarning(!Robot.isReal());
-    }
+        // (WPILib 2027 reports missing joysticks as Alerts instead of console warnings, so the
+        // 2026 silenceJoystickConnectionWarning call is no longer needed.)
 
-    @Override
-    public void robotInit() {
+        // Formerly robotInit(), which WPILib 2027 removed; runs at the end of construction.
         // Log first 8 character of robot serial
         Logger.recordOutput("Robot Serial", System.getenv("serialnum"));
 
-        SmartDashboard.putData("Robot Pose Field Map", fieldMap);
+        Tunables.publish("Robot Pose Field Map", fieldMap);
 
         // Warms up elastic function call to prevent delay during enable of auto
         Elastic.selectTab(1);
@@ -182,7 +181,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledInit() {
         // Switch to Autonomous tab in Elastic Dashboard
-        if (DriverStation.isFMSAttached()) {
+        if (org.wpilib.driverstation.RobotState.isFMSAttached()) {
             Elastic.selectTab(1);
         }
     }
@@ -255,20 +254,19 @@ public class Robot extends LoggedRobot {
     public void teleopPeriodic() {
         // Hub State management
         HubState.getInstance().periodic();
-        SmartDashboard.putBoolean(
-                "Manual Brownout Protection Enabled", robotContainer.brownoutEnabled);
+        Telemetry.log("Manual Brownout Protection Enabled", robotContainer.brownoutEnabled);
     }
 
     /** This function is called once when test mode is enabled. */
     @Override
-    public void testInit() {
+    public void utilityInit() {
         autonomousCommand = null;
         CommandScheduler.getInstance().cancelAll();
     }
 
     /** This function is called periodically during test mode. */
     @Override
-    public void testPeriodic() {}
+    public void utilityPeriodic() {}
 
     /** This function is called once when the robot is first started up. */
     @Override

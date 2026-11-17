@@ -15,20 +15,7 @@
 
 package frc.lib.posestimator;
 
-import static edu.wpi.first.units.Units.Seconds;
-
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.units.measure.Time;
+import static org.wpilib.units.Units.Seconds;
 
 import frc.lib.posestimator.SwerveOdometry.OdometryObservation;
 import frc.robot.FieldConstants.AprilTagLayoutType;
@@ -37,6 +24,18 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Twist2d;
+import org.wpilib.math.kinematics.SwerveDriveKinematics;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.numbers.N3;
+import org.wpilib.math.util.Nat;
+import org.wpilib.units.measure.Time;
 
 import java.util.List;
 import java.util.Optional;
@@ -155,9 +154,9 @@ public class PoseEstimator {
         odometry.addOdometryObservation(observation);
         Pose2d newOdometryPose = odometry.odometryPose();
 
-        Twist2d twist = lastOdometryPose.log(newOdometryPose);
+        Twist2d twist = newOdometryPose.minus(lastOdometryPose).log();
 
-        estimatedPose = estimatedPose.exp(twist);
+        estimatedPose = estimatedPose.plus(twist.exp());
     }
 
     /**
@@ -176,9 +175,9 @@ public class PoseEstimator {
         odometry.addGyroObservation(observation);
         Pose2d newOdometryPose = odometry.odometryPose();
 
-        Twist2d twist = lastOdometryPose.log(newOdometryPose);
+        Twist2d twist = newOdometryPose.minus(lastOdometryPose).log();
 
-        estimatedPose = estimatedPose.exp(twist);
+        estimatedPose = estimatedPose.plus(twist.exp());
     }
 
     private void updateOdometryStdDevMultipliersFromSkid(boolean[] badWheels) {
@@ -279,7 +278,7 @@ public class PoseEstimator {
 
         // Solve Kalman gain matrix given observation standard deviations
         // Logic is copied from:
-        // https://github.com/wpilibsuite/allwpilib/blob/b8d6bc2eb1b6cea10d1179939114d041945e172a/wpimath/src/main/java/edu/wpi/first/math/estimator/PoseEstimator.java#L93-L109
+        // https://github.com/wpilibsuite/allwpilib/blob/b8d6bc2eb1b6cea10d1179939114d041945e172a/wpimath/src/main/java/org.wpilib.math/estimator/PoseEstimator.java#L93-L109
         double[] visionVariances = {
             visionLinearVariance, // X axis
             visionLinearVariance, // Y axis
@@ -300,7 +299,7 @@ public class PoseEstimator {
         // Transform between our best estimated pose at the time the frame was captured to where the
         // camera is saying we should be, unscaled (without any Kalman gain applied)
         // Logic is copied from:
-        // https://github.com/wpilibsuite/allwpilib/blob/b8d6bc2eb1b6cea10d1179939114d041945e172a/wpimath/src/main/java/edu/wpi/first/math/estimator/PoseEstimator.java#L276-L292
+        // https://github.com/wpilibsuite/allwpilib/blob/b8d6bc2eb1b6cea10d1179939114d041945e172a/wpimath/src/main/java/org.wpilib.math/estimator/PoseEstimator.java#L276-L292
         Transform2d unscaledVisionCorrection = new Transform2d(oldPose, newVisionPose);
 
         double translationSigma =
@@ -415,7 +414,7 @@ public class PoseEstimator {
                     AprilTagLayoutType.OFFICIAL
                             .getLayout()
                             .getTagPose(seenTagIds[i])
-                            .orElse(Pose3d.kZero);
+                            .orElse(Pose3d.ZERO);
         }
 
         Logger.recordOutput(LOG_PREFIX + "Vision/Accepted", accepted);
@@ -432,7 +431,7 @@ public class PoseEstimator {
         Logger.recordOutput(LOG_PREFIX + "Vision/RotationNSigma", rotationNSigma);
         Logger.recordOutput(
                 LOG_PREFIX + "Vision/CandidatePose",
-                new Pose2d[] {candidatePose != null ? candidatePose : Pose2d.kZero});
+                new Pose2d[] {candidatePose != null ? candidatePose : Pose2d.ZERO});
         if (accepted && candidatePose != null) {
             Logger.recordOutput(LOG_PREFIX + "Vision/AcceptedPose", new Pose2d[] {candidatePose});
         } else {

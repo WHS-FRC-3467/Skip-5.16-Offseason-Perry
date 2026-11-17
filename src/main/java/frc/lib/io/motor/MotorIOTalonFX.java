@@ -15,10 +15,10 @@
 
 package frc.lib.io.motor;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static org.wpilib.units.Units.Amps;
+import static org.wpilib.units.Units.Rotations;
+import static org.wpilib.units.Units.RotationsPerSecond;
+import static org.wpilib.units.Units.RotationsPerSecondPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus;
@@ -30,20 +30,19 @@ import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-
+import frc.lib.util.AlertUtil;
 import frc.lib.util.CANUpdateThread;
 import frc.lib.util.Device;
 import frc.lib.util.PID;
+
+import org.wpilib.math.filter.Debouncer;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.AngularAcceleration;
+import org.wpilib.units.measure.AngularVelocity;
+import org.wpilib.units.measure.Current;
+import org.wpilib.units.measure.Temperature;
+import org.wpilib.units.measure.Voltage;
+import org.wpilib.util.Alert;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -122,15 +121,16 @@ public class MotorIOTalonFX implements MotorIO {
         motor = new TalonFX(main.id(), new CANBus(main.bus()));
         updateThread
                 .ctreCheckErrorAndRetry(() -> motor.getConfigurator().apply(config))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
 
         // Initialize lists
         disconnectAlerts = new Alert[followerData.length + 1];
-        disconnectAlerts[0] = new Alert(name + " is disconnected!", AlertType.kError);
+        disconnectAlerts[0] =
+                AlertUtil.create(
+                        name + " is disconnected!", name + " is disconnected!", Alert.Level.HIGH);
 
         disconnectDebouncers = new Debouncer[followerData.length + 1];
         disconnectDebouncers[0] = new Debouncer(0.5);
@@ -140,16 +140,20 @@ public class MotorIOTalonFX implements MotorIO {
 
         for (int i = 0; i < followerData.length; i++) {
             disconnectAlerts[i + 1] =
-                    new Alert(name + " follower " + i + " is disconnected!", AlertType.kError);
+                    AlertUtil.create(
+                            name + " follower " + i + " is disconnected!",
+                            name + " follower " + i + " is disconnected!",
+                            Alert.Level.HIGH);
             disconnectDebouncers[i + 1] = new Debouncer(0.5);
 
             Device.CAN id = followerData[i].id();
 
             if (!id.bus().equals(main.bus())) {
                 followerOnWrongBusAlert[i] =
-                        new Alert(
+                        AlertUtil.create(
                                 name + " follower " + i + " is on a different CAN bus than main!",
-                                AlertType.kError);
+                                name + " follower " + i + " is on a different CAN bus than main!",
+                                Alert.Level.HIGH);
                 followerOnWrongBusAlert[i].set(true);
             }
 
@@ -158,11 +162,10 @@ public class MotorIOTalonFX implements MotorIO {
             TalonFX follower = followers[i];
             updateThread
                     .ctreCheckErrorAndRetry(() -> follower.getConfigurator().apply(config))
-                    .exceptionally(
-                            ex -> {
-                                LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                                return null;
-                            });
+                    .exceptionally(ex -> {
+                        LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                        return null;
+                    });
             follower.setControl(
                     new Follower(
                             main.id(),
@@ -182,24 +185,22 @@ public class MotorIOTalonFX implements MotorIO {
         closedLoopReferenceSlope = motor.getClosedLoopReferenceSlope();
 
         updateThread
-                .ctreCheckErrorAndRetry(
-                        () ->
-                                BaseStatusSignal.setUpdateFrequencyForAll(
-                                        100.0,
-                                        position,
-                                        velocity,
-                                        supplyVoltage,
-                                        supplyCurrent,
-                                        torqueCurrent,
-                                        temperature,
-                                        closedLoopError,
-                                        closedLoopReference,
-                                        closedLoopReferenceSlope))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .ctreCheckErrorAndRetry(() ->
+                        BaseStatusSignal.setUpdateFrequencyForAll(
+                                100.0,
+                                position,
+                                velocity,
+                                supplyVoltage,
+                                supplyCurrent,
+                                torqueCurrent,
+                                temperature,
+                                closedLoopError,
+                                closedLoopReference,
+                                closedLoopReferenceSlope))
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
 
         motor.optimizeBusUtilization(0, 1.0);
     }
@@ -378,7 +379,7 @@ public class MotorIOTalonFX implements MotorIO {
      */
     @Override
     public void runCurrent(Current current, double dutyCycle) {
-        double dutyCyclePercent = MathUtil.clamp(dutyCycle, 0.0, 1.0);
+        double dutyCyclePercent = Math.clamp(dutyCycle, 0.0, 1.0);
         motor.setControl(currentControl.withOutput(current).withMaxAbsDutyCycle(dutyCyclePercent));
     }
 
@@ -389,7 +390,7 @@ public class MotorIOTalonFX implements MotorIO {
      */
     @Override
     public void runDutyCycle(double dutyCycle, boolean ignoringSoftLimits) {
-        double dutyCyclePercent = MathUtil.clamp(dutyCycle, -1.0, 1.0);
+        double dutyCyclePercent = Math.clamp(dutyCycle, -1.0, 1.0);
         motor.setControl(
                 dutyCycleControl
                         .withOutput(dutyCyclePercent)
@@ -488,27 +489,25 @@ public class MotorIOTalonFX implements MotorIO {
         currentConfig.CurrentLimits.SupplyCurrentLowerLimit = currentLimitAmps;
 
         updateThread
-                .ctreCheckErrorAndRetry(
-                        () -> {
-                            StatusCode status = motor.getConfigurator().apply(currentConfig);
-                            if (!status.isOK()) {
-                                return status;
-                            }
+                .ctreCheckErrorAndRetry(() -> {
+                    StatusCode status = motor.getConfigurator().apply(currentConfig);
+                    if (!status.isOK()) {
+                        return status;
+                    }
 
-                            for (TalonFX follower : followers) {
-                                status = follower.getConfigurator().apply(currentConfig);
-                                if (!status.isOK()) {
-                                    return status;
-                                }
-                            }
+                    for (TalonFX follower : followers) {
+                        status = follower.getConfigurator().apply(currentConfig);
+                        if (!status.isOK()) {
+                            return status;
+                        }
+                    }
 
-                            return StatusCode.OK;
-                        })
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                    return StatusCode.OK;
+                })
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
     }
 
     @Override
@@ -533,19 +532,15 @@ public class MotorIOTalonFX implements MotorIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> motor.getConfigurator().apply(mmConfig, 0.05))
-                .thenRun(
-                        () -> {
-                            lastAppliedMmCruiseVelocity = cruiseVelocity;
-                            lastAppliedMmAcceleration = acceleration;
-                        })
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(
-                                    Level.WARNING,
-                                    "Failed to apply MotionMagic config asynchronously",
-                                    ex);
-                            return null;
-                        });
+                .thenRun(() -> {
+                    lastAppliedMmCruiseVelocity = cruiseVelocity;
+                    lastAppliedMmAcceleration = acceleration;
+                })
+                .exceptionally(ex -> {
+                    LOGGER.log(
+                            Level.WARNING, "Failed to apply MotionMagic config asynchronously", ex);
+                    return null;
+                });
     }
 
     private void setPIDSlot0(PID pid) {
@@ -561,11 +556,10 @@ public class MotorIOTalonFX implements MotorIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> motor.getConfigurator().apply(currentConfig))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
     }
 
     private void setPIDSlot1(PID pid) {
@@ -581,11 +575,10 @@ public class MotorIOTalonFX implements MotorIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> motor.getConfigurator().apply(currentConfig))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
     }
 
     private void setPIDSlot2(PID pid) {
@@ -601,11 +594,10 @@ public class MotorIOTalonFX implements MotorIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> motor.getConfigurator().apply(currentConfig))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
     }
 
     @Override

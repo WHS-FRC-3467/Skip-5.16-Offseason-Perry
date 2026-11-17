@@ -34,17 +34,17 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Voltage;
-
 import frc.lib.util.CANUpdateThread;
 import frc.lib.util.PID;
 import frc.robot.Ports;
+
+import org.wpilib.math.filter.Debouncer;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.util.Units;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.AngularVelocity;
+import org.wpilib.units.measure.Current;
+import org.wpilib.units.measure.Voltage;
 
 import java.util.Queue;
 import java.util.logging.Level;
@@ -138,18 +138,16 @@ public class ModuleIOTalonFX implements ModuleIO {
         this.driveConfig = driveConfig;
         updateThread
                 .ctreCheckErrorAndRetry(() -> driveTalon.getConfigurator().apply(driveConfig, 0.25))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
         updateThread
                 .ctreCheckErrorAndRetry(() -> driveTalon.setPosition(0.0, 0.25))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
 
         // Configure turn motor
         var turnConfig = new TalonFXConfiguration();
@@ -186,11 +184,10 @@ public class ModuleIOTalonFX implements ModuleIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> turnTalon.getConfigurator().apply(turnConfig, 0.25))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
 
         // Configure CANCoder
         CANcoderConfiguration cancoderConfig = constants.EncoderInitialConfigs;
@@ -334,11 +331,10 @@ public class ModuleIOTalonFX implements ModuleIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> driveTalon.getConfigurator().apply(driveConfig))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
     }
 
     @Override
@@ -354,11 +350,10 @@ public class ModuleIOTalonFX implements ModuleIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> driveTalon.getConfigurator().apply(driveConfig))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
     }
 
     @Override
@@ -380,10 +375,9 @@ public class ModuleIOTalonFX implements ModuleIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> turnTalon.getConfigurator().apply(turnConfig))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
     }
 }

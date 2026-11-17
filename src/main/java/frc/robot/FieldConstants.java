@@ -6,26 +6,34 @@
 // the root directory of this project.
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Pounds;
+import static org.wpilib.units.Units.Inches;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.Pounds;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Mass;
-import edu.wpi.first.wpilibj.Filesystem;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import org.wpilib.fields.Field;
+import org.wpilib.fields.FieldTag;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Quaternion;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.util.Units;
+import org.wpilib.system.Filesystem;
+import org.wpilib.units.measure.Distance;
+import org.wpilib.units.measure.Mass;
+
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Contains information for location of field element and other useful reference points.
@@ -322,14 +330,14 @@ public class FieldConstants {
         NONE("2026-none");
 
         private final String name;
-        private volatile AprilTagFieldLayout layout;
+        private volatile Field layout;
         private volatile String layoutString;
 
         AprilTagLayoutType(String name) {
             this.name = name;
         }
 
-        public AprilTagFieldLayout getLayout() {
+        public Field getLayout() {
             if (layout == null) {
                 synchronized (this) {
                     if (layout == null) {
@@ -348,8 +356,11 @@ public class FieldConstants {
                                                     "apriltags",
                                                     FIELD_TYPE.getJsonFolder(),
                                                     name + ".json");
-                            layout = new AprilTagFieldLayout(p);
-                            layoutString = new ObjectMapper().writeValueAsString(layout);
+                            // The deploy files use the 2026 AprilTagFieldLayout JSON format, which
+                            // the C2 coprocessor also consumes, so send the raw text and parse it
+                            // into a WPILib 2027 Field here.
+                            layoutString = Files.readString(p);
+                            layout = parseLayout(name, layoutString);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -357,6 +368,39 @@ public class FieldConstants {
                 }
             }
             return layout;
+        }
+
+        private static Field parseLayout(String name, String json) throws IOException {
+            JsonNode root = new ObjectMapper().readTree(json);
+            List<FieldTag> tags = new ArrayList<>();
+            for (JsonNode tag : root.path("tags")) {
+                JsonNode translation = tag.path("pose").path("translation");
+                JsonNode quaternion = tag.path("pose").path("rotation").path("quaternion");
+                tags.add(
+                        new FieldTag(
+                                tag.path("ID").asInt(),
+                                new Pose3d(
+                                        new Translation3d(
+                                                translation.path("x").asDouble(),
+                                                translation.path("y").asDouble(),
+                                                translation.path("z").asDouble()),
+                                        new Rotation3d(
+                                                new Quaternion(
+                                                        quaternion.path("W").asDouble(),
+                                                        quaternion.path("X").asDouble(),
+                                                        quaternion.path("Y").asDouble(),
+                                                        quaternion.path("Z").asDouble())))));
+            }
+            JsonNode field = root.path("field");
+            return new Field(
+                    name,
+                    "2026",
+                    "Rebuilt",
+                    null,
+                    field.path("length").asDouble(),
+                    field.path("width").asDouble(),
+                    "frc",
+                    tags);
         }
 
         public String getLayoutString() {

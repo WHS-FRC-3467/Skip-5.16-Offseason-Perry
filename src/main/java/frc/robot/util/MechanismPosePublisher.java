@@ -15,21 +15,20 @@
 
 package frc.robot.util;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Rotations;
-
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import static org.wpilib.units.Units.Degrees;
+import static org.wpilib.units.Units.Inches;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.Rotations;
 
 import frc.robot.subsystems.intake.IntakeLinearConstants;
 import frc.robot.subsystems.intake.IntakeSuperstructure;
 import frc.robot.subsystems.shooter.ShooterSuperstructure;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation3d;
 
 public record MechanismPosePublisher(IntakeSuperstructure intake, ShooterSuperstructure shooter) {
     private static final double DOOHICKEY_MAX_ROTATION_DEGREES = 60;
@@ -54,7 +53,7 @@ public record MechanismPosePublisher(IntakeSuperstructure intake, ShooterSuperst
                         .rotateBy(directionRot);
 
         // Apply ONLY a translation (identity rotation), so pose orientation does not change.
-        var linearSlide = Pose3d.kZero.transformBy(new Transform3d(offset, new Rotation3d()));
+        var linearSlide = Pose3d.ZERO.transformBy(new Transform3d(offset, new Rotation3d()));
 
         double linearExtensionPercent =
                 (intake.getExtension().in(Inches) / IntakeLinearConstants.MAX_DISTANCE.in(Inches));
@@ -62,7 +61,7 @@ public record MechanismPosePublisher(IntakeSuperstructure intake, ShooterSuperst
         // Offset from origin (inverse of 3rd component in
         // ascope_assets/Robot_Perry_2026/config.json)
         var doohickey =
-                new Pose3d(-0.185, 0, 0.255, Rotation3d.kZero)
+                new Pose3d(-0.185, 0, 0.255, Rotation3d.ZERO)
                         .transformBy(
                                 new Transform3d(
                                         // Move with linear slide

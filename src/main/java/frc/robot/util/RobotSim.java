@@ -4,18 +4,10 @@
 
 package frc.robot.util;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static org.wpilib.units.Units.Degrees;
+import static org.wpilib.units.Units.Inches;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.RotationsPerSecond;
 
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
@@ -28,6 +20,14 @@ import frc.robot.subsystems.shooter.ShooterSuperstructure;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.tunable.Tunables;
+import org.wpilib.units.measure.LinearVelocity;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RobotSim {
@@ -50,51 +50,46 @@ public class RobotSim {
             Indexer indexer,
             IntakeSuperstructure intake) {
         Trigger shootSimFuel =
-                new Trigger(
-                        () ->
-                                (shooter.isNearGoal.getAsBoolean()
-                                        && (indexer.getVelocity().in(RotationsPerSecond) > 3.0)
-                                        && (fuelSim.getHeldFuel() > 0)));
+                new Trigger(() ->
+                        (shooter.isNearGoal.getAsBoolean()
+                                && (indexer.getVelocity().in(RotationsPerSecond) > 3.0)
+                                && (fuelSim.getHeldFuel() > 0)));
 
         shootSimFuel.whileTrue(
                 Commands.repeatingSequence(
                         Commands.waitSeconds(.1),
-                        Commands.runOnce(
-                                () -> {
-                                    LinearVelocity ballVelocity =
-                                            shooter.getLinearVelocity()
-                                                    .times(BALL_VELOCITY_FUDGE.get());
+                        Commands.runOnce(() -> {
+                            LinearVelocity ballVelocity =
+                                    shooter.getLinearVelocity().times(BALL_VELOCITY_FUDGE.get());
 
-                                    fuelSim.spawnFuel(
-                                            new Pose3d(robotState.getEstimatedPose())
-                                                    .plus(
-                                                            new Transform3d(
-                                                                    Inches.of(10),
-                                                                    Inches.of(3.6),
-                                                                    Inches.of(21),
-                                                                    Rotation3d.kZero))
-                                                    .getTranslation(),
-                                            fuelSim.launchVel(
-                                                    ballVelocity,
-                                                    Degrees.of(75.0)
-                                                            .minus(shooter.getHoodAngle())));
-                                    fuelSim.fillHopperBy(-1);
-                                    if (fuelSim.getHeldFuel() == 0) return;
-                                    fuelSim.spawnFuel(
-                                            new Pose3d(robotState.getEstimatedPose())
-                                                    .plus(
-                                                            new Transform3d(
-                                                                    Inches.of(10),
-                                                                    Inches.of(-3.6),
-                                                                    Inches.of(21),
-                                                                    Rotation3d.kZero))
-                                                    .getTranslation(),
-                                            fuelSim.launchVel(
-                                                    ballVelocity,
-                                                    Degrees.of(75.0)
-                                                            .minus(shooter.getHoodAngle())));
-                                    fuelSim.fillHopperBy(-1);
-                                })));
+                            fuelSim.spawnFuel(
+                                    new Pose3d(robotState.getEstimatedPose())
+                                            .plus(
+                                                    new Transform3d(
+                                                            Inches.of(10),
+                                                            Inches.of(3.6),
+                                                            Inches.of(21),
+                                                            Rotation3d.ZERO))
+                                            .getTranslation(),
+                                    fuelSim.launchVel(
+                                            ballVelocity,
+                                            Degrees.of(75.0).minus(shooter.getHoodAngle())));
+                            fuelSim.fillHopperBy(-1);
+                            if (fuelSim.getHeldFuel() == 0) return;
+                            fuelSim.spawnFuel(
+                                    new Pose3d(robotState.getEstimatedPose())
+                                            .plus(
+                                                    new Transform3d(
+                                                            Inches.of(10),
+                                                            Inches.of(-3.6),
+                                                            Inches.of(21),
+                                                            Rotation3d.ZERO))
+                                            .getTranslation(),
+                                    fuelSim.launchVel(
+                                            ballVelocity,
+                                            Degrees.of(75.0).minus(shooter.getHoodAngle())));
+                            fuelSim.fillHopperBy(-1);
+                        })));
 
         Trigger intakeSimFuel = new Trigger(intake::isIntaking);
 
@@ -115,7 +110,8 @@ public class RobotSim {
                 intakeSimFuel);
 
         fuelSim.start();
-        SmartDashboard.putData(
+        Tunables.publish(
+                "Reset Fuel",
                 Commands.runOnce(
                                 () -> {
                                     // Reset field fuels, then fill the hopper with placeholder

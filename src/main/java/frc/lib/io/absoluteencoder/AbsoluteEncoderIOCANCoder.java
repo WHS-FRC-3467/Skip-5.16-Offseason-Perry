@@ -21,10 +21,10 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 
-import edu.wpi.first.units.measure.Angle;
-
 import frc.lib.util.CANUpdateThread;
 import frc.lib.util.Device;
+
+import org.wpilib.units.measure.Angle;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,21 +57,19 @@ public class AbsoluteEncoderIOCANCoder implements AbsoluteEncoderIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> CANCoder.getConfigurator().apply(configuration))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
 
         angle = CANCoder.getAbsolutePosition();
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> angle.setUpdateFrequency(200))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
     }
 
     @Override

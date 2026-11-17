@@ -14,12 +14,7 @@
  */
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.*;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.units.measure.*;
-import edu.wpi.first.wpilibj2.command.*;
+import static org.wpilib.units.Units.*;
 
 import frc.lib.io.motor.MotorIO.PIDSlot;
 import frc.lib.mechanisms.flywheel.FlywheelMechanism;
@@ -28,6 +23,10 @@ import frc.lib.util.LoggedTrigger;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.LoggerHelper;
 import frc.lib.util.PowerProfiler;
+
+import org.wpilib.command2.*;
+import org.wpilib.math.filter.Debouncer;
+import org.wpilib.units.measure.*;
 
 public class IntakeSuperstructure extends SubsystemBase implements AutoCloseable {
 
@@ -39,7 +38,7 @@ public class IntakeSuperstructure extends SubsystemBase implements AutoCloseable
     private final LoggedTrigger isRollerSafe;
 
     private final Debouncer rollerSafeDebouncer =
-            new Debouncer(0.02, Debouncer.DebounceType.kRising);
+            new Debouncer(0.02, Debouncer.DebounceType.RISING);
 
     private static final LoggedTunableNumber MIN_SAFE_ROLLER_DISTANCE =
             new LoggedTunableNumber(
@@ -96,7 +95,7 @@ public class IntakeSuperstructure extends SubsystemBase implements AutoCloseable
 
     private Distance clampDistance(Distance goal) {
         return Meters.of(
-                MathUtil.clamp(
+                Math.clamp(
                         goal.in(Meters),
                         IntakeLinearConstants.MIN_DISTANCE.in(Meters),
                         IntakeLinearConstants.MAX_DISTANCE.in(Meters)));
@@ -119,10 +118,9 @@ public class IntakeSuperstructure extends SubsystemBase implements AutoCloseable
             LinearAcceleration acceleration,
             String name) {
         Distance clampedGoal = clampDistance(goal);
-        return this.runOnce(
-                        () ->
-                                intakeLinearIO.runLinearPosition(
-                                        clampedGoal, PIDSlot.SLOT_0, cruiseVelocity, acceleration))
+        return this.runOnce(() ->
+                        intakeLinearIO.runLinearPosition(
+                                clampedGoal, PIDSlot.SLOT_0, cruiseVelocity, acceleration))
                 .withName(name);
     }
 

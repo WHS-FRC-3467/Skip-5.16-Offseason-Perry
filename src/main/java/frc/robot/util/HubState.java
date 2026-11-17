@@ -1,9 +1,5 @@
 package frc.robot.util;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import frc.lib.util.LoggedTrigger;
 
 import lombok.AccessLevel;
@@ -11,6 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.DriverStationErrors;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.telemetry.Telemetry;
 
 import java.util.Arrays;
 
@@ -30,8 +30,8 @@ public class HubState {
 
     @Getter private static final HubState instance = new HubState();
 
-    private volatile Alliance activeAlliance = Alliance.Blue;
-    private volatile Alliance firstActiveAlliance = Alliance.Blue;
+    private volatile Alliance activeAlliance = Alliance.BLUE;
+    private volatile Alliance firstActiveAlliance = Alliance.BLUE;
 
     private boolean firstAllianceInitialized = false;
 
@@ -57,13 +57,13 @@ public class HubState {
     private void initializeFirstActiveAlliance() {
         if (firstAllianceInitialized) return;
 
-        String message = DriverStation.getGameSpecificMessage();
+        String message = MatchState.getGameData().orElse("");
         if (message != null && !message.isEmpty()) {
-            firstActiveAlliance = message.charAt(0) == 'B' ? Alliance.Red : Alliance.Blue;
+            firstActiveAlliance = message.charAt(0) == 'B' ? Alliance.RED : Alliance.BLUE;
         } else {
-            DriverStation.reportWarning(
+            DriverStationErrors.reportWarning(
                     "HubState: Missing game-specific message. Defaulting to BLUE.", false);
-            firstActiveAlliance = Alliance.Blue;
+            firstActiveAlliance = Alliance.BLUE;
         }
 
         firstAllianceInitialized = true;
@@ -79,7 +79,7 @@ public class HubState {
     }
 
     private boolean isCloseToSwitching() {
-        return isCloseToSwitching(DriverStation.getMatchTime());
+        return isCloseToSwitching(MatchState.getMatchTime());
     }
 
     private boolean isCloseToSwitching(double matchTime) {
@@ -110,10 +110,10 @@ public class HubState {
     }
 
     private boolean isEnablingSoon() {
-        double matchTime = DriverStation.getMatchTime();
+        double matchTime = MatchState.getMatchTime();
         if (!isCloseToSwitching(matchTime)) return false;
 
-        Alliance ourAlliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        Alliance ourAlliance = MatchState.getAlliance().orElse(Alliance.BLUE);
         double nextSwitch = nextSwitchTime(matchTime);
 
         return activeAllianceFor(matchTime, ourAlliance) != ourAlliance
@@ -121,18 +121,17 @@ public class HubState {
     }
 
     public void periodic() {
-        double matchTime = DriverStation.getMatchTime();
+        double matchTime = MatchState.getMatchTime();
 
         if (matchTime < 0) {
             // DS not connected or disabled
             return;
         }
 
-        Alliance ourAlliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        Alliance ourAlliance = MatchState.getAlliance().orElse(Alliance.BLUE);
         activeAlliance = activeAllianceFor(matchTime, ourAlliance);
 
-        SmartDashboard.putBoolean(
-                "Can Shoot!", hubActive.getAsBoolean() || hubChange.getAsBoolean());
+        Telemetry.log("Can Shoot!", hubActive.getAsBoolean() || hubChange.getAsBoolean());
 
         double next = nextSwitchTime(matchTime);
 
@@ -145,10 +144,10 @@ public class HubState {
     }
 
     private Alliance opposite(Alliance alliance) {
-        return alliance == Alliance.Blue ? Alliance.Red : Alliance.Blue;
+        return alliance == Alliance.BLUE ? Alliance.RED : Alliance.BLUE;
     }
 
     private boolean isOurHubActive() {
-        return activeAlliance == DriverStation.getAlliance().orElse(Alliance.Blue);
+        return activeAlliance == MatchState.getAlliance().orElse(Alliance.BLUE);
     }
 }

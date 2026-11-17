@@ -15,24 +15,9 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static org.wpilib.units.Units.Degrees;
+import static org.wpilib.units.Units.Inches;
+import static org.wpilib.units.Units.Meters;
 
 import frc.lib.util.CommandXboxControllerExtended;
 import frc.lib.util.FieldUtil;
@@ -66,6 +51,20 @@ import frc.robot.util.RobotSim;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Command.InterruptionBehavior;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.math.filter.Debouncer.DebounceType;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.smartdashboard.Field2d;
+import org.wpilib.system.RobotController;
+import org.wpilib.telemetry.Telemetry;
+import org.wpilib.tunable.Tunables;
+import org.wpilib.units.measure.Distance;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -182,36 +181,33 @@ public class RobotContainer {
                                         "PreloadAuto",
                                         Optional.of(PreloadAuto.create(ctx)))));
 
-        SmartDashboard.putData("Auto Preview", autoPreviewField);
+        Tunables.publish("Auto Preview", autoPreviewField);
 
-        autoChooser.onChange(
-                auto -> {
-                    if (auto == null) {
-                        rawAutoPreviewPoses = new Pose2d[] {};
-                        autoPreviewField.getObject("path").setPoses(new Pose2d[] {});
-                        cachedAutoCommand = null;
-                        return;
-                    }
-                    var pathPoses = auto.previewPoses().toArray(Pose2d[]::new);
-                    if (pathPoses.length == 0) {
-                        rawAutoPreviewPoses = new Pose2d[] {};
-                        return;
-                    }
-                    pathPoses[0] = auto.startingPose();
-                    rawAutoPreviewPoses = pathPoses;
+        autoChooser.onChange(auto -> {
+            if (auto == null) {
+                rawAutoPreviewPoses = new Pose2d[] {};
+                autoPreviewField.getObject("path").setPoses(new Pose2d[] {});
+                cachedAutoCommand = null;
+                return;
+            }
+            var pathPoses = auto.previewPoses().toArray(Pose2d[]::new);
+            if (pathPoses.length == 0) {
+                rawAutoPreviewPoses = new Pose2d[] {};
+                return;
+            }
+            pathPoses[0] = auto.startingPose();
+            rawAutoPreviewPoses = pathPoses;
 
-                    // Apply alliance flip for initial preview
-                    var flippedPoses =
-                            Arrays.stream(rawAutoPreviewPoses)
-                                    .map(FieldUtil::apply)
-                                    .toArray(Pose2d[]::new);
-                    autoPreviewField.getObject("path").setPoses(flippedPoses);
+            // Apply alliance flip for initial preview
+            var flippedPoses =
+                    Arrays.stream(rawAutoPreviewPoses).map(FieldUtil::apply).toArray(Pose2d[]::new);
+            autoPreviewField.getObject("path").setPoses(flippedPoses);
 
-                    // Pre-build the auto command now (while still disabled) so that
-                    // autonomousInit() doesn't burn 100-200 ms of cycle time constructing
-                    // routines, triggers, and command objects.
-                    cachedAutoCommand = auto.command();
-                });
+            // Pre-build the auto command now (while still disabled) so that
+            // autonomousInit() doesn't burn 100-200 ms of cycle time constructing
+            // routines, triggers, and command objects.
+            cachedAutoCommand = auto.command();
+        });
 
         // autoChooser.addOption(
         //         "Feedforward Characterization", FeedforwardCharacterizationAuto.create(ctx));
@@ -258,7 +254,7 @@ public class RobotContainer {
                                                                                                 .get())
                                                                                 .withInterruptBehavior(
                                                                                         InterruptionBehavior
-                                                                                                .kCancelSelf),
+                                                                                                .CANCEL_SELF),
                                                                 Set.of(tower))
                                                         .withDeadline(
                                                                 Commands.sequence(
@@ -266,7 +262,7 @@ public class RobotContainer {
                                                                         Commands.waitUntil(
                                                                                 shooter.readyToShootAtCurrentTarget))),
                                                 Commands.parallel(indexer.shoot(), tower.shoot())))
-                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
+                                .withInterruptBehavior(InterruptionBehavior.CANCEL_INCOMING))
                 .onFalse(
                         Commands.parallel(
                                 shooter.stopAndStow(), indexer.stopCommand(), tower.stopCommand()));
@@ -301,11 +297,11 @@ public class RobotContainer {
                                                                         indexer.eject())
                                                                 .withTimeout(TOWER_TIMEOUT.get()),
                                                 Set.of(tower, indexer))
-                                        .withInterruptBehavior(InterruptionBehavior.kCancelSelf)));
+                                        .withInterruptBehavior(InterruptionBehavior.CANCEL_SELF)));
 
         // D-Pad Down: Unjam
         controller
-                .povDown()
+                .dpadDown()
                 .whileTrue(Commands.parallel(intake.ejectRoller(), indexer.eject(), tower.eject()));
 
         // Driver X: Trench Shot (No-Vision Fallback)
@@ -329,11 +325,11 @@ public class RobotContainer {
                                                                         .withTimeout(0.2)
                                                                         .withInterruptBehavior(
                                                                                 InterruptionBehavior
-                                                                                        .kCancelSelf),
+                                                                                        .CANCEL_SELF),
                                                         Set.of(tower)),
                                                 Commands.waitUntil(shooter.isNearGoal),
                                                 Commands.parallel(indexer.shoot(), tower.shoot())))
-                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
+                                .withInterruptBehavior(InterruptionBehavior.CANCEL_INCOMING))
                 .onFalse(
                         Commands.parallel(
                                 shooter.stopAndStow(), indexer.stopCommand(), tower.stopCommand()));
@@ -354,11 +350,11 @@ public class RobotContainer {
                                                                         .withTimeout(0.2)
                                                                         .withInterruptBehavior(
                                                                                 InterruptionBehavior
-                                                                                        .kCancelSelf),
+                                                                                        .CANCEL_SELF),
                                                         Set.of(tower)),
                                                 Commands.waitUntil(shooter.isNearGoal),
                                                 Commands.parallel(indexer.shoot(), tower.shoot())))
-                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
+                                .withInterruptBehavior(InterruptionBehavior.CANCEL_INCOMING))
                 .onFalse(
                         Commands.parallel(
                                 shooter.stopAndStow(), indexer.stopCommand(), tower.stopCommand()));
@@ -384,28 +380,25 @@ public class RobotContainer {
                                                                         .withTimeout(0.2)
                                                                         .withInterruptBehavior(
                                                                                 InterruptionBehavior
-                                                                                        .kCancelSelf),
+                                                                                        .CANCEL_SELF),
                                                         Set.of(tower)),
                                                 Commands.waitUntil(shooter.isNearGoal),
                                                 Commands.parallel(indexer.shoot(), tower.shoot())))
-                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
+                                .withInterruptBehavior(InterruptionBehavior.CANCEL_INCOMING))
                 .onFalse(
                         Commands.parallel(
                                 shooter.stopAndStow(), indexer.stopCommand(), tower.stopCommand()));
 
         // Driver Start and Select: Reset gyro heading
         controller
-                .start()
-                .and(controller.back())
+                .menu()
+                .and(controller.view())
                 .onTrue(
-                        Commands.runOnce(
-                                () ->
-                                        robotState.resetPose(
-                                                new Pose2d(
-                                                        robotState
-                                                                .getEstimatedPose()
-                                                                .getTranslation(),
-                                                        Rotation2d.kZero))));
+                        Commands.runOnce(() ->
+                                robotState.resetPose(
+                                        new Pose2d(
+                                                robotState.getEstimatedPose().getTranslation(),
+                                                Rotation2d.ZERO))));
 
         // Operator A: Home Hood and Intake
         operatorController
@@ -421,30 +414,29 @@ public class RobotContainer {
         operatorController.x().onTrue(intake.retractIntake());
 
         // Operator POV Up: Trim shot power up
-        operatorController.povUp().onTrue(shooter.trimFlywheelSpeedUp());
+        operatorController.dpadUp().onTrue(shooter.trimFlywheelSpeedUp());
 
         // Operator POV Down: Trim shot power down
-        operatorController.povDown().onTrue(shooter.trimFlywheelSpeedDown());
+        operatorController.dpadDown().onTrue(shooter.trimFlywheelSpeedDown());
 
         // Operator POV Left: Toggle brownout mitigation
         operatorController
-                .povLeft()
+                .dpadLeft()
                 .onTrue(
-                        Commands.runOnce(
-                                () -> {
-                                    // disableAutomaticBrownoutMitigation = true;
-                                    brownoutEnabled = !brownoutEnabled;
-                                    drive.toggleBrownedOut();
-                                    indexer.toggleBrownedOut();
-                                    shooter.toggleBrownedOut();
-                                }));
+                        Commands.runOnce(() -> {
+                            // disableAutomaticBrownoutMitigation = true;
+                            brownoutEnabled = !brownoutEnabled;
+                            drive.toggleBrownedOut();
+                            indexer.toggleBrownedOut();
+                            shooter.toggleBrownedOut();
+                        }));
 
         // Operator Y: Manual Spinup
         operatorController
                 .y()
                 .whileTrue(
                         shooter.spinUpFlywheel()
-                                .withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+                                .withInterruptBehavior(InterruptionBehavior.CANCEL_SELF));
 
         controller
                 .rightTrigger()
@@ -455,44 +447,42 @@ public class RobotContainer {
         controller
                 .joysticksZeroed
                 .negate()
-                .and(new Trigger(DriverStation::isDisabled))
+                .and(new Trigger(org.wpilib.driverstation.RobotState::isDisabled))
                 .whileTrue(controller.rumble(1.0).ignoringDisable(true));
 
         new Trigger(RobotController::isBrownedOut)
-                .debounce(0.5, DebounceType.kFalling)
+                .debounce(0.5, DebounceType.FALLING)
                 .whileTrue(controller.rumble(1.0));
 
         operatorController
                 .rightBumper()
                 .onTrue(
-                        Commands.runOnce(
-                                () ->
-                                        CommandScheduler.getInstance()
-                                                .setDefaultCommand(
+                        Commands.runOnce(() ->
+                                CommandScheduler.getInstance()
+                                        .setDefaultCommand(
+                                                drive,
+                                                DriveCommands.joystickDrive(
                                                         drive,
-                                                        DriveCommands.joystickDrive(
-                                                                drive,
-                                                                () -> -controller.getLeftY(),
-                                                                () -> -controller.getLeftX(),
-                                                                () -> -controller.getRightX()))))
+                                                        () -> -controller.getLeftY(),
+                                                        () -> -controller.getLeftX(),
+                                                        () -> -controller.getRightX()))))
                 .onFalse(
-                        Commands.runOnce(
-                                () ->
-                                        CommandScheduler.getInstance()
-                                                .setDefaultCommand(
+                        Commands.runOnce(() ->
+                                CommandScheduler.getInstance()
+                                        .setDefaultCommand(
+                                                drive,
+                                                DriveCommands.joystickDrive(
                                                         drive,
-                                                        DriveCommands.joystickDrive(
-                                                                drive,
-                                                                () -> -controller.getLeftY() * 0.85,
-                                                                () -> -controller.getLeftX() * 0.85,
-                                                                () -> -controller.getRightX()))));
+                                                        () -> -controller.getLeftY() * 0.85,
+                                                        () -> -controller.getLeftX() * 0.85,
+                                                        () -> -controller.getRightX()))));
 
-        // SmartDashboard.putBoolean("Browned Out!", false);
+        // Telemetry.log("Browned Out!", false);
         // new Trigger(Count.over(1.0, RobotController::isBrownedOut).greaterThanEquals(5))
         //         .onTrue(
         //                 Commands.runOnce(
         //                         () -> {
-        //                             SmartDashboard.putBoolean("Browned Out!", true);
+        //                             Telemetry.log("Browned Out!", true);
 
         //                             if (disableAutomaticBrownoutMitigation) return;
         //                             drive.setBrownedOut(true);
@@ -507,41 +497,38 @@ public class RobotContainer {
      */
     private void initializeDashboard() {
 
-        SmartDashboard.putData(
+        Tunables.publish(
                 "Home Intake and Shooter",
                 Commands.parallel(intake.homeLinear(), shooter.homeHood()));
 
         // Indexer Commands
-        SmartDashboard.putData(IndexerConstants.NAME + "/Shoot", indexer.shoot());
-        SmartDashboard.putData(IndexerConstants.NAME + "/Expel", indexer.eject());
-        SmartDashboard.putData(IndexerConstants.NAME + "/Stop", indexer.stopCommand());
+        Tunables.publish(IndexerConstants.NAME + "/Shoot", indexer.shoot());
+        Tunables.publish(IndexerConstants.NAME + "/Expel", indexer.eject());
+        Tunables.publish(IndexerConstants.NAME + "/Stop", indexer.stopCommand());
 
         // Intake Commands
-        SmartDashboard.putData(IntakeLinearConstants.NAME + "/Intake", intake.intake());
-        SmartDashboard.putData(IntakeLinearConstants.NAME + "/Retract", intake.retractIntake());
-        SmartDashboard.putData(IntakeLinearConstants.NAME + "/Coast", intake.linearCoast());
+        Tunables.publish(IntakeLinearConstants.NAME + "/Intake", intake.intake());
+        Tunables.publish(IntakeLinearConstants.NAME + "/Retract", intake.retractIntake());
+        Tunables.publish(IntakeLinearConstants.NAME + "/Coast", intake.linearCoast());
 
         // Tower Commands
-        SmartDashboard.putData(TowerConstants.NAME + "/Stop", tower.stopCommand());
-        SmartDashboard.putData(TowerConstants.NAME + "/Shoot", tower.shoot());
-        SmartDashboard.putData(TowerConstants.NAME + "/Eject", tower.eject());
+        Tunables.publish(TowerConstants.NAME + "/Stop", tower.stopCommand());
+        Tunables.publish(TowerConstants.NAME + "/Shoot", tower.shoot());
+        Tunables.publish(TowerConstants.NAME + "/Eject", tower.eject());
 
         // Shooter Commands
-        SmartDashboard.putData(
-                ShooterSuperstructureConstants.NAME + "/Stop", shooter.coastFlywheels());
-        SmartDashboard.putData(
+        Tunables.publish(ShooterSuperstructureConstants.NAME + "/Stop", shooter.coastFlywheels());
+        Tunables.publish(
                 ShooterSuperstructureConstants.NAME + "/Shoot", shooter.setShooterContinuous());
-        SmartDashboard.putData(
-                ShooterSuperstructureConstants.NAME + "/SpinUp", shooter.spinUpFlywheel());
+        Tunables.publish(ShooterSuperstructureConstants.NAME + "/SpinUp", shooter.spinUpFlywheel());
 
-        SmartDashboard.putData(
+        Tunables.publish(
                 "Reset Brownout Mitigation",
-                Commands.runOnce(
-                        () -> {
-                            drive.setBrownedOut(false);
-                            indexer.setBrownedOut(false);
-                            shooter.setBrownedOut(false);
-                        }));
+                Commands.runOnce(() -> {
+                    drive.setBrownedOut(false);
+                    indexer.setBrownedOut(false);
+                    shooter.setBrownedOut(false);
+                }));
     }
 
     /**
@@ -610,29 +597,29 @@ public class RobotContainer {
             double[] startPoseArray = {
                 startPose.getX(), startPose.getY(), startPose.getRotation().getDegrees()
             };
-            SmartDashboard.putNumberArray("Start Pose (x, y, degrees)", startPoseArray);
+            Telemetry.log("Start Pose (x, y, degrees)", startPoseArray);
 
-            SmartDashboard.putNumber(
+            Telemetry.log(
                     "Auto Pose Check/Inches from Start",
                     (int) Math.round(distanceFromStartPose.in(Inches) * 100.0) / 100.0);
-            SmartDashboard.putBoolean(
+            Telemetry.log(
                     "Auto Pose Check/Robot Position Within Tolerance",
                     distanceFromStartPose.in(Inches)
                             < Constants.STARTING_POSE_DRIVE_TOLERANCE.in(Inches));
-            SmartDashboard.putNumber(
+            Telemetry.log(
                     "Auto Pose Check/Degrees from Start",
                     (int) Math.round(degreesFromStartPose * 100.0) / 100.0);
-            SmartDashboard.putBoolean(
+            Telemetry.log(
                     "Auto Pose Check/Robot Rotation Within Tolerance",
                     degreesFromStartPose
                             < Constants.STARTING_POSE_ROT_TOLERANCE_DEGREES.in(Degrees));
 
         } catch (Exception e) {
             startPose = robotState.getEstimatedPose();
-            SmartDashboard.putNumber("Auto Pose Check/Inches from Start", -1);
-            SmartDashboard.putBoolean("Auto Pose Check/Robot Position Within Tolerance", false);
-            SmartDashboard.putNumber("Auto Pose Check/Degrees from Start", -1);
-            SmartDashboard.putBoolean("Auto Pose Check/Robot Rotation Within Tolerance", false);
+            Telemetry.log("Auto Pose Check/Inches from Start", -1);
+            Telemetry.log("Auto Pose Check/Robot Position Within Tolerance", false);
+            Telemetry.log("Auto Pose Check/Degrees from Start", -1);
+            Telemetry.log("Auto Pose Check/Robot Rotation Within Tolerance", false);
         }
     }
 }

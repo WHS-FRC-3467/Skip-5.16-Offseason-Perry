@@ -19,17 +19,6 @@ import choreo.trajectory.EventMarker;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
 import frc.lib.util.FieldUtil;
 import frc.lib.util.LoggedTrigger;
 import frc.lib.util.LoggedTunableBoolean;
@@ -39,6 +28,16 @@ import frc.robot.RobotState.FieldRegion;
 import frc.robot.subsystems.drive.Drive;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.framework.RobotBase;
+import org.wpilib.math.controller.PIDController;
+import org.wpilib.math.filter.Debouncer;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.system.Timer;
 
 import java.util.Comparator;
 import java.util.List;
@@ -200,7 +199,7 @@ public class ResilientTrajectoryFollower extends Command {
 
     @Override
     public void initialize() {
-        double time = Timer.getFPGATimestamp();
+        double time = Timer.getTimestamp();
         finished = false;
         state = State.TRACKING;
         trajectoryTime = 0.0;
@@ -216,7 +215,7 @@ public class ResilientTrajectoryFollower extends Command {
 
         Logger.recordOutput("Odometry/Trajectory", FieldUtil.apply(trajectory.getPoses()));
         Logger.recordOutput("Auto/ResilientFollower/State", state.name());
-        Logger.recordOutput("Auto/Init Delay", Timer.getFPGATimestamp() - time);
+        Logger.recordOutput("Auto/Init Delay", Timer.getTimestamp() - time);
     }
 
     @Override
@@ -233,7 +232,7 @@ public class ResilientTrajectoryFollower extends Command {
         if (nudgeNow && !previousNudgeState) {
             double nudgeDistance = SIM_NUDGE_DISTANCE_METERS.get();
             // Offset 90° to the left of the robot's current heading.
-            Rotation2d perpendicular = currentPose.getRotation().plus(Rotation2d.kCCW_90deg);
+            Rotation2d perpendicular = currentPose.getRotation().plus(Rotation2d.CCW_90DEG);
             Translation2d nudgedTranslation =
                     currentPose
                             .getTranslation()
@@ -297,11 +296,11 @@ public class ResilientTrajectoryFollower extends Command {
         fireEvents();
 
         // --- Compute and apply chassis speeds ---
-        ChassisSpeeds targetSpeeds;
+        ChassisVelocities targetSpeeds;
         if (state == State.TRACKING) {
             // Normal following: feedforward + PID feedback
             targetSpeeds =
-                    new ChassisSpeeds(
+                    new ChassisVelocities(
                             sample.vx + xController.calculate(currentPose.getX(), sample.x),
                             sample.vy + yController.calculate(currentPose.getY(), sample.y),
                             sample.omega
@@ -311,7 +310,7 @@ public class ResilientTrajectoryFollower extends Command {
         } else {
             // Recovery: PID-only toward frozen target pose (no feedforward)
             targetSpeeds =
-                    new ChassisSpeeds(
+                    new ChassisVelocities(
                             xController.calculate(currentPose.getX(), sample.x),
                             yController.calculate(currentPose.getY(), sample.y),
                             thetaController.calculate(
@@ -322,8 +321,7 @@ public class ResilientTrajectoryFollower extends Command {
         if (RobotBase.isSimulation() && SIM_FORCE_STUCK.get()) {
             drive.stop();
         } else {
-            drive.runVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(targetSpeeds, currentPose.getRotation()));
+            drive.runVelocity(targetSpeeds.toRobotRelative(currentPose.getRotation()));
         }
         robotState.setActiveTrajPose(targetPose);
 

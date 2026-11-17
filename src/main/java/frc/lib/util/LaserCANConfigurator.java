@@ -22,6 +22,8 @@ import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 import au.grapplerobotics.interfaces.LaserCanInterface.RegionOfInterest;
 import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 
+import org.wpilib.hardware.bus.CANPort;
+
 /**
  * Configuration wrapper for Grapple Robotics LaserCAN distance sensors.
  *
@@ -53,6 +55,16 @@ public class LaserCANConfigurator implements AutoCloseable {
      */
     public LaserCANConfigurator(int can_id) {
         laserCAN = new LaserCan(can_id);
+    }
+
+    /**
+     * Constructs a LaserCAN configurator on a specific SystemCore CAN port.
+     *
+     * @param port SystemCore CAN port the LaserCAN is wired to
+     * @param can_id CAN ID of the LaserCAN device
+     */
+    public LaserCANConfigurator(CANPort port, int can_id) {
+        laserCAN = new LaserCan(port, can_id);
     }
 
     /**

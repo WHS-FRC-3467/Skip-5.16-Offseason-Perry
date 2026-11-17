@@ -2,9 +2,6 @@ package frc.robot.commands.autos.utils;
 
 import choreo.auto.AutoFactory;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
 import frc.lib.util.FieldUtil;
 import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
@@ -15,6 +12,8 @@ import frc.robot.subsystems.shooter.ShooterSuperstructure;
 import frc.robot.subsystems.tower.Tower;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.math.geometry.Pose2d;
 
 import java.util.Optional;
 

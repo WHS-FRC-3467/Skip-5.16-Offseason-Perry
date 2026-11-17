@@ -15,28 +15,33 @@
 
 package frc.lib.io.servo;
 
-import static edu.wpi.first.units.Units.Degrees;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.Servo;
+import static org.wpilib.units.Units.Degrees;
 
 import frc.lib.util.Device;
 
+import org.wpilib.hardware.discrete.PWM;
+import org.wpilib.units.measure.Angle;
+
 /**
- * ServoIOPWM is an abstraction for WPILib's Servo class with Pulse Width Modulation signal control
- * (PWM) and implements the ServoIO interface. It provides methods to run the servo to a specified
- * position.
+ * ServoIOPWM drives a hobby servo with Pulse Width Modulation signal control (PWM) and implements
+ * the ServoIO interface. WPILib 2027 removed the Servo class, so this maps positions onto raw PWM
+ * pulse widths using the same 0.6ms-2.4ms range the 2026 Servo class used. It provides methods to
+ * run the servo to a specified position.
  */
 public class ServoIOPWM implements ServoIO {
 
-    private final Servo servo;
+    // Pulse range used by the 2026 WPILib Servo class (Hitec HS-322HD defaults)
+    private static final int MIN_PULSE_US = 600;
+    private static final int MAX_PULSE_US = 2400;
+
+    private final PWM servo;
 
     private double minAngle;
     private double maxAngle;
 
     public ServoIOPWM(Device.PWM id, Angle minAngle, Angle maxAngle) {
-        servo = new Servo(id.id());
+        servo = new PWM(id.id());
+        servo.setOutputPeriod(20);
         this.minAngle = minAngle.in(Degrees);
         this.maxAngle = maxAngle.in(Degrees);
     }
@@ -47,7 +52,7 @@ public class ServoIOPWM implements ServoIO {
      * @param value Position from 0.0 to 1.0, corresponding to the range of full left to full right.
      */
     public void setScaledPosition(double value) {
-        servo.set(MathUtil.clamp(value, 0.0, 1.0));
+        setPulseFraction(value);
     }
 
     /**
@@ -62,7 +67,13 @@ public class ServoIOPWM implements ServoIO {
      */
     public void setAngle(double degrees) {
         var servoAngleRange = maxAngle - minAngle;
-        servo.set((MathUtil.clamp(degrees, minAngle, maxAngle) - minAngle) / servoAngleRange);
+        setPulseFraction((Math.clamp(degrees, minAngle, maxAngle) - minAngle) / servoAngleRange);
+    }
+
+    private void setPulseFraction(double value) {
+        double clamped = Math.clamp(value, 0.0, 1.0);
+        servo.setPulseTimeMicroseconds(
+                (int) Math.round(MIN_PULSE_US + clamped * (MAX_PULSE_US - MIN_PULSE_US)));
     }
 
     /**

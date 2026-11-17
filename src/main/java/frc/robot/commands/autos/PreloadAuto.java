@@ -11,14 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PreloadAuto {
     public static AutoOption create(AutoContext ctx) {
-        return AutoUtil.commandOption(
-                () ->
-                        AutoCommands.shootCommand(
-                                ctx.drive(),
-                                ctx.intake(),
-                                ctx.indexer(),
-                                ctx.tower(),
-                                ctx.shooter(),
-                                10.0));
+        return AutoUtil.commandOption(() ->
+                AutoCommands.shootCommand(
+                        ctx.drive(),
+                        ctx.intake(),
+                        ctx.indexer(),
+                        ctx.tower(),
+                        ctx.shooter(),
+                        10.0));
     }
 }

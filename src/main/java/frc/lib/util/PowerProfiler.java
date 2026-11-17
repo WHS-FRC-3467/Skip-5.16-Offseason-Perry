@@ -14,14 +14,13 @@
  */
 package frc.lib.util;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Volts;
-
-import edu.wpi.first.wpilibj.Timer;
+import static org.wpilib.units.Units.Amps;
+import static org.wpilib.units.Units.Volts;
 
 import frc.lib.mechanisms.Mechanism;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.system.Timer;
 
 import java.util.ArrayList;
 import java.util.HashMap;

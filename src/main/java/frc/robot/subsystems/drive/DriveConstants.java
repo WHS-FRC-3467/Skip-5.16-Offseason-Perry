@@ -1,6 +1,6 @@
 package frc.robot.subsystems.drive;
 
-import static edu.wpi.first.units.Units.*;
+import static org.wpilib.units.Units.*;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.hardware.*;
@@ -8,13 +8,13 @@ import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.units.measure.*;
-
 import frc.robot.Constants;
 import frc.robot.Ports;
+
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N3;
+import org.wpilib.units.measure.*;
 
 /**
  * Configuration constants for the swerve drivetrain.
@@ -116,7 +116,7 @@ public class DriveConstants {
 
     public static final SwerveDrivetrainConstants drivetrainConstants =
             new SwerveDrivetrainConstants()
-                    .withCANBusName(Ports.DRIVETRAIN_BUS.getName())
+                    .withNetwork(Ports.DRIVETRAIN_BUS)
                     .withPigeon2Id(kPigeonId)
                     .withPigeon2Configs(pigeonConfigs);
 

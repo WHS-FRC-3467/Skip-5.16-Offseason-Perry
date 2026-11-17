@@ -4,18 +4,18 @@
 
 package frc.lib.mechanisms.linear;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.units.BaseUnits;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.Radians;
 
 import frc.lib.io.motor.MotorIO;
 import frc.lib.io.motor.MotorIO.ControlType;
 import frc.lib.mechanisms.Mechanism;
+
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.units.BaseUnits;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.Distance;
 
 import java.util.Optional;
 

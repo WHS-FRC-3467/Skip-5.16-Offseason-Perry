@@ -15,26 +15,13 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Watts;
-
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Power;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static org.wpilib.units.Units.Degrees;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.MetersPerSecond;
+import static org.wpilib.units.Units.RadiansPerSecond;
+import static org.wpilib.units.Units.Rotations;
+import static org.wpilib.units.Units.RotationsPerSecond;
+import static org.wpilib.units.Units.Watts;
 
 import frc.lib.io.motor.MotorIO.PIDSlot;
 import frc.lib.mechanisms.flywheel.FlywheelMechanism;
@@ -49,6 +36,18 @@ import frc.robot.RobotState;
 import frc.robot.util.ShotTracker;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.SubsystemBase;
+import org.wpilib.math.filter.Debouncer;
+import org.wpilib.math.filter.Debouncer.DebounceType;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.interpolation.InterpolatingDoubleTreeMap;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.AngularVelocity;
+import org.wpilib.units.measure.Distance;
+import org.wpilib.units.measure.LinearVelocity;
+import org.wpilib.units.measure.Power;
 
 import java.util.function.Supplier;
 
@@ -112,7 +111,7 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
     private final RotaryMechanism<?, ?> hoodIO;
     private final FlywheelMechanism<?> flywheelIO;
 
-    private final Debouncer nearGoalDebouncer = new Debouncer(0.1, DebounceType.kRising);
+    private final Debouncer nearGoalDebouncer = new Debouncer(0.1, DebounceType.RISING);
     public final LoggedTrigger isNearGoal =
             new LoggedTrigger(
                     this.getName() + "/isNearGoal",
@@ -403,11 +402,10 @@ public class ShooterSuperstructure extends SubsystemBase implements AutoCloseabl
 
     public Command homeHood() {
         return Commands.sequence(this.runOnce(() -> hoodIO.runDutyCycle(-0.1, true)), this.idle())
-                .finallyDo(
-                        () -> {
-                            hoodIO.setEncoderPosition(Rotations.zero());
-                            hoodIO.runBrake();
-                        })
+                .finallyDo(() -> {
+                    hoodIO.setEncoderPosition(Rotations.zero());
+                    hoodIO.runBrake();
+                })
                 .withName("Home Hood");
     }
 

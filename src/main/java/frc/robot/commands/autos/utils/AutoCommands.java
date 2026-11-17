@@ -4,13 +4,8 @@
 
 package frc.robot.commands.autos.utils;
 
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
+import static org.wpilib.units.Units.Rotations;
+import static org.wpilib.units.Units.RotationsPerSecond;
 
 import frc.lib.util.AlwaysTunableNumber;
 import frc.robot.RobotState;
@@ -20,6 +15,11 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.IntakeSuperstructure;
 import frc.robot.subsystems.shooter.ShooterSuperstructure;
 import frc.robot.subsystems.tower.Tower;
+
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Command.InterruptionBehavior;
+import org.wpilib.command2.CommandScheduler;
+import org.wpilib.command2.Commands;
 
 /**
  * Class containing useful individual commands or small-group command sequences that can be strung
@@ -64,7 +64,7 @@ public class AutoCommands {
                                         Commands.parallel(tower.eject(), indexer.eject())
                                                 .withTimeout(0.5)
                                                 .withInterruptBehavior(
-                                                        InterruptionBehavior.kCancelSelf)
+                                                        InterruptionBehavior.CANCEL_SELF)
                                                 .withDeadline(
                                                         Commands.sequence(
                                                                 Commands.waitSeconds(0.001),
@@ -81,15 +81,12 @@ public class AutoCommands {
                                         Commands.waitSeconds(2.0),
                                         Commands.waitUntil(robotState.hopperEmpty)))
                         .withTimeout(timeoutDuration)
-                        .finallyDo(
-                                () -> {
-                                    CommandScheduler.getInstance()
-                                            .schedule(
-                                                    shooter.setFlywheelSpeed(
-                                                            RotationsPerSecond.zero()));
-                                    CommandScheduler.getInstance()
-                                            .schedule(shooter.setHoodAngle(Rotations.zero()));
-                                }),
+                        .finallyDo(() -> {
+                            CommandScheduler.getInstance()
+                                    .schedule(shooter.setFlywheelSpeed(RotationsPerSecond.zero()));
+                            CommandScheduler.getInstance()
+                                    .schedule(shooter.setHoodAngle(Rotations.zero()));
+                        }),
                 DriveCommands.staticAimTowardsTarget(drive));
     }
 

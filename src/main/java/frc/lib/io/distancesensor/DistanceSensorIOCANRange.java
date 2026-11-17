@@ -21,10 +21,10 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.hardware.CANrange;
 
-import edu.wpi.first.units.measure.Distance;
-
 import frc.lib.util.CANUpdateThread;
 import frc.lib.util.Device;
+
+import org.wpilib.units.measure.Distance;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,11 +52,10 @@ public class DistanceSensorIOCANRange implements DistanceSensorIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> CANRange.getConfigurator().apply(config))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
 
         ambientSignal = CANRange.getAmbientSignal();
         distance = CANRange.getDistance();

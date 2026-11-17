@@ -15,12 +15,12 @@
 
 package frc.lib.io.objectdetection;
 
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
+import frc.lib.util.AlertUtil;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.wpilib.util.Alert;
 
 import java.util.List;
 
@@ -45,9 +45,10 @@ public class ObjectDetectionIOPhotonVision implements ObjectDetectionIO {
         // PhotonVision UI).
         camera = new PhotonCamera(cameraName);
         disconnectedAlert =
-                new Alert(
+                AlertUtil.create(
                         "PhotonVision Camera " + cameraName + " is not connected.",
-                        AlertType.kError);
+                        "PhotonVision Camera " + cameraName + " is not connected.",
+                        Alert.Level.HIGH);
         this.cameraName = cameraName;
     }
 

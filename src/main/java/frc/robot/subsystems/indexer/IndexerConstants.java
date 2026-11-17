@@ -4,23 +4,16 @@
 
 package frc.robot.subsystems.indexer;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static org.wpilib.units.Units.Amps;
+import static org.wpilib.units.Units.Inches;
+import static org.wpilib.units.Units.KilogramSquareMeters;
+import static org.wpilib.units.Units.RotationsPerSecond;
+import static org.wpilib.units.Units.RotationsPerSecondPerSecond;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.MomentOfInertia;
 
 import frc.lib.io.motor.MotorIO;
 import frc.lib.io.motor.MotorIO.PIDSlot;
@@ -34,6 +27,13 @@ import frc.lib.util.PID;
 import frc.robot.Constants;
 import frc.robot.Ports;
 import frc.robot.Robot;
+
+import org.wpilib.math.system.DCMotor;
+import org.wpilib.units.measure.AngularAcceleration;
+import org.wpilib.units.measure.AngularVelocity;
+import org.wpilib.units.measure.Current;
+import org.wpilib.units.measure.Distance;
+import org.wpilib.units.measure.MomentOfInertia;
 
 /** Add your docs here. */
 public class IndexerConstants {

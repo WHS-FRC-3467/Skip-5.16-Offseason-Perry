@@ -4,23 +4,9 @@
 
 package frc.robot.subsystems.objectdetector;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Milliseconds;
-import static edu.wpi.first.units.Units.Radians;
-
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.numbers.N8;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Time;
+import static org.wpilib.units.Units.Degrees;
+import static org.wpilib.units.Units.Milliseconds;
+import static org.wpilib.units.Units.Radians;
 
 import frc.lib.devices.AprilTagCamera.CameraProperties;
 import frc.lib.io.objectdetection.*;
@@ -33,6 +19,19 @@ import lombok.NoArgsConstructor;
 
 import org.photonvision.estimation.TargetModel;
 import org.photonvision.simulation.VisionTargetSim;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.linalg.MatBuilder;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.linalg.VecBuilder;
+import org.wpilib.math.linalg.Vector;
+import org.wpilib.math.numbers.N3;
+import org.wpilib.math.numbers.N8;
+import org.wpilib.math.util.Nat;
+import org.wpilib.units.Units;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.Time;
 
 import java.util.Comparator;
 import java.util.function.Supplier;
@@ -142,38 +141,32 @@ public class ObjectDetectorConstants {
                 double halfFov = CAMERA0_FOV.in(Radians) / 2.0;
                 return fuels.stream()
                         .filter(pose -> pose != null)
-                        .filter(
-                                pose ->
-                                        pose.getTranslation()
-                                                        .toTranslation2d()
-                                                        .getDistance(cameraPose.getTranslation())
-                                                < 10.0)
-                        .filter(
-                                pose -> {
-                                    var fieldRel =
-                                            pose.getTranslation()
-                                                    .toTranslation2d()
-                                                    .minus(cameraPose.getTranslation());
-                                    var cameraRel =
-                                            fieldRel.rotateBy(
-                                                    cameraPose.getRotation().unaryMinus());
-                                    if (cameraRel.getX() <= 0) {
-                                        return false;
-                                    }
-                                    double yaw = Math.atan2(cameraRel.getY(), cameraRel.getX());
-                                    return Math.abs(yaw) < halfFov;
-                                })
+                        .filter(pose ->
+                                pose.getTranslation()
+                                                .toTranslation2d()
+                                                .getDistance(cameraPose.getTranslation())
+                                        < 10.0)
+                        .filter(pose -> {
+                            var fieldRel =
+                                    pose.getTranslation()
+                                            .toTranslation2d()
+                                            .minus(cameraPose.getTranslation());
+                            var cameraRel =
+                                    fieldRel.rotateBy(cameraPose.getRotation().unaryMinus());
+                            if (cameraRel.getX() <= 0) {
+                                return false;
+                            }
+                            double yaw = Math.atan2(cameraRel.getY(), cameraRel.getX());
+                            return Math.abs(yaw) < halfFov;
+                        })
                         .sorted(
-                                Comparator.comparingDouble(
-                                        pose ->
-                                                pose.getTranslation()
-                                                        .toTranslation2d()
-                                                        .getDistance(cameraPose.getTranslation())))
+                                Comparator.comparingDouble(pose ->
+                                        pose.getTranslation()
+                                                .toTranslation2d()
+                                                .getDistance(cameraPose.getTranslation())))
                         .limit(30)
-                        .map(
-                                pose ->
-                                        new VisionTargetSim(
-                                                pose, new TargetModel(OBJECT0_HEIGHT_METERS)))
+                        .map(pose ->
+                                new VisionTargetSim(pose, new TargetModel(OBJECT0_HEIGHT_METERS)))
                         .toArray(VisionTargetSim[]::new);
             };
 

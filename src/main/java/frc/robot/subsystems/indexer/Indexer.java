@@ -14,16 +14,16 @@
  */
 package frc.robot.subsystems.indexer;
 
-import static edu.wpi.first.units.Units.Amps;
-
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static org.wpilib.units.Units.Amps;
 
 import frc.lib.mechanisms.flywheel.FlywheelMechanism;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.LoggerHelper;
 import frc.lib.util.PowerProfiler;
+
+import org.wpilib.command2.Command;
+import org.wpilib.command2.SubsystemBase;
+import org.wpilib.units.measure.AngularVelocity;
 
 /**
  * Subsystem that controls the indexer floor and indexer centering mechanism for moving game pieces

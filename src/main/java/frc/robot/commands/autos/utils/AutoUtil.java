@@ -1,22 +1,22 @@
 package frc.robot.commands.autos.utils;
 
-import static edu.wpi.first.units.Units.Meters;
+import static org.wpilib.units.Units.Meters;
 
 import choreo.Choreo;
 import choreo.auto.AutoRoutine;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-
 import frc.robot.FieldConstants;
 import frc.robot.generated.ChoreoVars;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
+import org.wpilib.driverstation.DriverStationErrors;
+import org.wpilib.math.geometry.Pose2d;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,7 +76,7 @@ public final class AutoUtil {
         var optionalTrajectories =
                 names.stream().map(name -> loadTrajectory(name, shouldMirror)).toList();
         if (optionalTrajectories.stream().anyMatch(Optional::isEmpty)) {
-            DriverStation.reportError(
+            DriverStationErrors.reportError(
                     "Failed to load Choreo trajectory for auto. Names: "
                             + names
                             + ", shouldMirror="

@@ -15,9 +15,9 @@
 
 package frc.lib.mechanisms.linear;
 
-import edu.wpi.first.units.measure.Angle;
-
 import frc.lib.io.motor.MotorIO;
+
+import org.wpilib.units.measure.Angle;
 
 /**
  * A real implementation of the LinearMechanism class that interacts with a physical motor through a

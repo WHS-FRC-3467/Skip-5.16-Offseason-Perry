@@ -15,7 +15,7 @@
 
 package frc.lib.io.distancesensor;
 
-import static edu.wpi.first.units.Units.Millimeters;
+import static org.wpilib.units.Units.Millimeters;
 
 import au.grapplerobotics.interfaces.LaserCanInterface;
 import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
@@ -23,12 +23,13 @@ import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 import au.grapplerobotics.interfaces.LaserCanInterface.RegionOfInterest;
 import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-
+import frc.lib.util.AlertUtil;
 import frc.lib.util.CANUpdateThread;
 import frc.lib.util.Device;
 import frc.lib.util.LaserCANConfigurator;
+
+import org.wpilib.hardware.bus.CANPort;
+import org.wpilib.util.Alert;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,42 +63,47 @@ public class DistanceSensorIOLaserCAN implements DistanceSensorIO {
             RegionOfInterest regionOfInterest,
             TimingBudget timingBudget) {
         laserCANOnWrongBusAlert =
-                new Alert(
-                        "LaserCAN " + name + " must be wired to the RIO's CAN bus",
-                        AlertType.kError);
-        disconnectedAlert = new Alert("LaserCAN " + name + " is not connected", AlertType.kError);
+                AlertUtil.create(
+                        "LaserCAN " + name + " must be wired to a native SystemCore CAN bus",
+                        "LaserCAN " + name + " must be wired to a native SystemCore CAN bus",
+                        Alert.Level.HIGH);
+        disconnectedAlert =
+                AlertUtil.create(
+                        "LaserCAN " + name + " is not connected",
+                        "LaserCAN " + name + " is not connected",
+                        Alert.Level.HIGH);
         invalidReadingAlert =
-                new Alert("LaserCAN " + name + " reading is invalid", AlertType.kWarning);
+                AlertUtil.create(
+                        "LaserCAN " + name + " reading is invalid",
+                        "LaserCAN " + name + " reading is invalid",
+                        Alert.Level.MEDIUM);
 
-        if (!id.bus().equals("rio")) {
+        if (id.canPort().isEmpty()) {
             laserCANOnWrongBusAlert.set(true);
         }
 
-        laserCAN = new LaserCANConfigurator(id.id());
+        laserCAN = new LaserCANConfigurator(id.canPort().orElse(CANPort.CAN_S0), id.id());
 
         updateThread
                 .laserCANCheckErrorAndRetry(() -> laserCAN.setRangingMode(rangingMode))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
 
         updateThread
                 .laserCANCheckErrorAndRetry(() -> laserCAN.setRegionOfInterest(regionOfInterest))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
 
         updateThread
                 .laserCANCheckErrorAndRetry(() -> laserCAN.setTimingBudget(timingBudget))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
     }
 
     @Override

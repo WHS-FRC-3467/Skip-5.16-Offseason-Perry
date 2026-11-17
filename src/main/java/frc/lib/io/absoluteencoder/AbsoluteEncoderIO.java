@@ -15,9 +15,8 @@
 
 package frc.lib.io.absoluteencoder;
 
-import edu.wpi.first.units.measure.Angle;
-
 import org.littletonrobotics.junction.AutoLog;
+import org.wpilib.units.measure.Angle;
 
 /** Standardized interface for absolute encoders used in FRC. */
 public interface AbsoluteEncoderIO extends AutoCloseable {

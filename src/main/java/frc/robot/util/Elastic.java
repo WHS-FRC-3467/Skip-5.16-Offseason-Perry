@@ -9,10 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.PubSubOption;
-import edu.wpi.first.networktables.StringPublisher;
-import edu.wpi.first.networktables.StringTopic;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.networktables.PubSubOption;
+import org.wpilib.networktables.StringPublisher;
+import org.wpilib.networktables.StringTopic;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,11 +24,11 @@ public final class Elastic {
             NetworkTableInstance.getDefault().getStringTopic("/Elastic/RobotNotifications");
     private static final StringPublisher notificationPublisher =
             notificationTopic.publish(
-                    PubSubOption.sendAll(true), PubSubOption.keepDuplicates(true));
+                    new PubSubOption.SendAll(true), new PubSubOption.KeepDuplicates(true));
     private static final StringTopic selectedTabTopic =
             NetworkTableInstance.getDefault().getStringTopic("/Elastic/SelectedTab");
     private static final StringPublisher selectedTabPublisher =
-            selectedTabTopic.publish(PubSubOption.keepDuplicates(true));
+            selectedTabTopic.publish(new PubSubOption.KeepDuplicates(true));
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**

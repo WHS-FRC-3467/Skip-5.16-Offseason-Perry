@@ -15,16 +15,15 @@
 
 package frc.lib.util;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-
 import frc.lib.posestimator.PoseEstimator.VisionPoseObservation;
 import frc.robot.Robot;
 import frc.robot.RobotState;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.util.MathUtil;
 
 /**
  * Attempts to semi-autonomously characterize both vision and odometry covariance diagonals for use
@@ -149,9 +148,8 @@ public class VisionOdometryCharacterizer {
         }
         // Verify robot is approximately stationary to ensure innovation covariance approximates
         // measurement covariance
-        ChassisSpeeds vel = robotState.getFieldRelativeVelocity();
-        if (Math.hypot(vel.vxMetersPerSecond, vel.vyMetersPerSecond) > 0.1
-                || Math.abs(vel.omegaRadiansPerSecond) > 0.35) {
+        ChassisVelocities vel = robotState.getFieldRelativeVelocity();
+        if (Math.hypot(vel.vx, vel.vy) > 0.1 || Math.abs(vel.omega) > 0.35) {
             return false;
         }
         // Verify measurement is within typical bounds to ensure we are characterizing expected
@@ -257,9 +255,8 @@ public class VisionOdometryCharacterizer {
         }
         // Verify robot is in motion to ensure we are capturing odometry covariance (wheel slip,
         // encoder quantization, kinematic linearization, gyro noise, etc.)
-        ChassisSpeeds vel = robotState.getFieldRelativeVelocity();
-        if (Math.hypot(vel.vxMetersPerSecond, vel.vyMetersPerSecond) < 0.3
-                && Math.abs(vel.omegaRadiansPerSecond) < 1.0) {
+        ChassisVelocities vel = robotState.getFieldRelativeVelocity();
+        if (Math.hypot(vel.vx, vel.vy) < 0.3 && Math.abs(vel.omega) < 1.0) {
             return false;
         }
         // Assume vision is "ground truth" only if it is a high confidence measurement (multiple

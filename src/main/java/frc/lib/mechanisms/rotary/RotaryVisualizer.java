@@ -6,22 +6,21 @@
 
 package frc.lib.mechanisms.rotary;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Rotations;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
+import static org.wpilib.units.Units.Degrees;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.Radians;
+import static org.wpilib.units.Units.Rotations;
 
 import frc.lib.mechanisms.rotary.RotaryMechanism.RotaryMechCharacteristics;
 
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.telemetry.Telemetry;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.util.Color;
+import org.wpilib.util.Color8Bit;
 
 import java.util.Optional;
 
@@ -43,7 +42,7 @@ public class RotaryVisualizer {
 
     public RotaryVisualizer(String name, RotaryMechCharacteristics constants) {
         this.name = name;
-        mechanism = new LoggedMechanism2d(3.0, 3.0, new Color8Bit(Color.kBlack));
+        mechanism = new LoggedMechanism2d(3.0, 3.0, new Color8Bit(Color.BLACK));
         LoggedMechanismRoot2d root = mechanism.getRoot(name + " root", 1.5, 1.5);
 
         armLength = constants.armLength().in(Meters);
@@ -55,7 +54,7 @@ public class RotaryVisualizer {
                             constants.armLength().in(Meters),
                             constants.minAngle().in(Degrees),
                             3,
-                            new Color8Bit(Color.kWhite));
+                            new Color8Bit(Color.WHITE));
 
             upperBound =
                     new LoggedMechanismLigament2d(
@@ -63,7 +62,7 @@ public class RotaryVisualizer {
                             constants.armLength().in(Meters),
                             constants.maxAngle().in(Degrees),
                             3,
-                            new Color8Bit(Color.kWhite));
+                            new Color8Bit(Color.WHITE));
         } else {
             lowerBound =
                     new LoggedMechanismLigament2d(
@@ -71,7 +70,7 @@ public class RotaryVisualizer {
                             0.0,
                             constants.minAngle().in(Degrees),
                             3,
-                            new Color8Bit(Color.kWhite));
+                            new Color8Bit(Color.WHITE));
 
             upperBound =
                     new LoggedMechanismLigament2d(
@@ -79,7 +78,7 @@ public class RotaryVisualizer {
                             0.0,
                             constants.maxAngle().in(Degrees),
                             3,
-                            new Color8Bit(Color.kWhite));
+                            new Color8Bit(Color.WHITE));
         }
 
         measured =
@@ -88,7 +87,7 @@ public class RotaryVisualizer {
                         armLength,
                         constants.startingAngle().in(Degrees),
                         3,
-                        new Color8Bit(Color.kGreen));
+                        new Color8Bit(Color.GREEN));
 
         trajectory =
                 new LoggedMechanismLigament2d(
@@ -96,7 +95,7 @@ public class RotaryVisualizer {
                         armLength,
                         constants.startingAngle().in(Degrees),
                         3,
-                        new Color8Bit(Color.kYellow));
+                        new Color8Bit(Color.YELLOW));
 
         goal =
                 new LoggedMechanismLigament2d(
@@ -104,7 +103,7 @@ public class RotaryVisualizer {
                         armLength,
                         constants.startingAngle().in(Degrees),
                         3,
-                        new Color8Bit(Color.kRed));
+                        new Color8Bit(Color.RED));
 
         root.append(lowerBound);
         root.append(upperBound);
@@ -114,7 +113,7 @@ public class RotaryVisualizer {
     }
 
     private void update() {
-        SmartDashboard.putData("Mechanism Visualizers/" + name + " Visualizer", mechanism);
+        Telemetry.log("Mechanism Visualizers/" + name + " Visualizer", mechanism);
     }
 
     /**
@@ -138,11 +137,10 @@ public class RotaryVisualizer {
             trajectory.setLength(0.0);
         }
 
-        angle.ifPresent(
-                (a) -> {
-                    trajectory.setLength(armLength);
-                    trajectory.setAngle(a.in(Degrees));
-                });
+        angle.ifPresent(a -> {
+            trajectory.setLength(armLength);
+            trajectory.setAngle(a.in(Degrees));
+        });
 
         update();
     }
@@ -157,11 +155,10 @@ public class RotaryVisualizer {
             goal.setLength(0.0);
         }
 
-        angle.ifPresent(
-                (a) -> {
-                    goal.setLength(armLength);
-                    goal.setAngle(a.in(Degrees));
-                });
+        angle.ifPresent(a -> {
+            goal.setLength(armLength);
+            goal.setAngle(a.in(Degrees));
+        });
 
         update();
     }

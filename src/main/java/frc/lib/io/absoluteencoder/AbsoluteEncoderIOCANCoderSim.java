@@ -18,10 +18,10 @@ package frc.lib.io.absoluteencoder;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.RobotController;
-
 import frc.lib.util.Device.CAN;
+
+import org.wpilib.system.RobotController;
+import org.wpilib.units.measure.Angle;
 
 public class AbsoluteEncoderIOCANCoderSim extends AbsoluteEncoderIOCANCoder
         implements AbsoluteEncoderIOSim {

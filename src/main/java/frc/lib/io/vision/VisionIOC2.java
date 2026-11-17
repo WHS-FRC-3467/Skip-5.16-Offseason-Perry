@@ -14,20 +14,20 @@
  */
 package frc.lib.io.vision;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.IntegerPublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.PubSubOption;
-import edu.wpi.first.networktables.RawSubscriber;
-import edu.wpi.first.networktables.StringPublisher;
-import edu.wpi.first.networktables.TimestampedRaw;
-import edu.wpi.first.util.WPIUtilJNI;
-
 import frc.lib.devices.AprilTagCamera.CameraProperties;
 import frc.robot.FieldConstants.AprilTagLayoutType;
+
+import org.wpilib.fields.Field;
+import org.wpilib.math.util.Units;
+import org.wpilib.networktables.DoublePublisher;
+import org.wpilib.networktables.IntegerPublisher;
+import org.wpilib.networktables.NetworkTable;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.networktables.PubSubOption;
+import org.wpilib.networktables.RawSubscriber;
+import org.wpilib.networktables.StringPublisher;
+import org.wpilib.networktables.TimestampedRaw;
+import org.wpilib.util.WPIUtilJNI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +72,7 @@ public class VisionIOC2 implements VisionIO {
             int exposure,
             int gain,
             double fiducialSizeMeters,
-            AprilTagFieldLayout tagLayout,
+            Field tagLayout,
             String tagLayoutJson,
             int pollStorageDepth) {}
 
@@ -272,8 +272,8 @@ public class VisionIOC2 implements VisionIO {
                         .subscribe(
                                 FLATBUFFER_TYPE,
                                 new byte[0],
-                                PubSubOption.sendAll(true),
-                                PubSubOption.keepDuplicates(true),
+                                new PubSubOption.SendAll(true),
+                                new PubSubOption.KeepDuplicates(true),
                                 PubSubOption.pollStorage(this.config.pollStorageDepth()));
     }
 

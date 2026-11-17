@@ -24,21 +24,20 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
-import edu.wpi.first.hal.HAL;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.simulation.DriverStationSim;
-import edu.wpi.first.wpilibj2.command.Commands;
-
 import frc.robot.TestUtil;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.wpilib.command2.Commands;
+import org.wpilib.driverstation.RobotState;
+import org.wpilib.hardware.hal.HAL;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.kinematics.SwerveModulePosition;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.simulation.DriverStationSim;
+import org.wpilib.system.Timer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -52,7 +51,7 @@ class DriveTest {
 
     @BeforeEach // this method will run before each test
     void setup() {
-        assertTrue(HAL.initialize(500, 0)); // initialize the HAL, crash if failed
+        assertTrue(HAL.initialize()); // initialize the HAL, crash if failed
         setTunableBoolean(SKID_DETECTION_ENABLED_KEY, true);
         setTunableBoolean(FRONT_LEFT_SKID_SIM_KEY, false);
 
@@ -76,7 +75,7 @@ class DriveTest {
     void robotIsEnabled() {
         /* verify that the robot is enabled */
         try {
-            assertTrue(DriverStation.isEnabled());
+            assertTrue(RobotState.isEnabled());
         } catch (Exception e) {
             fail("Robot is not enabled: " + e.getMessage());
         }
@@ -97,10 +96,12 @@ class DriveTest {
     @Test
     void testDriveVelocity() {
         TestUtil.runTest(
-                Commands.run(() -> drive.runVelocity(new ChassisSpeeds(1.5, 1.5, 0.0))), 1, drive);
+                Commands.run(() -> drive.runVelocity(new ChassisVelocities(1.5, 1.5, 0.0))),
+                1,
+                drive);
         try {
-            assertEquals(1.5, drive.getChassisSpeeds().vxMetersPerSecond, DELTA);
-            assertEquals(1.5, drive.getChassisSpeeds().vyMetersPerSecond, DELTA);
+            assertEquals(1.5, drive.getChassisVelocities().vx, DELTA);
+            assertEquals(1.5, drive.getChassisVelocities().vy, DELTA);
         } catch (Exception e) {
             fail(
                     "Failed to run drive linear velocity of 1.5 m/s in the x direction and 3 m/s in"
@@ -112,9 +113,11 @@ class DriveTest {
     @Test
     void testSteerVelocity() {
         TestUtil.runTest(
-                Commands.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, 1.5))), 1, drive);
+                Commands.run(() -> drive.runVelocity(new ChassisVelocities(0.0, 0.0, 1.5))),
+                1,
+                drive);
         try {
-            assertEquals(1.5, drive.getChassisSpeeds().omegaRadiansPerSecond, DELTA);
+            assertEquals(1.5, drive.getChassisVelocities().omega, DELTA);
         } catch (Exception e) {
             fail("Failed to run drive rotational velocity of 1.5 rad/s: " + e.getMessage());
         }
@@ -154,13 +157,13 @@ class DriveTest {
                         swerveModulePositions[i].angle.getRadians(),
                         DELTA);
             }
-            assertEquals(0.0, drive.getChassisSpeeds().vxMetersPerSecond, DELTA); // make sure that
+            assertEquals(0.0, drive.getChassisVelocities().vx, DELTA); // make sure that
             // the drivetrain
             // reaches a
             // velocity of
             // zero
-            assertEquals(0.0, drive.getChassisSpeeds().vyMetersPerSecond, DELTA);
-            assertEquals(0.0, drive.getChassisSpeeds().omegaRadiansPerSecond, DELTA);
+            assertEquals(0.0, drive.getChassisVelocities().vy, DELTA);
+            assertEquals(0.0, drive.getChassisVelocities().omega, DELTA);
 
         } catch (Exception e) {
             fail(
@@ -201,7 +204,7 @@ class DriveTest {
         setTunableBoolean(SKID_DETECTION_ENABLED_KEY, false);
 
         TestUtil.runTest(
-                Commands.run(() -> drive.runVelocity(new ChassisSpeeds(2.0, 0.0, 0.0))),
+                Commands.run(() -> drive.runVelocity(new ChassisVelocities(2.0, 0.0, 0.0))),
                 1.0,
                 drive);
         assertArrayEquals(

@@ -18,11 +18,10 @@ package frc.lib.util;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import edu.wpi.first.hal.HAL;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.wpilib.hardware.hal.HAL;
 
 class LoggedTriggerTest {
 
@@ -30,7 +29,7 @@ class LoggedTriggerTest {
 
     @BeforeEach
     void setup() {
-        assertTrue(HAL.initialize(500, 0)); // initialize the HAL, crash if failed
+        assertTrue(HAL.initialize()); // initialize the HAL, crash if failed
     }
 
     @AfterEach

@@ -15,15 +15,8 @@
 
 package frc.robot.subsystems.objectdetector;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static org.wpilib.units.Units.Degrees;
+import static org.wpilib.units.Units.Meters;
 
 import frc.lib.devices.ObjectDetection;
 import frc.lib.devices.ObjectDetection.ContourSelectionMode;
@@ -38,6 +31,10 @@ import lombok.Setter;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.wpilib.command2.SubsystemBase;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
 
 import java.util.Arrays;
 import java.util.List;
@@ -209,7 +206,7 @@ public class ObjectDetector extends SubsystemBase {
             double x = obs.get().objectPose().get().getX();
 
             int index = (int) ((x - minX) / laneWidth);
-            index = MathUtil.clamp(index, 0, NUM_LANES - 1);
+            index = Math.clamp(index, 0, NUM_LANES - 1);
             histogram[index]++;
         }
 
@@ -278,11 +275,11 @@ public class ObjectDetector extends SubsystemBase {
         Logger.recordOutput(
                 "Detection/ROI",
                 new Pose2d[] {
-                    new Pose2d(a, Rotation2d.kZero),
-                    new Pose2d(b, Rotation2d.kZero),
-                    new Pose2d(c, Rotation2d.kZero),
-                    new Pose2d(d, Rotation2d.kZero),
-                    new Pose2d(a, Rotation2d.kZero)
+                    new Pose2d(a, Rotation2d.ZERO),
+                    new Pose2d(b, Rotation2d.ZERO),
+                    new Pose2d(c, Rotation2d.ZERO),
+                    new Pose2d(d, Rotation2d.ZERO),
+                    new Pose2d(a, Rotation2d.ZERO)
                 });
     }
 
@@ -305,11 +302,11 @@ public class ObjectDetector extends SubsystemBase {
             Logger.recordOutput(
                     "Detection/BestLane",
                     new Pose2d[] {
-                        new Pose2d(a, Rotation2d.kZero),
-                        new Pose2d(b, Rotation2d.kZero),
-                        new Pose2d(c, Rotation2d.kZero),
-                        new Pose2d(d, Rotation2d.kZero),
-                        new Pose2d(a, Rotation2d.kZero)
+                        new Pose2d(a, Rotation2d.ZERO),
+                        new Pose2d(b, Rotation2d.ZERO),
+                        new Pose2d(c, Rotation2d.ZERO),
+                        new Pose2d(d, Rotation2d.ZERO),
+                        new Pose2d(a, Rotation2d.ZERO)
                     });
             Logger.recordOutput("Detection/Best Lane Target X", xLane);
             Logger.recordOutput("Detection/Best Lane Target Width", wLane);
@@ -330,7 +327,7 @@ public class ObjectDetector extends SubsystemBase {
         // the full FOV each evaluation, increasing stability and reducing overhead
         List<Translation2d> correctedCorners = getCorrectedROI();
         // Skip ML inference calculations during teleop for performance
-        if (DriverStation.isTeleop()) {
+        if (org.wpilib.driverstation.RobotState.isTeleop()) {
             latestObjectObservation = List.of();
             latestBigContourObservation = Optional.empty();
             latestLowContourObservation = Optional.empty();
@@ -353,12 +350,9 @@ public class ObjectDetector extends SubsystemBase {
             latestObjectObservation =
                     Arrays.stream(objectDetection.getTargets())
                             .map(this::generateObjectObservation)
-                            .filter(
-                                    obs ->
-                                            isObjectWithinROI(
-                                                    obs,
-                                                    correctedCorners.get(0),
-                                                    correctedCorners.get(1)))
+                            .filter(obs ->
+                                    isObjectWithinROI(
+                                            obs, correctedCorners.get(0), correctedCorners.get(1)))
                             .toList();
             // Estimate the argmax (within the camera's current FOV) of the Object Detector's
             // spatial histogram (i.e. ROI)

@@ -15,24 +15,26 @@
 
 package frc.lib.mechanisms.flywheel;
 
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.MomentOfInertia;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj.util.Color;
+import static org.wpilib.units.Units.KilogramSquareMeters;
+import static org.wpilib.units.Units.Radians;
+import static org.wpilib.units.Units.RadiansPerSecond;
+import static org.wpilib.units.Units.RadiansPerSecondPerSecond;
+import static org.wpilib.units.Units.Seconds;
+import static org.wpilib.units.Units.Volts;
 
 import frc.lib.io.motor.MotorIOSim;
+
+import org.wpilib.math.system.DCMotor;
+import org.wpilib.math.system.Models;
+import org.wpilib.simulation.BatterySim;
+import org.wpilib.simulation.FlywheelSim;
+import org.wpilib.simulation.RoboRioSim;
+import org.wpilib.system.RobotController;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.AngularVelocity;
+import org.wpilib.units.measure.MomentOfInertia;
+import org.wpilib.units.measure.Time;
+import org.wpilib.util.Color;
 
 /**
  * A simulated implementation of the FlywheelMechanism abstract class that uses FlywheelSim to
@@ -59,7 +61,7 @@ public class FlywheelMechanismSim extends FlywheelMechanism<MotorIOSim> {
         this.tolerance = tolerance;
         sim =
                 new FlywheelSim(
-                        LinearSystemId.createFlywheelSystem(
+                        Models.flywheelFromPhysicalConstants(
                                 motor,
                                 momentOfInertia.in(KilogramSquareMeters),
                                 io.getRotorToSensorRatio() * io.getSensorToMechanismRatio()),
@@ -76,20 +78,18 @@ public class FlywheelMechanismSim extends FlywheelMechanism<MotorIOSim> {
         sim.setInputVoltage(inputs.appliedVoltage.in(Volts));
         sim.update(deltaTime);
         RoboRioSim.setVInVoltage(
-                BatterySim.calculateDefaultBatteryLoadedVoltage(sim.getCurrentDrawAmps()));
+                BatterySim.calculateDefaultBatteryLoadedVoltage(sim.getCurrentDraw()));
 
         lastTime = currentTime;
 
-        io.setRotorVelocity(sim.getAngularVelocity());
-        io.setRotorAcceleration(sim.getAngularAcceleration());
+        io.setRotorVelocity(RadiansPerSecond.of(sim.getAngularVelocity()));
+        io.setRotorAcceleration(RadiansPerSecondPerSecond.of(sim.getAngularAcceleration()));
 
         // Angular displacement kinematic equation (θ = ω₀t + (1/2)αt²)'
         Angle positionChange =
                 Radians.of(
-                        sim.getAngularVelocityRadPerSec() * deltaTime
-                                + 0.5
-                                        * sim.getAngularAccelerationRadPerSecSq()
-                                        * Math.pow(deltaTime, 2));
+                        sim.getAngularVelocity() * deltaTime
+                                + 0.5 * sim.getAngularAcceleration() * Math.pow(deltaTime, 2));
 
         io.setPosition(inputs.position.plus(positionChange));
 
@@ -97,9 +97,9 @@ public class FlywheelMechanismSim extends FlywheelMechanism<MotorIOSim> {
 
         visualizer.setAngle(inputs.position);
         if (inputs.velocityError != null && inputs.velocityError.lte(tolerance)) {
-            visualizer.setColor(Color.kGreen);
+            visualizer.setColor(Color.GREEN);
         } else {
-            visualizer.setColor(Color.kBlack);
+            visualizer.setColor(Color.BLACK);
         }
     }
 }

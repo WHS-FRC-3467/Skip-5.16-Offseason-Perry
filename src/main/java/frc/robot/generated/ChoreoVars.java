@@ -1,9 +1,9 @@
 // spotless:off
 package frc.robot.generated;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.*;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.units.Units;
+import org.wpilib.units.measure.*;
 
 /**
  * Generated file containing variables defined in Choreo.

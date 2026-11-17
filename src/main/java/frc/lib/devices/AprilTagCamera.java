@@ -20,24 +20,10 @@ import dsv0.CameraOutput;
 import dsv0.Frame;
 import dsv0.PoseSolution;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.numbers.N8;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-
 import frc.lib.io.vision.VisionIO;
 import frc.lib.io.vision.VisionIOInputsAutoLogged;
 import frc.lib.io.vision.VisionIOPhotonVision;
+import frc.lib.util.AlertUtil;
 
 import lombok.Getter;
 
@@ -48,6 +34,19 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.targeting.PnpResult;
 import org.photonvision.targeting.TargetCorner;
+import org.wpilib.fields.Field;
+import org.wpilib.math.filter.Debouncer;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.linalg.Matrix;
+import org.wpilib.math.numbers.N1;
+import org.wpilib.math.numbers.N3;
+import org.wpilib.math.numbers.N8;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.Time;
+import org.wpilib.util.Alert;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -102,7 +101,7 @@ public class AprilTagCamera {
 
     private final VisionIO io;
     private final VisionIOInputsAutoLogged inputs;
-    private final AprilTagFieldLayout tagLayout;
+    private final Field tagLayout;
     private final int cameraIndex;
 
     private final Alert disconnectAlert;
@@ -121,12 +120,12 @@ public class AprilTagCamera {
      * @param io the VisionIO interface for this camera
      */
     public AprilTagCamera(
-            CameraProperties properties,
-            VisionIO io,
-            int cameraIndex,
-            AprilTagFieldLayout tagLayout) {
+            CameraProperties properties, VisionIO io, int cameraIndex, Field tagLayout) {
         disconnectAlert =
-                new Alert("Camera " + properties.name() + " is Disconnected!", AlertType.kError);
+                AlertUtil.create(
+                        "Camera " + properties.name() + " is Disconnected!",
+                        "Camera " + properties.name() + " is Disconnected!",
+                        Alert.Level.HIGH);
 
         this.io = io;
         this.cameraIndex = cameraIndex;
@@ -300,7 +299,7 @@ public class AprilTagCamera {
 
         Optional<MultiTargetPNPResult> multitagResult = Optional.empty();
         if (targets.size() >= 2) {
-            Transform3d fieldToCameraTransform = new Transform3d(Pose3d.kZero, fieldToCamera);
+            Transform3d fieldToCameraTransform = new Transform3d(Pose3d.ZERO, fieldToCamera);
             List<Short> idsUsed =
                     targets.stream().map(target -> (short) target.getFiducialId()).toList();
 
@@ -353,7 +352,7 @@ public class AprilTagCamera {
         return new Pose3d(
                 new Translation3d(translation.x(), translation.y(), translation.z()),
                 new Rotation3d(
-                        new edu.wpi.first.math.geometry.Quaternion(
+                        new org.wpilib.math.geometry.Quaternion(
                                 rotation.w(), rotation.x(), rotation.y(), rotation.z())));
     }
 

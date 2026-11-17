@@ -15,10 +15,9 @@
 
 package frc.lib.util;
 
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.math.filter.Debouncer;
 
 import java.util.function.BooleanSupplier;
 
@@ -105,7 +104,7 @@ public class LoggedTrigger extends Trigger {
      */
     @Override
     public LoggedTrigger debounce(double seconds) {
-        return debounce(seconds, Debouncer.DebounceType.kRising);
+        return debounce(seconds, Debouncer.DebounceType.RISING);
     }
 
     /**

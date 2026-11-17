@@ -15,7 +15,8 @@
 
 package frc.lib.util;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.wpilib.tunable.TunableDouble;
+import org.wpilib.tunable.Tunables;
 
 /**
  * Class for a tunable number. Gets value from dashboard regardless of tuning mode, returns default
@@ -28,6 +29,7 @@ public class AlwaysTunableNumber {
     private String key;
     private double defaultValue;
     private boolean hasDefault = false;
+    private TunableDouble tunable;
 
     /**
      * Create a new TunableNumber
@@ -58,7 +60,7 @@ public class AlwaysTunableNumber {
         if (!hasDefault) {
             hasDefault = true;
             this.defaultValue = defaultValue;
-            SmartDashboard.putNumber(key, SmartDashboard.getNumber(key, defaultValue));
+            tunable = Tunables.addDouble(key, defaultValue);
         }
     }
 
@@ -76,7 +78,11 @@ public class AlwaysTunableNumber {
      * next cycle.
      */
     public void set(double value) {
-        SmartDashboard.putNumber(key, value);
+        if (tunable == null) {
+            tunable = Tunables.addDouble(key, value);
+        } else {
+            tunable.set(value);
+        }
     }
 
     /**
@@ -88,7 +94,7 @@ public class AlwaysTunableNumber {
         if (!hasDefault) {
             return 0.0;
         } else {
-            return SmartDashboard.getNumber(key, defaultValue);
+            return tunable.get();
         }
     }
 }

@@ -18,22 +18,21 @@ package frc.robot.subsystems.intake;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import edu.wpi.first.hal.HAL;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.simulation.DriverStationSim;
-
 import frc.robot.TestUtil;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.wpilib.hardware.hal.HAL;
+import org.wpilib.simulation.DriverStationSim;
+import org.wpilib.system.Timer;
 
 public class IntakeTest {
     IntakeSuperstructure intake;
 
     @BeforeEach // this method will run before each test
     void setup() {
-        assertTrue(HAL.initialize(500, 0)); // initialize the HAL, crash if failed
+        assertTrue(HAL.initialize()); // initialize the HAL, crash if failed
 
         intake = IntakeSuperstructureConstants.get();
 

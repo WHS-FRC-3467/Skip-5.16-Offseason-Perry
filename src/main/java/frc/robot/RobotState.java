@@ -15,22 +15,9 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
-
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.MetersPerSecond;
+import static org.wpilib.units.Units.Seconds;
 
 import frc.lib.posestimator.PoseEstimator;
 import frc.lib.posestimator.PoseEstimator.VisionPoseObservation;
@@ -48,6 +35,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.math.filter.Debouncer;
+import org.wpilib.math.filter.Debouncer.DebounceType;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.kinematics.SwerveDriveKinematics;
+import org.wpilib.units.measure.Distance;
+import org.wpilib.units.measure.LinearVelocity;
 
 import java.util.Optional;
 
@@ -91,27 +90,25 @@ public class RobotState {
     @Getter
     @AutoLogOutput(key = "Drive/FacingTarget")
     public final Trigger facingTarget =
-            new Trigger(
-                    () ->
-                            Math.abs(
-                                            getAngleToTarget()
-                                                    .minus(getEstimatedPose().getRotation())
-                                                    .getDegrees())
-                                    < SHOOT_TOLERANCE_DEGREES.get());
+            new Trigger(() ->
+                    Math.abs(
+                                    getAngleToTarget()
+                                            .minus(getEstimatedPose().getRotation())
+                                            .getDegrees())
+                            < SHOOT_TOLERANCE_DEGREES.get());
 
     @Getter
     @AutoLogOutput(key = "Drive/FacingFeedTarget")
     public final Trigger facingFeedTarget =
-            new Trigger(
-                    () -> {
-                        Translation2d futureTranslation =
-                                getFuturePose(feedLookaheadSeconds.get()).getTranslation();
-                        return Math.abs(
-                                        getAngleToTarget(futureTranslation)
-                                                .minus(getEstimatedPose().getRotation())
-                                                .getDegrees())
-                                < FEED_TOLERANCE_DEGREES.get();
-                    });
+            new Trigger(() -> {
+                Translation2d futureTranslation =
+                        getFuturePose(feedLookaheadSeconds.get()).getTranslation();
+                return Math.abs(
+                                getAngleToTarget(futureTranslation)
+                                        .minus(getEstimatedPose().getRotation())
+                                        .getDegrees())
+                        < FEED_TOLERANCE_DEGREES.get();
+            });
 
     public final LoggedTrigger shouldFeed =
             new LoggedTrigger(
@@ -122,7 +119,7 @@ public class RobotState {
                                 case FEED_LEFT, FEED_RIGHT -> true;
                             });
 
-    private final Debouncer staticShootingDebouncer = new Debouncer(0.20, DebounceType.kRising);
+    private final Debouncer staticShootingDebouncer = new Debouncer(0.20, DebounceType.RISING);
 
     /**
      * Trigger determining whether robot is instantaneously positioned for a static shot -- robot
@@ -132,11 +129,9 @@ public class RobotState {
             new LoggedTrigger(
                     "RobotState/WithinStaticShootingTolerance",
                     () -> {
-                        ChassisSpeeds chassisVelocity = getFieldRelativeVelocity();
+                        ChassisVelocities chassisVelocity = getFieldRelativeVelocity();
                         double linearVelocityMPS =
-                                Math.hypot(
-                                        chassisVelocity.vxMetersPerSecond,
-                                        chassisVelocity.vyMetersPerSecond);
+                                Math.hypot(chassisVelocity.vx, chassisVelocity.vy);
                         // Arbitrary threshold to determine if the robot is ready for a
                         // static shot
                         return linearVelocityMPS < 0.1 && facingTarget.getAsBoolean();
@@ -168,7 +163,7 @@ public class RobotState {
                             AUTO_ANGULAR_ODOMETRY_STD_DEV)
                     .withPoseValidator(this::isPoseWithinField);
 
-    @Getter @Setter private ChassisSpeeds robotRelativeVelocity = new ChassisSpeeds();
+    @Getter @Setter private ChassisVelocities robotRelativeVelocity = new ChassisVelocities();
 
     public void setTeleop() {
         poseEstimator.setOdometryStdDevs(
@@ -201,7 +196,7 @@ public class RobotState {
      * @param observation the odometry observation to add
      */
     public void addOdometryObservation(OdometryObservation observation) {
-        // if (DriverStation.isDisabled()) return;
+        // if (RobotState.isDisabled()) return;
 
         poseEstimator.addOdometryObservation(observation);
     }
@@ -247,12 +242,8 @@ public class RobotState {
      *
      * @return the field-relative chassis speeds
      */
-    public ChassisSpeeds getFieldRelativeVelocity() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(
-                robotRelativeVelocity.vxMetersPerSecond,
-                robotRelativeVelocity.vyMetersPerSecond,
-                robotRelativeVelocity.omegaRadiansPerSecond,
-                getEstimatedPose().getRotation());
+    public ChassisVelocities getFieldRelativeVelocity() {
+        return robotRelativeVelocity.toFieldRelative(getEstimatedPose().getRotation());
     }
 
     /**
@@ -262,7 +253,7 @@ public class RobotState {
      */
     public LinearVelocity getLinearVelocity() {
         var speeds = getFieldRelativeVelocity();
-        return MetersPerSecond.of(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+        return MetersPerSecond.of(Math.hypot(speeds.vx, speeds.vy));
     }
 
     /**
@@ -419,7 +410,7 @@ public class RobotState {
             case ALLIANCE_ZONE -> {
                 if (x < trenchMinX) {
                     // Alliance-wall side of the corridor: point toward midfield.
-                    yield FieldUtil.apply(Rotation2d.kZero);
+                    yield FieldUtil.apply(Rotation2d.ZERO);
                 } else if (x > trenchMaxX) {
                     // Midfield side of the corridor: point back toward the alliance wall.
                     yield FieldUtil.apply(Rotation2d.k180deg);
@@ -433,7 +424,7 @@ public class RobotState {
                 // In the official neutral zone, bias toward the nearer half's direction.
                 yield FieldUtil.apply(
                         x < FieldConstants.FIELD_CENTER.getX()
-                                ? Rotation2d.kZero
+                                ? Rotation2d.ZERO
                                 : Rotation2d.k180deg);
             }
 
@@ -443,7 +434,7 @@ public class RobotState {
                     yield FieldUtil.apply(Rotation2d.k180deg);
                 } else if (x < oppTrenchMaxX) {
                     // Midfield side of the corridor: point toward the opponent wall.
-                    yield FieldUtil.apply(Rotation2d.kZero);
+                    yield FieldUtil.apply(Rotation2d.ZERO);
                 } else {
 
                     // Inside the corridor but not classified into a lane: stay square.
@@ -547,7 +538,8 @@ public class RobotState {
                 .getAllianceTranslation()
                 .toTranslation2d()
                 .minus(getEstimatedPose().getTranslation())
-                .getAngle();
+                .getAngle()
+                .orElse(Rotation2d.ZERO);
     }
 
     /**
@@ -565,7 +557,8 @@ public class RobotState {
                 .getAllianceTranslation()
                 .toTranslation2d()
                 .minus(robotTranslation)
-                .getAngle();
+                .getAngle()
+                .orElse(Rotation2d.ZERO);
     }
 
     /**
@@ -577,9 +570,9 @@ public class RobotState {
     public Pose2d getFuturePose(double seconds) {
         Transform2d velocity =
                 new Transform2d(
-                        robotRelativeVelocity.vxMetersPerSecond,
-                        robotRelativeVelocity.vyMetersPerSecond,
-                        Rotation2d.fromRadians(robotRelativeVelocity.omegaRadiansPerSecond));
+                        robotRelativeVelocity.vx,
+                        robotRelativeVelocity.vy,
+                        Rotation2d.fromRadians(robotRelativeVelocity.omega));
         return getEstimatedPose().plus(velocity.times(feedLookaheadSeconds.get()));
     }
 }

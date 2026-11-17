@@ -15,27 +15,18 @@
 
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Radians;
+import static org.wpilib.units.Units.Degrees;
+import static org.wpilib.units.Units.Inches;
+import static org.wpilib.units.Units.Kilograms;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.MetersPerSecond;
+import static org.wpilib.units.Units.MetersPerSecondPerSecond;
+import static org.wpilib.units.Units.Radians;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Mass;
-import edu.wpi.first.wpilibj.RobotBase;
 
 import frc.lib.io.motor.MotorIO;
 import frc.lib.io.motor.MotorIO.PIDSlot;
@@ -51,6 +42,15 @@ import frc.robot.Ports;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import org.wpilib.framework.RobotBase;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.system.DCMotor;
+import org.wpilib.math.util.Units;
+import org.wpilib.units.measure.Distance;
+import org.wpilib.units.measure.LinearAcceleration;
+import org.wpilib.units.measure.LinearVelocity;
+import org.wpilib.units.measure.Mass;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class IntakeLinearConstants {

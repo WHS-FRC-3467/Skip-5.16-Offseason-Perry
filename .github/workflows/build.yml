@@ -10,7 +10,15 @@ jobs:
   run_tests:
     name: Test
     runs-on: ubuntu-latest
+    # WPILib 2027 desktop natives (used by unit tests and simulation) require glibc >= 2.41,
+    # which the ubuntu-latest (24.04) runner image does not provide.
+    container: ubuntu:26.04
     steps:
+      - name: Install container dependencies
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            ca-certificates curl git
       - name: Verify checkout token
         env:
           ACTIONS_TOKEN: ${{ secrets.ACTIONS_TOKEN }}
@@ -52,7 +60,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: "17"
+          java-version: "25"
       - name: Grant execute permission
         run: chmod +x gradlew
       - name: Build Robot Code

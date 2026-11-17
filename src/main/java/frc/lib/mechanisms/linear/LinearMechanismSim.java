@@ -15,21 +15,21 @@
 
 package frc.lib.mechanisms.linear;
 
-import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Mass;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import static org.wpilib.units.Units.Kilograms;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.Seconds;
+import static org.wpilib.units.Units.Volts;
 
 import frc.lib.io.motor.MotorIOSim;
+
+import org.wpilib.math.system.DCMotor;
+import org.wpilib.simulation.BatterySim;
+import org.wpilib.simulation.ElevatorSim;
+import org.wpilib.simulation.RoboRioSim;
+import org.wpilib.system.RobotController;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.Mass;
+import org.wpilib.units.measure.Time;
 
 /**
  * A simulated implementation of the LinearMechanism interface that uses ElevatorSim to simulate the
@@ -94,13 +94,13 @@ public class LinearMechanismSim extends LinearMechanism<MotorIOSim> {
         sim.setInputVoltage(inputs.appliedVoltage.in(Volts));
         sim.update(deltaTime);
         RoboRioSim.setVInVoltage(
-                BatterySim.calculateDefaultBatteryLoadedVoltage(sim.getCurrentDrawAmps()));
+                BatterySim.calculateDefaultBatteryLoadedVoltage(sim.getCurrentDraw()));
 
         lastTime = currentTime;
 
-        io.setPosition(toAngle(Meters.of(sim.getPositionMeters())));
+        io.setPosition(toAngle(Meters.of(sim.getPosition())));
         io.setRotorVelocity(
-                toAngle(Meters.of(sim.getVelocityMetersPerSecond()))
+                toAngle(Meters.of(sim.getVelocity()))
                         .per(Seconds)
                         .times(io.getRotorToSensorRatio() * io.getSensorToMechanismRatio()));
 

@@ -4,23 +4,23 @@
 
 package frc.lib.mechanisms.rotary;
 
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.MomentOfInertia;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import static org.wpilib.units.Units.KilogramSquareMeters;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.Radians;
+import static org.wpilib.units.Units.RadiansPerSecond;
+import static org.wpilib.units.Units.Seconds;
+import static org.wpilib.units.Units.Volts;
 
 import frc.lib.io.absoluteencoder.AbsoluteEncoderIOSim;
 import frc.lib.io.motor.MotorIOSim;
+
+import org.wpilib.math.system.DCMotor;
+import org.wpilib.simulation.BatterySim;
+import org.wpilib.simulation.RoboRioSim;
+import org.wpilib.simulation.SingleJointedArmSim;
+import org.wpilib.system.RobotController;
+import org.wpilib.units.measure.MomentOfInertia;
+import org.wpilib.units.measure.Time;
 
 import java.util.Optional;
 
@@ -67,20 +67,18 @@ public class RotaryMechanismSim extends RotaryMechanism<MotorIOSim, AbsoluteEnco
         sim.setInputVoltage(inputs.appliedVoltage.in(Volts));
         sim.update(deltaTime);
         RoboRioSim.setVInVoltage(
-                BatterySim.calculateDefaultBatteryLoadedVoltage(sim.getCurrentDrawAmps()));
+                BatterySim.calculateDefaultBatteryLoadedVoltage(sim.getCurrentDraw()));
 
         lastTime = currentTime;
 
-        io.setPosition(Radians.of(sim.getAngleRads()));
+        io.setPosition(Radians.of(sim.getAngle()));
         io.setRotorVelocity(
-                RadiansPerSecond.of(sim.getVelocityRadPerSec())
+                RadiansPerSecond.of(sim.getVelocity())
                         .times(io.getRotorToSensorRatio() * io.getSensorToMechanismRatio()));
 
-        absoluteEncoder.ifPresent(
-                encoderSim -> {
-                    encoderSim.setAngle(
-                            Radians.of(sim.getAngleRads()).times(io.getSensorToMechanismRatio()));
-                });
+        absoluteEncoder.ifPresent(encoderSim -> {
+            encoderSim.setAngle(Radians.of(sim.getAngle()).times(io.getSensorToMechanismRatio()));
+        });
 
         super.periodic();
     }

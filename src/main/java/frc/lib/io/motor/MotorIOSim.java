@@ -15,9 +15,9 @@
 
 package frc.lib.io.motor;
 
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.AngularAcceleration;
+import org.wpilib.units.measure.AngularVelocity;
 
 public interface MotorIOSim extends MotorIO {
     /**

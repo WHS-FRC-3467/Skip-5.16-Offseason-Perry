@@ -1,6 +1,6 @@
 package frc.lib.util;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.wpilib.telemetry.Telemetry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +47,7 @@ public class LoggedDashboardDashboardChooser<V> {
             String key, Map<String, Map<String, Optional<V>>> treeMap) {
 
         this.dashboardChooser = new LoggedDashboardChooser<>(key);
-        SmartDashboard.putBoolean(key + "IsOk", false);
+        Telemetry.log(key + "IsOk", false);
 
         if (treeMap.isEmpty()) {
             this.treeMap = Map.of("null", Map.of());
@@ -71,42 +71,41 @@ public class LoggedDashboardDashboardChooser<V> {
         }
         this.treeMode = true;
 
-        this.dashboardChooser.onChange(
-                choice -> {
-                    if (choice == null) {
-                        return;
+        this.dashboardChooser.onChange(choice -> {
+            if (choice == null) {
+                return;
+            }
+            Telemetry.log(key + "IsOk", choice.value.isPresent());
+            if (treeMode) {
+
+                dashboardChooser.clearOptions(this.treeMap.get(choice.name));
+
+                // dashboardChooser.clearSelected();
+
+                treeMode = false;
+
+            } else {
+
+                if (choice.name == "..") {
+                    dashboardChooser.clear();
+                    for (var entry : this.treeMap.entrySet()) {
+                        dashboardChooser.addOption(
+                                entry.getKey(), new DashboardChoice(entry.getKey()));
                     }
-                    SmartDashboard.putBoolean(key + "IsOk", choice.value.isPresent());
-                    if (treeMode) {
 
-                        dashboardChooser.clearOptions(this.treeMap.get(choice.name));
+                    this.treeMode = true;
+                    return;
+                } else if (choice.value.isPresent()) {
 
-                        // dashboardChooser.clearSelected();
+                    V value = choice.value.get();
 
-                        treeMode = false;
+                    if (this.onChange.isPresent()) {
 
-                    } else {
-
-                        if (choice.name == "..") {
-                            dashboardChooser.clear();
-                            for (var entry : this.treeMap.entrySet()) {
-                                dashboardChooser.addOption(
-                                        entry.getKey(), new DashboardChoice(entry.getKey()));
-                            }
-
-                            this.treeMode = true;
-                            return;
-                        } else if (choice.value.isPresent()) {
-
-                            V value = choice.value.get();
-
-                            if (this.onChange.isPresent()) {
-
-                                this.onChange.get().accept(value);
-                            }
-                        }
+                        this.onChange.get().accept(value);
                     }
-                });
+                }
+            }
+        });
 
         this.onChange = Optional.empty();
     }

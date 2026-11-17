@@ -15,18 +15,17 @@
 
 package frc.lib.util;
 
-import static edu.wpi.first.units.Units.Seconds;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static org.wpilib.units.Units.Seconds;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
+import org.wpilib.command2.button.CommandXboxController;
+import org.wpilib.command2.button.Trigger;
+import org.wpilib.driverstation.GenericHID;
+import org.wpilib.driverstation.GenericHID.RumbleType;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.units.measure.Time;
 
 /**
  * Extended Xbox controller with additional functionality for FRC use.
@@ -43,7 +42,7 @@ import org.littletonrobotics.junction.Logger;
  *     .applyCurve(true); // Square inputs for finer control at low speeds
  *
  * // Use rumble for feedback
- * Command scoreSignal = driver.rumbleForTime(RumbleType.kBothRumble, 0.5, Seconds.of(0.3));
+ * Command scoreSignal = driver.rumbleForTime(RumbleType.LEFT_RUMBLE, 0.5, Seconds.of(0.3));
  * }</pre>
  */
 public class CommandXboxControllerExtended extends CommandXboxController {
@@ -52,12 +51,11 @@ public class CommandXboxControllerExtended extends CommandXboxController {
     private boolean applyCurve = false;
 
     public final Trigger joysticksZeroed =
-            new Trigger(
-                    () ->
-                            getLeftX() == 0.0
-                                    && getLeftY() == 0.0
-                                    && getRightX() == 0.0
-                                    && getRightY() == 0.0);
+            new Trigger(() ->
+                    getLeftX() == 0.0
+                            && getLeftY() == 0.0
+                            && getRightX() == 0.0
+                            && getRightY() == 0.0);
 
     /**
      * Constructs an extended Xbox controller with additional functionality.
@@ -66,7 +64,16 @@ public class CommandXboxControllerExtended extends CommandXboxController {
      */
     public CommandXboxControllerExtended(int port) {
         super(port);
-        hid = this.getHID();
+        hid = this.getHID().getHID();
+
+        // WPILib 2027 applies a default 0.1 deadband to the sticks. This class applies its own
+        // configurable deadband (see withDeadband), so disable the built-in one to keep the
+        // 2026 input response.
+        var controller = getController();
+        controller.setLeftXDeadband(0.0);
+        controller.setLeftYDeadband(0.0);
+        controller.setRightXDeadband(0.0);
+        controller.setRightYDeadband(0.0);
     }
 
     /**
@@ -93,7 +100,8 @@ public class CommandXboxControllerExtended extends CommandXboxController {
 
     private void setRumble(double intensity) {
         Logger.recordOutput("Controllers/" + hid.getPort() + "/VibrationIntensity", intensity);
-        hid.setRumble(RumbleType.kBothRumble, intensity);
+        hid.setRumble(RumbleType.LEFT_RUMBLE, intensity);
+        hid.setRumble(RumbleType.RIGHT_RUMBLE, intensity);
     }
 
     /**

@@ -14,24 +14,24 @@
  */
 package frc.robot.commands.autos.current;
 
-import static edu.wpi.first.units.Units.Degrees;
+import static org.wpilib.units.Units.Degrees;
 
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-
+import frc.lib.util.AlertUtil;
 import frc.robot.commands.ResilientTrajectoryFollower;
 import frc.robot.commands.autos.utils.AutoCommands;
 import frc.robot.commands.autos.utils.AutoContext;
 import frc.robot.commands.autos.utils.AutoOption;
 import frc.robot.commands.autos.utils.AutoUtil;
 import frc.robot.generated.ChoreoTraj;
+
+import org.wpilib.command2.Command;
+import org.wpilib.command2.Commands;
+import org.wpilib.util.Alert;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +40,10 @@ import java.util.Optional;
 public class BAuto {
 
     private static final Alert TRAJECTORIES_MISSING =
-            new Alert("Neutral Auto Trajectories Missing, Auto(s) Unavailable", AlertType.kError);
+            AlertUtil.create(
+                    "BAuto/trajectoriesMissing",
+                    "Neutral Auto Trajectories Missing, Auto(s) Unavailable",
+                    Alert.Level.HIGH);
 
     public static final double Y_OFFSET = 7.530;
 

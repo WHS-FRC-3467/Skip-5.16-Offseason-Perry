@@ -66,8 +66,8 @@ public class VisionIOPhotonVision implements VisionIO {
         if (!unreadResults.isEmpty()) {
             var result = unreadResults.get(unreadResults.size() - 1);
             inputs.rawResults = new byte[][] {packPhotonResult(result)};
-            inputs.captureTimestampsUs = new long[] {result.metadata.captureTimestampMicros};
-            inputs.publishTimestampsUs = new long[] {result.metadata.publishTimestampMicros};
+            inputs.captureTimestampsUs = new long[] {result.metadata.captureTimestampNanos / 1000};
+            inputs.publishTimestampsUs = new long[] {result.metadata.publishTimestampNanos / 1000};
         } else {
             inputs.rawResults = new byte[0][];
             inputs.captureTimestampsUs = new long[0];

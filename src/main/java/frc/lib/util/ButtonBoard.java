@@ -14,20 +14,32 @@
  */
 package frc.lib.util;
 
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.wpilib.command2.button.CommandGenericHID;
+import org.wpilib.command2.button.Trigger;
 
 /**
- * Extended CommandGenericHID with additional functionality for FRC use. This class is intended to
- * provide support for a generic digital button board with multiple buttons/switches and
+ * Wrapper around CommandGenericHID with additional functionality for FRC use. This class is
+ * intended to provide support for a generic digital button board with multiple buttons/switches and
  * LEDs/buzzers but no axes.
+ *
+ * <p>CommandGenericHID is final in WPILib 2027, so this wraps it rather than extending it.
  */
-public class ButtonBoard extends CommandGenericHID {
+public class ButtonBoard {
+    private final CommandGenericHID hid;
+
     public ButtonBoard(int port) {
-        super(port);
+        hid = CommandGenericHID.getCommandGenericHID(port);
+    }
+
+    public CommandGenericHID getHID() {
+        return hid;
+    }
+
+    public Trigger button(int buttonNumber) {
+        return hid.button(buttonNumber);
     }
 
     public Trigger buttonBoardButton(int buttonNumber) {
-        return super.button(buttonNumber);
+        return hid.button(buttonNumber);
     }
 }

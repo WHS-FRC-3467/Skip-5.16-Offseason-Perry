@@ -1,7 +1,7 @@
 package frc.robot.commands.autos.utils;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
+import org.wpilib.math.geometry.Pose2d;
 
 import java.util.List;
 import java.util.function.Supplier;

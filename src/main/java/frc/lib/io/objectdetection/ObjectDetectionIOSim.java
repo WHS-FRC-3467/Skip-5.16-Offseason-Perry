@@ -4,15 +4,14 @@
 
 package frc.lib.io.objectdetection;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.units.Units;
-
 import frc.lib.devices.AprilTagCamera.CameraProperties;
 
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.simulation.VisionTargetSim;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.units.Units;
 
 import java.util.function.Supplier;
 

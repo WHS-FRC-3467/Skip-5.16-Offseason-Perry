@@ -4,15 +4,10 @@
 
 package frc.robot.util;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Watts;
-
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj2.command.Commands;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.MetersPerSecond;
+import static org.wpilib.units.Units.RadiansPerSecond;
+import static org.wpilib.units.Units.Watts;
 
 import frc.lib.util.LoggedTrigger;
 import frc.lib.util.LoggedTunableNumber;
@@ -23,6 +18,10 @@ import frc.robot.subsystems.shooter.ShooterSuperstructure;
 import lombok.Getter;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.command2.Commands;
+import org.wpilib.math.filter.Debouncer;
+import org.wpilib.math.filter.Debouncer.DebounceType;
+import org.wpilib.units.measure.LinearVelocity;
 
 public class ShotTracker {
 
@@ -64,7 +63,7 @@ public class ShotTracker {
 
     // Heuristic for whether a shot has passed through the shooter in ~ 0.5s using flywheel velocity
     // drop and power spike
-    private final Debouncer hopperEmptyDebouncer = new Debouncer(1.2, DebounceType.kRising);
+    private final Debouncer hopperEmptyDebouncer = new Debouncer(1.2, DebounceType.RISING);
 
     /**
      * Trigger input for hopperEmpty trigger, made explicit for compartmentalization and
@@ -92,19 +91,17 @@ public class ShotTracker {
 
     private void attachBallTriggers() {
         ballTrigger.onTrue(
-                Commands.runOnce(
-                        () -> {
-                            if (this.shooter.getFlywheelPowerDraw().in(Watts)
-                                    > powerDetectionThresholdWatts.getAsDouble()) {
-                                powerSink = true;
-                            } else {
-                                powerSink = false;
-                            }
-                            if (hopperEmpty.negate().getAsBoolean())
-                                totalFuelCount = totalFuelCount + 2.6;
-                            Logger.recordOutput("ShotTracker/powerSink", powerSink);
-                            Logger.recordOutput("ShotTracker/TotalFuelCount", totalFuelCount);
-                        }));
+                Commands.runOnce(() -> {
+                    if (this.shooter.getFlywheelPowerDraw().in(Watts)
+                            > powerDetectionThresholdWatts.getAsDouble()) {
+                        powerSink = true;
+                    } else {
+                        powerSink = false;
+                    }
+                    if (hopperEmpty.negate().getAsBoolean()) totalFuelCount = totalFuelCount + 2.6;
+                    Logger.recordOutput("ShotTracker/powerSink", powerSink);
+                    Logger.recordOutput("ShotTracker/TotalFuelCount", totalFuelCount);
+                }));
     }
 
     /**

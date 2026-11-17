@@ -1,43 +1,39 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2026.2.1"
-    id "com.peterabeles.gversion" version "1.10"
-    id "io.freefair.lombok" version "8.6"
-    id "net.ltgt.errorprone" version "4.3.0"
-    id 'com.diffplug.spotless' version '8.2.1'
+    id "application"
+    id "org.wpilib.GradleRIO" version "2027.0.0-alpha-8"
+    id "com.peterabeles.gversion" version "1.11.0"
+    id "io.freefair.lombok" version "9.8.3"
+    id "net.ltgt.errorprone" version "5.2.0"
+    id 'com.diffplug.spotless' version '8.11.0'
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 def flatbuffersVersion = "25.2.10"
 def flatbuffersSchemaDir = file("C2/schema")
 def flatbuffersGeneratedSourceDir = file("src/main/generated/flatbuffers/java")
-def flatbuffersToolDir = file("$buildDir/flatbuffers/tooling")
+def flatbuffersToolDir = layout.buildDirectory.dir("flatbuffers/tooling").get().asFile
 
 def isWindows = {
     System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")
 }
 
 def findFlatcOnPath = {
-    def stdout = new ByteArrayOutputStream()
-    def stderr = new ByteArrayOutputStream()
-    def result = project.exec {
+    def lookup = providers.exec {
         commandLine(isWindows() ? ["where", "flatc"] : ["which", "flatc"])
-        standardOutput = stdout
-        errorOutput = stderr
         ignoreExitValue = true
     }
 
-    if (result.exitValue != 0) {
+    if (lookup.result.get().exitValue != 0) {
         return null
     }
 
-    return stdout
-            .toString()
+    return lookup.standardOutput.asText.get()
             .readLines()
             .collect { it.trim() }
             .find { !it.isEmpty() }
@@ -161,27 +157,24 @@ tasks.register("generateFlatbuffers") {
         }
         logger.lifecycle("Generating FlatBuffers Java sources with ${flatcPath}")
 
-        def tempOutputDir = file("$buildDir/generated/sources/flatbuffers/java/main")
+        def tempOutputDir = layout.buildDirectory.dir("generated/sources/flatbuffers/java/main").get().asFile
         delete(tempOutputDir)
         tempOutputDir.mkdirs()
 
-        def stdout = new ByteArrayOutputStream()
-        def stderr = new ByteArrayOutputStream()
-        def result = project.exec {
+        def flatcRun = providers.exec {
             commandLine([
                 flatcPath,
                 "--java",
                 "-I", flatbuffersSchemaDir.absolutePath,
                 "-o", tempOutputDir.absolutePath,
             ] + schemaFiles.collect { it.absolutePath })
-            standardOutput = stdout
-            errorOutput = stderr
             ignoreExitValue = true
         }
+        def result = flatcRun.result.get()
 
         if (result.exitValue != 0) {
             logger.warn("FlatBuffers code generation failed with exit code ${result.exitValue}; using existing generated sources in ${flatbuffersGeneratedSourceDir}.")
-            def commandOutput = stderr.toString("UTF-8").trim()
+            def commandOutput = flatcRun.standardError.asText.get().trim()
             if (!commandOutput.isEmpty()) {
                 logger.warn(commandOutput)
             }
@@ -198,50 +191,36 @@ tasks.register("generateFlatbuffers") {
     }
 }
 
-// Define my targets (RoboRIO) and artifacts (deployable files)
+// Define my targets (SystemCore) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
     targets {
-        roborio(getTargetTypeClass('RoboRIO')) {
+        systemcore(getTargetTypeClass('SystemCore')) {
             // Team number is loaded either from the .wpilib/wpilib_preferences.json
             // or from command line. If not found an exception will be thrown.
             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
             // want to store a team number in this file.
-            team = project.frc.getTeamNumber()
-            debug = project.frc.getDebugOrDefault(false)
+            team = project.wpilib.getTeamNumber()
+            // Use the default systemcore host name. This must be called after setting team
+            // as happens on the line above
+            useDefaultSystemcoreHostName()
+            debug = project.wpilib.getDebugOrDefault(false)
 
             artifacts {
                 // First part is artifact name, 2nd is artifact type
                 // getTargetTypeClass is a shortcut to get the class type using a string
 
-                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
-                    jvmArgs.add("-XX:+UnlockExperimentalVMOptions")
-                    jvmArgs.add("-XX:GCTimeRatio=5")
-                    jvmArgs.add("-XX:+UseSerialGC")
-                    jvmArgs.add("-XX:MaxGCPauseMillis=50")
- //                   jvmArgs.add("-verbose:class")
-
-                    // The options below may improve performance, but should only be enabled on the RIO 2
-                    //
-                    final MAX_JAVA_HEAP_SIZE_MB = 100;
-                    jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
-                    jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
-                    jvmArgs.add("-XX:+AlwaysPreTouch")
-
-//                        jvmArgs.add("-Dcom.sun.management.jmxremote=true")
-//    jvmArgs.add("-Dcom.sun.management.jmxremote.port=1198")
-//    jvmArgs.add("-Dcom.sun.management.jmxremote.local.only=false")
-//    jvmArgs.add("-Dcom.sun.management.jmxremote.ssl=false")
-//    jvmArgs.add("-Dcom.sun.management.jmxremote.authenticate=false")
-//    jvmArgs.add("-Djava.rmi.server.hostname=10.34.67.2") // Replace TE.AM with team number
+                wpilibJava(getArtifactTypeClass('WPILibJavaArtifact')) {
+                    // Set to true to use debug including JNI, which will drastically impact performance.
+                    debugJni = false
                 }
 
                 // Static files artifact
-                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                wpilibStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
-                    directory = '/home/lvuser/deploy'
-                    // Change to true to delete files on roboRIO that no
-                    // longer exist in deploy directory on roboRIO
+                    directory = '/home/systemcore/deploy'
+                    // Change to true to delete files on systemcore that no
+                    // longer exist in deploy directory of this project
                     deleteOldFiles = true
                 }
             }
@@ -249,16 +228,16 @@ deploy {
     }
 }
 
-def deployArtifact = deploy.targets.roborio.artifacts.frcJava
+def deployArtifact = deploy.targets.systemcore.artifacts.wpilibJava
 
-// Set to true to use debug for JNI.
-wpi.java.debugJni = false
+// Set to true to use debug for simulation including JNI
+wpi.java.runSimWithDebugJni = false
 
 // Set this to true to enable desktop support.
 def includeDesktopSupport = true
 
 // Configuration for AdvantageKit
-task(replayWatch, type: JavaExec) {
+tasks.register("replayWatch", JavaExec) {
     mainClass = "org.littletonrobotics.junction.ReplayWatch"
     classpath = sourceSets.main.runtimeClasspath
 }
@@ -272,16 +251,16 @@ repositories {
 dependencies {
     annotationProcessor wpi.java.deps.wpilibAnnotations()
 
-    errorprone("com.google.errorprone:error_prone_core:2.17.0")
+    errorprone("com.google.errorprone:error_prone_core:2.52.0")
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
-    roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
-    roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
+    systemcoreDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.systemcore)
+    systemcoreDebug wpi.java.vendor.jniDebug(wpi.platforms.systemcore)
 
-    roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
-    roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
+    systemcoreRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.systemcore)
+    systemcoreRelease wpi.java.vendor.jniRelease(wpi.platforms.systemcore)
 
     nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
     nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
@@ -297,10 +276,12 @@ dependencies {
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
     annotationProcessor "org.littletonrobotics.akit:akit-autolog:$akitJson.version"
 
-    compileOnly 'com.google.errorprone:error_prone_annotations:2.35.0'
-    annotationProcessor 'com.google.errorprone:error_prone_core:2.35.0'
+    compileOnly 'com.google.errorprone:error_prone_annotations:2.52.0'
 
     implementation "org.apache.commons:commons-lang3:3.18.0"
+
+    // WPILib 2027 no longer bundles Jackson; used for AprilTag layout parsing and Elastic notifications
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.20.1"
 
     implementation "com.google.flatbuffers:flatbuffers-java:${flatbuffersVersion}"
 }
@@ -321,20 +302,17 @@ test {
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
-// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
-// in order to make them all available at runtime. Also adding the manifest so WPILib
-// knows where to look for our Robot Class.
-jar {
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-    from sourceSets.main.allSource
-    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
+application.mainClass = ROBOT_MAIN_CLASS
 
-// Configure jar and deploy tasks
-deployArtifact.jarTask = jar
-wpi.java.configureExecutableTasks(jar)
+deployArtifact.configureApplication(application)
+wpi.java.configureApplication(application)
 wpi.java.configureTestTasks(test)
+
+jar {
+    from('src') { into 'backup/src' }
+    from('vendordeps') { into 'backup/vendordeps' }
+    from('build.gradle') { into 'backup' }
+}
 
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
@@ -368,25 +346,26 @@ gversion {
 }
 
 // Create commit with working changes on event branches
-task(eventDeploy) {
+tasks.register("eventDeploy") {
     doLast {
         if (project.gradle.startParameter.taskNames.any({ it.toLowerCase().contains("deploy") })) {
             def branchPrefix = "event"
-            def branch = 'git branch --show-current'.execute().text.trim()
+            def branch = providers.exec {
+                workingDir(projectDir)
+                commandLine 'git', 'branch', '--show-current'
+            }.standardOutput.asText.get().trim()
             def commitMessage = "Update at '${new Date().toString()}'"
 
             if (branch.startsWith(branchPrefix)) {
-                exec {
+                providers.exec {
                     workingDir(projectDir)
-                    executable 'git'
-                    args 'add', '-A'
-                }
-                exec {
+                    commandLine 'git', 'add', '-A'
+                }.result.get()
+                providers.exec {
                     workingDir(projectDir)
-                    executable 'git'
-                    args 'commit', '-m', commitMessage
+                    commandLine 'git', 'commit', '-m', commitMessage
                     ignoreExitValue = true
-                }
+                }.result.get()
 
                 println "Committed to branch: '$branch'"
                 println "Commit message: '$commitMessage'"

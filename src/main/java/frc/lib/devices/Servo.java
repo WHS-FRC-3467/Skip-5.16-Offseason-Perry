@@ -15,9 +15,9 @@
 
 package frc.lib.devices;
 
-import edu.wpi.first.units.measure.Angle;
-
 import frc.lib.io.servo.ServoIO;
+
+import org.wpilib.units.measure.Angle;
 
 /**
  * Wrapper class for servo motors that can rotate to specific angles. Provides a simplified

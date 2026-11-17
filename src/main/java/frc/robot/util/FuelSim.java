@@ -1,27 +1,26 @@
 package frc.robot.util;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.IntegerPublisher;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.Timer;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.MetersPerSecond;
+import static org.wpilib.units.Units.Radians;
 
 import frc.robot.RobotState;
+
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Pose3d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.util.Units;
+import org.wpilib.networktables.IntegerPublisher;
+import org.wpilib.networktables.NetworkTableInstance;
+import org.wpilib.networktables.StructArrayPublisher;
+import org.wpilib.system.Timer;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.Distance;
+import org.wpilib.units.measure.LinearVelocity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -429,7 +428,7 @@ public class FuelSim {
     protected boolean running = false;
     protected boolean simulateAirResistance = false;
     protected Supplier<Pose2d> robotPoseSupplier = null;
-    protected Supplier<ChassisSpeeds> robotFieldSpeedsSupplier = null;
+    protected Supplier<ChassisVelocities> robotFieldSpeedsSupplier = null;
     protected double robotWidth; // size along the robot's y axis
     protected double robotLength; // size along the robot's x axis
     protected double bumperHeight;
@@ -561,10 +560,10 @@ public class FuelSim {
 
     /** Adds array of `Translation3d`'s to NetworkTables at tableKey + "/Fuels" */
     public void logFuels() {
-        fuelPublisher.set(fuels.stream().map((fuel) -> fuel.pos).toArray(Translation3d[]::new));
+        fuelPublisher.set(fuels.stream().map(fuel -> fuel.pos).toArray(Translation3d[]::new));
         fuelInHopperPublisher.set(
                 hopperFuel.stream()
-                        .map((position) -> toFieldRelative(position))
+                        .map(position -> toFieldRelative(position))
                         .toArray(Translation3d[]::new));
     }
 
@@ -628,14 +627,14 @@ public class FuelSim {
      * @param length from front to back (x-axis)
      * @param bumperHeight from the ground
      * @param poseSupplier supplier for the robot pose
-     * @param fieldSpeedsSupplier field-relative `ChassisSpeeds` supplier
+     * @param fieldSpeedsSupplier field-relative `ChassisVelocities` supplier
      */
     public void registerRobot(
             double width,
             double length,
             double bumperHeight,
             Supplier<Pose2d> poseSupplier,
-            Supplier<ChassisSpeeds> fieldSpeedsSupplier) {
+            Supplier<ChassisVelocities> fieldSpeedsSupplier) {
         this.robotPoseSupplier = poseSupplier;
         this.robotFieldSpeedsSupplier = fieldSpeedsSupplier;
         this.robotWidth = width;
@@ -650,14 +649,14 @@ public class FuelSim {
      * @param length from front to back (x-axis)
      * @param bumperHeight from the ground
      * @param poseSupplier supplier for the robot pose
-     * @param fieldSpeedsSupplier field-relative `ChassisSpeeds` supplier
+     * @param fieldSpeedsSupplier field-relative `ChassisVelocities` supplier
      */
     public void registerRobot(
             Distance width,
             Distance length,
             Distance bumperHeight,
             Supplier<Pose2d> poseSupplier,
-            Supplier<ChassisSpeeds> fieldSpeedsSupplier) {
+            Supplier<ChassisVelocities> fieldSpeedsSupplier) {
         this.robotPoseSupplier = poseSupplier;
         this.robotFieldSpeedsSupplier = fieldSpeedsSupplier;
         this.robotWidth = width.in(Meters);
@@ -713,7 +712,7 @@ public class FuelSim {
     public void setHopperFuel(int numFuel) {
         int previousAmount = getHeldFuel();
         // Clamp the new set amount of fuel
-        int amountFuel = MathUtil.clamp(numFuel, 0, HOPPER_CAPACITY);
+        int amountFuel = Math.clamp(numFuel, 0, HOPPER_CAPACITY);
         if (amountFuel < previousAmount) {
             for (int i = amountFuel; i < previousAmount; i++) {
                 hopperFuel.remove(hopperFuel.size() - 1);
@@ -758,7 +757,7 @@ public class FuelSim {
      */
     protected void handleRobotCollision(Fuel fuel, Pose2d robot, Translation2d robotVel) {
         Translation2d relativePos =
-                new Pose2d(fuel.pos.toTranslation2d(), Rotation2d.kZero)
+                new Pose2d(fuel.pos.toTranslation2d(), Rotation2d.ZERO)
                         .relativeTo(robot)
                         .getTranslation();
 
@@ -805,9 +804,8 @@ public class FuelSim {
 
     protected void handleRobotCollisions(List<Fuel> fuels) {
         Pose2d robot = robotPoseSupplier.get();
-        ChassisSpeeds speeds = robotFieldSpeedsSupplier.get();
-        Translation2d robotVel =
-                new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+        ChassisVelocities speeds = robotFieldSpeedsSupplier.get();
+        Translation2d robotVel = new Translation2d(speeds.vx, speeds.vy);
 
         for (Fuel fuel : fuels) {
             handleRobotCollision(fuel, robot, robotVel);
@@ -1138,7 +1136,7 @@ public class FuelSim {
                     || hopperFuel.size() >= HOPPER_CAPACITY) return false;
 
             Translation2d fuelRelativePos =
-                    new Pose2d(fuel.pos.toTranslation2d(), Rotation2d.kZero)
+                    new Pose2d(fuel.pos.toTranslation2d(), Rotation2d.ZERO)
                             .relativeTo(robotPose)
                             .getTranslation();
 
@@ -1224,15 +1222,15 @@ public class FuelSim {
      */
     public Translation3d launchVel(LinearVelocity vel, Angle angle) {
         Pose3d robot = new Pose3d(RobotState.getInstance().getEstimatedPose());
-        ChassisSpeeds fieldSpeeds = RobotState.getInstance().getFieldRelativeVelocity();
+        ChassisVelocities fieldSpeeds = RobotState.getInstance().getFieldRelativeVelocity();
 
         double horizontalVel = Math.cos(angle.in(Radians)) * vel.in(MetersPerSecond);
         double verticalVel = Math.sin(angle.in(Radians)) * vel.in(MetersPerSecond);
         double xVel = horizontalVel * Math.cos(robot.getRotation().toRotation2d().getRadians());
         double yVel = horizontalVel * Math.sin(robot.getRotation().toRotation2d().getRadians());
 
-        xVel += fieldSpeeds.vxMetersPerSecond;
-        yVel += fieldSpeeds.vyMetersPerSecond;
+        xVel += fieldSpeeds.vx;
+        yVel += fieldSpeeds.vy;
 
         return new Translation3d(xVel, yVel, verticalVel);
     }
@@ -1242,6 +1240,6 @@ public class FuelSim {
         if (fuels.isEmpty()) {
             return List.of();
         }
-        return fuels.stream().map(fuel -> new Pose3d(fuel.pos, Rotation3d.kZero)).toList();
+        return fuels.stream().map(fuel -> new Pose3d(fuel.pos, Rotation3d.ZERO)).toList();
     }
 }

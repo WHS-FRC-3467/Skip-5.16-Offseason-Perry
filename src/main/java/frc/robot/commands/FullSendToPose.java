@@ -4,19 +4,8 @@
 
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj2.command.Command;
+import static org.wpilib.units.Units.Meters;
+import static org.wpilib.units.Units.Radians;
 
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.PID;
@@ -24,6 +13,16 @@ import frc.robot.RobotState;
 import frc.robot.subsystems.drive.Drive;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.command2.Command;
+import org.wpilib.math.controller.PIDController;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.math.kinematics.ChassisVelocities;
+import org.wpilib.math.trajectory.TrapezoidProfile;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.Distance;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -162,9 +161,9 @@ public class FullSendToPose extends Command {
 
     @Override
     public void initialize() {
-        ChassisSpeeds fieldVelocity =
-                ChassisSpeeds.fromRobotRelativeSpeeds(
-                        drive.getChassisSpeeds(), robotState.getEstimatedPose().getRotation());
+        ChassisVelocities fieldVelocity =
+                drive.getChassisVelocities()
+                        .toFieldRelative(robotState.getEstimatedPose().getRotation());
 
         linearController.reset();
         angularController.reset();
@@ -176,18 +175,17 @@ public class FullSendToPose extends Command {
                         .minus(robotState.getEstimatedPose().getTranslation());
         resetLinearController(translationToTarget, fieldVelocity);
         resetAngularController(
-                robotState.getEstimatedPose().getRotation().getRadians(),
-                fieldVelocity.omegaRadiansPerSecond);
+                robotState.getEstimatedPose().getRotation().getRadians(), fieldVelocity.omega);
     }
 
     private void resetLinearController(
-            Translation2d translationToTarget, ChassisSpeeds fieldVelocity) {
+            Translation2d translationToTarget, ChassisVelocities fieldVelocity) {
         double distanceToTarget = translationToTarget.getNorm();
         double velocityTowardTarget = 0.0;
         if (distanceToTarget > 1e-9) {
             velocityTowardTarget =
-                    (fieldVelocity.vxMetersPerSecond * translationToTarget.getX()
-                                    + fieldVelocity.vyMetersPerSecond * translationToTarget.getY())
+                    (fieldVelocity.vx * translationToTarget.getX()
+                                    + fieldVelocity.vy * translationToTarget.getY())
                             / distanceToTarget;
         }
 
@@ -242,7 +240,7 @@ public class FullSendToPose extends Command {
         Translation2d translationToTarget =
                 target.getTranslation().minus(currentPose.getTranslation());
 
-        Rotation2d directionToTarget = translationToTarget.getAngle();
+        Rotation2d directionToTarget = translationToTarget.getAngle().orElse(Rotation2d.ZERO);
 
         // Calculate outputs from controllers
         double linearOutput = 0.0;
@@ -259,7 +257,7 @@ public class FullSendToPose extends Command {
                     linearController.calculate(translationToTarget.getNorm(), nextState.position);
 
             double totalOutput = feedforwardOutput + feedbackOutput;
-            linearOutput = MathUtil.clamp(-totalOutput, -LINEAR_V.get(), LINEAR_V.get());
+            linearOutput = Math.clamp(-totalOutput, -LINEAR_V.get(), LINEAR_V.get());
         }
 
         double angularOutput = 0.0;
@@ -277,19 +275,17 @@ public class FullSendToPose extends Command {
                             currentPose.getRotation().getRadians(), nextState.position);
 
             double totalOutput = feedforwardOutput + feedbackOutput;
-            angularOutput = MathUtil.clamp(totalOutput, -ANGULAR_V.get(), ANGULAR_V.get());
+            angularOutput = Math.clamp(totalOutput, -ANGULAR_V.get(), ANGULAR_V.get());
         }
 
         // Convert to robot-relative speeds and set request velocities
         var fieldRelativeSpeed =
-                new ChassisSpeeds(
+                new ChassisVelocities(
                         linearOutput * Math.cos(directionToTarget.getRadians()),
                         linearOutput * Math.sin(directionToTarget.getRadians()),
                         angularOutput);
 
-        drive.runVelocity(
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                        fieldRelativeSpeed, currentPose.getRotation()));
+        drive.runVelocity(fieldRelativeSpeed.toRobotRelative(currentPose.getRotation()));
 
         Logger.recordOutput("FullSendToPose/Target Pose", target);
         Logger.recordOutput("FullSendToPose/Distance To Target (m)", translationToTarget.getNorm());
@@ -332,24 +328,22 @@ public class FullSendToPose extends Command {
         double linearError = linearProfileGoal.position - linearProfileState.position;
         boolean withinDistanceTolerance =
                 distanceTolerance
-                        .map(
-                                tolerance ->
-                                        Math.abs(linearController.getError()) < tolerance
-                                                && Math.abs(linearError) < tolerance
-                                                && Math.abs(linearProfileState.velocity)
-                                                        < LINEAR_VELOCITY_TOLERANCE_METERS_PER_SECOND)
+                        .map(tolerance ->
+                                Math.abs(linearController.getError()) < tolerance
+                                        && Math.abs(linearError) < tolerance
+                                        && Math.abs(linearProfileState.velocity)
+                                                < LINEAR_VELOCITY_TOLERANCE_METERS_PER_SECOND)
                         .orElse(true);
 
         double angularError =
                 MathUtil.angleModulus(angularProfileGoal.position - angularProfileState.position);
         boolean withinAngularTolerance =
                 angleTolerance
-                        .map(
-                                tolerance ->
-                                        Math.abs(angularController.getError()) < tolerance
-                                                && Math.abs(angularError) < tolerance
-                                                && Math.abs(angularProfileState.velocity)
-                                                        < ANGULAR_VELOCITY_TOLERANCE_RADIANS_PER_SECOND)
+                        .map(tolerance ->
+                                Math.abs(angularController.getError()) < tolerance
+                                        && Math.abs(angularError) < tolerance
+                                        && Math.abs(angularProfileState.velocity)
+                                                < ANGULAR_VELOCITY_TOLERANCE_RADIANS_PER_SECOND)
                         .orElse(true);
 
         Logger.recordOutput(

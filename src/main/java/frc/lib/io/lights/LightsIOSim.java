@@ -15,23 +15,22 @@
 
 package frc.lib.io.lights;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.InchesPerSecond;
-import static edu.wpi.first.units.Units.Milliseconds;
-import static edu.wpi.first.units.Units.Seconds;
+import static org.wpilib.units.Units.Inches;
+import static org.wpilib.units.Units.InchesPerSecond;
+import static org.wpilib.units.Units.Milliseconds;
+import static org.wpilib.units.Units.Seconds;
 
 import com.ctre.phoenix6.controls.ControlRequest;
-
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.AddressableLEDBufferView;
-import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.util.Color;
 
 import frc.lib.util.CANdlePatterns;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.hardware.led.AddressableLED;
+import org.wpilib.hardware.led.AddressableLEDBuffer;
+import org.wpilib.hardware.led.AddressableLEDBufferView;
+import org.wpilib.hardware.led.LEDPattern;
+import org.wpilib.units.measure.Distance;
+import org.wpilib.util.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +68,6 @@ public class LightsIOSim implements LightsIO {
         }
         led.setLength(buffer.getLength());
         led.setData(this.buffer);
-        led.start();
     }
 
     @Override
@@ -111,7 +109,7 @@ public class LightsIOSim implements LightsIO {
                     Integer.valueOf(colorSplit[2]));
 
         } else {
-            return new Color("#C0FFEE");
+            return Color.fromString("#C0FFEE");
         }
     }
 
@@ -134,7 +132,7 @@ public class LightsIOSim implements LightsIO {
                 Inches.of(1);
         switch (requestInfo.get("Name")) {
             case "RainbowAnimation" ->
-                    rainbow.scrollAtAbsoluteSpeed(
+                    rainbow.scrollAtAbsoluteVelocity(
                                     InchesPerSecond.of(
                                             Double.valueOf(checkAndGet("FrameRate")) * direction),
                                     kLedSpacing)
@@ -151,7 +149,7 @@ public class LightsIOSim implements LightsIO {
                                     Double.valueOf(checkAndGet("FrameRate")) * direction,
                                     colorParse())
                             .applyTo(views.get(slot));
-            case "EmptyAnimation" -> LEDPattern.kOff.applyTo(views.get(slot));
+            case "EmptyAnimation" -> LEDPattern.OFF.applyTo(views.get(slot));
             case "LarsonAnimation" ->
                     candlePatterns
                             .larsonPattern(

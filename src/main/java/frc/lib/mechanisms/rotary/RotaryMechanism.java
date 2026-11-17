@@ -4,11 +4,6 @@
 
 package frc.lib.mechanisms.rotary;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.BaseUnits;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-
 import frc.lib.io.absoluteencoder.AbsoluteEncoderIO;
 import frc.lib.io.absoluteencoder.AbsoluteEncoderInputsAutoLogged;
 import frc.lib.io.motor.MotorIO;
@@ -16,6 +11,10 @@ import frc.lib.io.motor.MotorIO.ControlType;
 import frc.lib.mechanisms.Mechanism;
 
 import org.littletonrobotics.junction.Logger;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.units.BaseUnits;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.Distance;
 
 import java.util.Optional;
 
@@ -97,11 +96,10 @@ public abstract class RotaryMechanism<T extends MotorIO, E extends AbsoluteEncod
         visualizer.setGoalAngle(getGoalAngle());
 
         // Finally, update and log absolute encoder inputs if present.
-        absoluteEncoder.ifPresent(
-                encoder -> {
-                    encoder.updateInputs(absoluteEncoderInputs);
-                    Logger.processInputs(encoderName, absoluteEncoderInputs);
-                });
+        absoluteEncoder.ifPresent(encoder -> {
+            encoder.updateInputs(absoluteEncoderInputs);
+            Logger.processInputs(encoderName, absoluteEncoderInputs);
+        });
     }
 
     @Override

@@ -30,20 +30,20 @@ public class Ports {
      */
     public static final CANBus DRIVETRAIN_BUS = new CANBus("Drivetrain");
 
-    public static final Device.CAN pdh = new CAN(40, "rio");
+    public static final Device.CAN pdh = new CAN(40, Device.ONBOARD_CAN_BUS);
 
-    public static final Device.CAN topLeftFlywheel = new CAN(18, "rio");
-    public static final Device.CAN topRightFlywheel = new CAN(16, "rio");
-    public static final Device.CAN bottomLeftFlywheel = new CAN(21, "rio");
-    public static final Device.CAN bottomRightFlywheel = new CAN(22, "rio");
+    public static final Device.CAN topLeftFlywheel = new CAN(18, Device.ONBOARD_CAN_BUS);
+    public static final Device.CAN topRightFlywheel = new CAN(16, Device.ONBOARD_CAN_BUS);
+    public static final Device.CAN bottomLeftFlywheel = new CAN(21, Device.ONBOARD_CAN_BUS);
+    public static final Device.CAN bottomRightFlywheel = new CAN(22, Device.ONBOARD_CAN_BUS);
 
-    public static final Device.CAN hood = new CAN(19, "rio");
+    public static final Device.CAN hood = new CAN(19, Device.ONBOARD_CAN_BUS);
 
-    public static final Device.CAN tower = new CAN(20, "rio");
+    public static final Device.CAN tower = new CAN(20, Device.ONBOARD_CAN_BUS);
 
-    public static final Device.CAN indexer = new CAN(25, "rio");
-    public static final Device.CAN indexerFollower = new CAN(26, "rio");
+    public static final Device.CAN indexer = new CAN(25, Device.ONBOARD_CAN_BUS);
+    public static final Device.CAN indexerFollower = new CAN(26, Device.ONBOARD_CAN_BUS);
 
-    public static final Device.CAN intakeLinear = new CAN(27, "rio");
-    public static final Device.CAN intakeRoller = new CAN(28, "rio");
+    public static final Device.CAN intakeLinear = new CAN(27, Device.ONBOARD_CAN_BUS);
+    public static final Device.CAN intakeRoller = new CAN(28, Device.ONBOARD_CAN_BUS);
 }

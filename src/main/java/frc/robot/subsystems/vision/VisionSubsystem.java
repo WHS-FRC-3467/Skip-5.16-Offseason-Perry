@@ -15,11 +15,6 @@
 
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import frc.lib.devices.AprilTagCamera;
 import frc.lib.posestimator.PoseEstimator.VisionPoseObservation;
 import frc.lib.util.LoggedTunableNumber;
@@ -32,6 +27,9 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.wpilib.command2.SubsystemBase;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Pose3d;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -355,7 +353,7 @@ public class VisionSubsystem extends SubsystemBase {
                         * ambiguityFactor
                         * camera.getProperties().stdDevFactor();
 
-        return MathUtil.clamp(stdDevFactor, STDDEV_FACTOR_MIN, STDDEV_FACTOR_MAX);
+        return Math.clamp(stdDevFactor, STDDEV_FACTOR_MIN, STDDEV_FACTOR_MAX);
     }
 
     private List<Integer> getTagsUsed(List<PhotonTrackedTarget> targets) {

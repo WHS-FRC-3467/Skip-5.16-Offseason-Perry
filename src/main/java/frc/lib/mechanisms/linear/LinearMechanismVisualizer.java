@@ -4,19 +4,18 @@
 
 package frc.lib.mechanisms.linear;
 
-import static edu.wpi.first.units.Units.Meters;
-
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
+import static org.wpilib.units.Units.Meters;
 
 import frc.lib.mechanisms.linear.LinearMechanism.LinearMechCharacteristics;
 
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
+import org.wpilib.math.geometry.Rotation3d;
+import org.wpilib.telemetry.Telemetry;
+import org.wpilib.units.measure.Distance;
+import org.wpilib.util.Color;
+import org.wpilib.util.Color8Bit;
 
 import java.util.Optional;
 
@@ -65,7 +64,7 @@ public class LinearMechanismVisualizer {
         // WPILib uses counter-clockwise positive, so pitch directly maps to visualization angle
         double visualAngleDegrees = Math.toDegrees(-orientation.getY());
 
-        mechanism = new LoggedMechanism2d(3.0, 3.0, new Color8Bit(Color.kBlack));
+        mechanism = new LoggedMechanism2d(3.0, 3.0, new Color8Bit(Color.BLACK));
         LoggedMechanismRoot2d root = mechanism.getRoot(name + " root", 1.5, 1.5);
 
         lowerBound =
@@ -74,11 +73,11 @@ public class LinearMechanismVisualizer {
                         characteristics.minDistance().in(Meters),
                         visualAngleDegrees,
                         3,
-                        new Color8Bit(Color.kWhite));
+                        new Color8Bit(Color.WHITE));
 
         lowerBoundArm =
                 new LoggedMechanismLigament2d(
-                        name + "lowerBoundArm", ARM_LENGTH, -90, 3, new Color8Bit(Color.kWhite));
+                        name + "lowerBoundArm", ARM_LENGTH, -90, 3, new Color8Bit(Color.WHITE));
 
         upperBound =
                 new LoggedMechanismLigament2d(
@@ -86,11 +85,11 @@ public class LinearMechanismVisualizer {
                         characteristics.maxDistance().in(Meters),
                         visualAngleDegrees,
                         3,
-                        new Color8Bit(Color.kWhite));
+                        new Color8Bit(Color.WHITE));
 
         upperBoundArm =
                 new LoggedMechanismLigament2d(
-                        name + "upperBoundArm", ARM_LENGTH, -90.0, 3, new Color8Bit(Color.kWhite));
+                        name + "upperBoundArm", ARM_LENGTH, -90.0, 3, new Color8Bit(Color.WHITE));
 
         measured =
                 new LoggedMechanismLigament2d(
@@ -98,11 +97,11 @@ public class LinearMechanismVisualizer {
                         characteristics.startingDistance().in(Meters),
                         visualAngleDegrees,
                         3,
-                        new Color8Bit(Color.kGreen));
+                        new Color8Bit(Color.GREEN));
 
         measuredArm =
                 new LoggedMechanismLigament2d(
-                        name + "measuredArm", ARM_LENGTH, -90, 3, new Color8Bit(Color.kGreen));
+                        name + "measuredArm", ARM_LENGTH, -90, 3, new Color8Bit(Color.GREEN));
 
         trajectory =
                 new LoggedMechanismLigament2d(
@@ -110,11 +109,11 @@ public class LinearMechanismVisualizer {
                         characteristics.startingDistance().in(Meters),
                         visualAngleDegrees,
                         3,
-                        new Color8Bit(Color.kYellow));
+                        new Color8Bit(Color.YELLOW));
 
         trajectoryArm =
                 new LoggedMechanismLigament2d(
-                        name + "trajectoryArm", ARM_LENGTH, -90, 3, new Color8Bit(Color.kYellow));
+                        name + "trajectoryArm", ARM_LENGTH, -90, 3, new Color8Bit(Color.YELLOW));
 
         goal =
                 new LoggedMechanismLigament2d(
@@ -122,11 +121,11 @@ public class LinearMechanismVisualizer {
                         characteristics.startingDistance().in(Meters),
                         visualAngleDegrees,
                         3,
-                        new Color8Bit(Color.kRed));
+                        new Color8Bit(Color.RED));
 
         goalArm =
                 new LoggedMechanismLigament2d(
-                        name + "goalArm", ARM_LENGTH, -90, 3, new Color8Bit(Color.kRed));
+                        name + "goalArm", ARM_LENGTH, -90, 3, new Color8Bit(Color.RED));
 
         root.append(lowerBound);
         lowerBound.append(lowerBoundArm);
@@ -154,7 +153,7 @@ public class LinearMechanismVisualizer {
     }
 
     private void update() {
-        SmartDashboard.putData("Mechanism Visualizers/" + name + " Visualizer", mechanism);
+        Telemetry.log("Mechanism Visualizers/" + name + " Visualizer", mechanism);
     }
 
     /**
@@ -178,11 +177,10 @@ public class LinearMechanismVisualizer {
             trajectoryArm.setLength(0.0);
         }
 
-        distance.ifPresent(
-                d -> {
-                    trajectoryArm.setLength(ARM_LENGTH);
-                    trajectory.setLength(d.in(Meters));
-                });
+        distance.ifPresent(d -> {
+            trajectoryArm.setLength(ARM_LENGTH);
+            trajectory.setLength(d.in(Meters));
+        });
 
         update();
     }
@@ -197,11 +195,10 @@ public class LinearMechanismVisualizer {
             goalArm.setLength(0.0);
         }
 
-        distance.ifPresent(
-                d -> {
-                    goalArm.setLength(ARM_LENGTH);
-                    goal.setLength(d.in(Meters));
-                });
+        distance.ifPresent(d -> {
+            goalArm.setLength(ARM_LENGTH);
+            goal.setLength(d.in(Meters));
+        });
 
         update();
     }

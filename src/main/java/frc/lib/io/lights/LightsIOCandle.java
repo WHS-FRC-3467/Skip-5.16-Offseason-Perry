@@ -47,11 +47,10 @@ public class LightsIOCandle implements LightsIO {
 
         updateThread
                 .ctreCheckErrorAndRetry(() -> candle.getConfigurator().apply(config))
-                .exceptionally(
-                        ex -> {
-                            LOGGER.log(Level.SEVERE, ex.toString(), ex);
-                            return null;
-                        });
+                .exceptionally(ex -> {
+                    LOGGER.log(Level.SEVERE, ex.toString(), ex);
+                    return null;
+                });
     }
 
     @Override

@@ -15,22 +15,21 @@
 
 package frc.lib.devices;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
+import static org.wpilib.units.Units.Degrees;
+import static org.wpilib.units.Units.Meters;
 
 import frc.lib.io.objectdetection.ObjectDetectionIO;
 import frc.lib.io.objectdetection.ObjectDetectionIO.ObjectDetectionIOInputs;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import org.wpilib.math.geometry.Pose2d;
+import org.wpilib.math.geometry.Rotation2d;
+import org.wpilib.math.geometry.Transform2d;
+import org.wpilib.math.geometry.Transform3d;
+import org.wpilib.math.geometry.Translation2d;
+import org.wpilib.units.measure.Angle;
+import org.wpilib.units.measure.Distance;
 
 import java.util.Optional;
 
