@@ -17,7 +17,6 @@ package frc.lib.devices;
 
 import frc.lib.io.vision.VisionIO;
 import frc.lib.io.vision.VisionIO.CameraResult;
-import frc.lib.io.vision.VisionIOC2;
 import frc.lib.io.vision.VisionIOInputsAutoLogged;
 import frc.lib.io.vision.VisionIOPhotonVision;
 import frc.lib.util.AlertUtil;
@@ -65,7 +64,6 @@ public class AprilTagCamera {
      */
     public record CameraProperties(
             String name,
-            int index,
             Transform3d robotToCamera,
             Matrix<N3, N3> cameraMatrix,
             Matrix<N8, N1> distCoeffs,
@@ -129,7 +127,6 @@ public class AprilTagCamera {
                         "Unknown/Invalid Vision Packet Type Reported. Ignoring.", null);
                 yield Optional.empty();
             }
-            case C2 -> Optional.of(VisionIOC2.decodeResults(inputs, fieldLayout, properties.index));
             case PHOTON -> Optional.of(VisionIOPhotonVision.decodeResults(inputs, fieldLayout));
         };
     }

@@ -57,9 +57,6 @@ public class VisionIOPhotonVision implements VisionIO {
      */
     @Override
     public void updateInputs(VisionIOInputs inputs) {
-        // Set the FPS limit to 45 to reduce CPU usage and network traffic
-        // Done as quick hack
-        photonCamera.setFPSLimit(30);
         inputs.connected = photonCamera.isConnected();
         inputs.rawPacketType = NativePacketType.PHOTON;
 
@@ -71,15 +68,15 @@ public class VisionIOPhotonVision implements VisionIO {
         }
 
         var unreadResults = photonCamera.getAllUnreadResults();
-        if (!unreadResults.isEmpty()) {
-            var result = unreadResults.get(unreadResults.size() - 1);
-            inputs.rawResults = new byte[][] {packPhotonResult(result)};
-            inputs.captureTimestampsUs = new long[] {result.metadata.captureTimestampNanos / 1000};
-            inputs.publishTimestampsUs = new long[] {result.metadata.publishTimestampNanos / 1000};
-        } else {
-            inputs.rawResults = new byte[0][];
-            inputs.captureTimestampsUs = new long[0];
-            inputs.publishTimestampsUs = new long[0];
+        int n = unreadResults.size();
+        inputs.rawResults = new byte[n][];
+        inputs.captureTimestampsUs = new long[n];
+        inputs.publishTimestampsUs = new long[n];
+        for (int i = 0; i < n; i++) {
+            var result = unreadResults.get(i);
+            inputs.rawResults[i] = packPhotonResult(result);
+            inputs.captureTimestampsUs[i] = result.metadata.captureTimestampNanos / 1000;
+            inputs.publishTimestampsUs[i] = result.metadata.publishTimestampNanos / 1000;
         }
     }
 

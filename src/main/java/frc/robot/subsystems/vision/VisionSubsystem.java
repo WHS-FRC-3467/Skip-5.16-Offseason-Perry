@@ -64,9 +64,6 @@ public class VisionSubsystem extends SubsystemBase {
     /** Maximum ambiguity ratio allowed in a result */
     public static final double MAX_AMBIGUITY = 0.2;
 
-    /** Maximum unread results processed per camera cycle. */
-    public static final int MAX_UNREAD_RESULTS = 5;
-
     /** Width of the field in meters. */
     public static final double FIELD_WIDTH = FieldConstants.FIELD_WIDTH;
 
@@ -178,11 +175,6 @@ public class VisionSubsystem extends SubsystemBase {
             CameraResult[] results = camera.getUnreadResults().orElse(null);
             if (results == null) {
                 continue;
-            }
-            if (results.length > MAX_UNREAD_RESULTS) {
-                results =
-                        Arrays.copyOfRange(
-                                results, results.length - MAX_UNREAD_RESULTS, results.length);
             }
 
             ArrayList<CameraResult> acceptedResults = new ArrayList<>();

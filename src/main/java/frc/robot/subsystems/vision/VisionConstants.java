@@ -21,7 +21,6 @@ import static org.wpilib.units.Units.Milliseconds;
 import frc.lib.devices.AprilTagCamera;
 import frc.lib.devices.AprilTagCamera.CameraProperties;
 import frc.lib.io.vision.VisionIO;
-import frc.lib.io.vision.VisionIOC2;
 import frc.lib.io.vision.VisionIOPhotonVision;
 import frc.lib.io.vision.VisionIOPhotonVisionSim;
 import frc.robot.Constants;
@@ -74,12 +73,6 @@ public class VisionConstants {
     public static final String LEFT_NAME = "left";
     public static final String RIGHT_NAME = "right";
     public static final String FRONT_RIGHT_NAME = "front_right";
-
-    // Combined-frame slice order on the shared CTWO device.
-    private static final int FRONT_LEFT_CAMERA_INDEX = 3;
-    private static final int LEFT_CTWO_CAMERA_INDEX = 1;
-    private static final int RIGHT_CTWO_CAMERA_INDEX = 0;
-    private static final int FRONT_RIGHT_CAMERA_INDEX = 2;
 
     public static final Transform3d FRONT_LEFT_TRANSFORM =
             new Transform3d(
@@ -259,7 +252,6 @@ public class VisionConstants {
     public static final CameraProperties FRONT_LEFT =
             new CameraProperties(
                     FRONT_LEFT_NAME,
-                    FRONT_LEFT_CAMERA_INDEX,
                     FRONT_LEFT_TRANSFORM,
                     FRONT_LEFT_MATRIX,
                     FRONT_LEFT_DIST_COEFFS,
@@ -274,7 +266,6 @@ public class VisionConstants {
     public static final CameraProperties LEFT =
             new CameraProperties(
                     LEFT_NAME,
-                    LEFT_CTWO_CAMERA_INDEX,
                     LEFT_TRANSFORM,
                     LEFT_MATRIX,
                     LEFT_DIST_COEFFS,
@@ -289,7 +280,6 @@ public class VisionConstants {
     public static final CameraProperties RIGHT =
             new CameraProperties(
                     RIGHT_NAME,
-                    RIGHT_CTWO_CAMERA_INDEX,
                     RIGHT_TRANSFORM,
                     RIGHT_MATRIX,
                     RIGHT_DIST_COEFFS,
@@ -304,7 +294,6 @@ public class VisionConstants {
     public static final CameraProperties FRONT_RIGHT =
             new CameraProperties(
                     FRONT_RIGHT_NAME,
-                    FRONT_RIGHT_CAMERA_INDEX,
                     FRONT_RIGHT_TRANSFORM,
                     FRONT_RIGHT_MATRIX,
                     FRONT_RIGHT_DIST_COEFFS,
@@ -317,14 +306,6 @@ public class VisionConstants {
                     FRONT_RIGHT_LATENCY_STDDEV);
 
     private static Optional<VisionSystemSim> visionSim = Optional.empty();
-    private static final VisionIOC2.C2Config FRONT_LEFT_C2_CONFIG =
-            VisionIOC2.defaultsFor(FRONT_LEFT_CAMERA_INDEX);
-    private static final VisionIOC2.C2Config LEFT_C2_CONFIG =
-            VisionIOC2.defaultsFor(LEFT_CTWO_CAMERA_INDEX);
-    private static final VisionIOC2.C2Config RIGHT_C2_CONFIG =
-            VisionIOC2.defaultsFor(RIGHT_CTWO_CAMERA_INDEX);
-    private static final VisionIOC2.C2Config FRONT_RIGHT_C2_CONFIG =
-            VisionIOC2.defaultsFor(FRONT_RIGHT_CAMERA_INDEX);
 
     private static VisionSystemSim getVisionSim() {
         if (visionSim.isEmpty()) {
