@@ -4,6 +4,8 @@
 
 package frc.lib.util;
 
+import static org.wpilib.units.Units.Meters;
+
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
 
@@ -15,6 +17,7 @@ import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Rotation3d;
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.geometry.Translation3d;
+import org.wpilib.units.measure.Distance;
 
 /** Utility class for field-related methods. */
 public class FieldUtil {
@@ -126,6 +129,20 @@ public class FieldUtil {
                 && MatchState.getAlliance().isPresent()
                 && MatchState.getAlliance().get() == Alliance.RED;
     }
+
+    /**
+     * Checks if a given pose is within the field boundaries, with a specified margin.
+     *
+     * @param translation The translation to check.
+     * @param margin The distance inset from the boundaries.
+     * @return True if the pose is within the field boundaries, false otherwise.
+     */
+    public static boolean isPoseInField(Translation2d translation, Distance margin) {
+        return translation.getX() >= margin.in(Meters)
+                && translation.getX() <= FieldConstants.FIELD_LENGTH - margin.in(Meters)
+                && translation.getY() >= margin.in(Meters)
+                && translation.getY() <= FieldConstants.FIELD_WIDTH - margin.in(Meters);
+    }
 }
 
     // /**
@@ -135,8 +152,8 @@ public class FieldUtil {
     // */
     // public static boolean shouldFlip()
     // {
-    // return MatchState.getAlliance().isPresent()
-    // && MatchState.getAlliance().get() == Alliance.RED;
+    // return DriverStation.getAlliance().isPresent()
+    // && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
     // }
 
     // public static Pose2d handleAllianceFlip(Pose2d blue_pose)
@@ -161,19 +178,4 @@ public class FieldUtil {
     // return shouldFlip()
     // ? blue_translation.rotateAround(fieldCenter3D, new Rotation3d(0, 0, 180.00))
     // : blue_translation;
-    // }
-
-    // /**
-    // * Checks if a given pose is within the field boundaries, with a specified margin.
-    // *
-    // * @param translation The tranlslation to check.
-    // * @param margin The distance inset from the boundaries.
-    // * @return True if the pose is within the field boundaries, false otherwise.
-    // */
-    // public static boolean isPoseInField(Translation2d translation, Distance margin)
-    // {
-    // return translation.getX() >= margin.in(Meters)
-    // && translation.getX() <= FieldConstants.FIELD_LENGTH - margin.in(Meters)
-    // && translation.getY() >= margin.in(Meters)
-    // && translation.getY() <= FieldConstants.FIELD_WIDTH - margin.in(Meters);
     // }
